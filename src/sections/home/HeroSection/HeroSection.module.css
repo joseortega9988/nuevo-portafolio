@@ -1,0 +1,131 @@
+.section {
+  position: relative;
+  display: grid;
+  align-items: center;
+  /* Fills the viewport below the sticky navbar without overflowing it. */
+  min-height: calc(100svh - 64px);
+  overflow: hidden;
+  background: var(--c-void);
+}
+
+.canvas,
+.poster {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-canvas);
+}
+
+.poster {
+  background: var(--c-void);
+}
+
+/* The copy column: left third on wide screens, so the funnel of filaments
+   keeps the rest of the frame (§E, page 1 item 2). */
+.copy {
+  position: relative;
+  z-index: var(--z-content);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.1rem;
+  width: min(46ch, 100%);
+  margin-inline-start: clamp(1rem, 6vw, 5rem);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border-radius: var(--r-lg);
+  /* The scrim. Text must hold AA contrast over a background that is, by
+     design, bright and moving (§G). */
+  background: radial-gradient(
+    130% 120% at 30% 50%,
+    var(--c-void-85) 0%,
+    var(--c-void-00) 100%
+  );
+}
+
+.eyebrow {
+  margin: 0;
+}
+
+.title {
+  font-size: var(--step-6);
+  background-image: var(--g-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.body {
+  max-width: 44ch;
+  color: var(--c-text-dim);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.15rem;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background-image: var(--g-primary);
+  color: var(--c-void);
+  font-size: var(--step--1);
+  font-weight: 600;
+  transition:
+    transform var(--dur-base) var(--ease-signature),
+    box-shadow var(--dur-base) var(--ease-signature);
+}
+
+.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glow-magenta);
+}
+
+.scroll {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-content);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--c-text-muted);
+  animation: breathe 2.4s var(--ease-signature) infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.4; transform: translate(-50%, 0); }
+  50%      { opacity: 1;   transform: translate(-50%, 5px); }
+}
+
+/* Stacked below the attractor on narrow screens. */
+@media (max-width: 1023px) {
+  .section {
+    align-items: end;
+    padding-bottom: 4rem;
+  }
+  .copy {
+    margin-inline: auto;
+    width: min(52ch, calc(100% - 2rem));
+  }
+  .title {
+    font-size: var(--step-5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll {
+    animation: none;
+    opacity: 0.7;
+  }
+  .primary:hover {
+    transform: none;
+  }
+}

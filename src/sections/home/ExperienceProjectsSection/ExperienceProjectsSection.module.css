@@ -1,0 +1,34 @@
+.section {
+  position: relative;
+  /* Tall enough that the sunrise→night progression has room to be read as a
+     progression rather than a jump. */
+  min-height: 260vh;
+  padding-block: clamp(4rem, 10vh, 8rem);
+  background: var(--c-void);
+}
+
+.canvas,
+.poster {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-canvas);
+}
+
+.poster {
+  background: var(--c-void);
+}
+
+.content {
+  position: sticky;
+  /* Sticks below the navbar so the carousel stays in view for the whole
+     descent — the phase change is the reward for scrolling, and the cards are
+     what the visitor reads while it happens. */
+  top: 88px;
+  z-index: var(--z-content);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 4vh, 3rem);
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2.5rem);
+}

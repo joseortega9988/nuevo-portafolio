@@ -1,0 +1,58 @@
+.section {
+  position: relative;
+  /* Two viewports of travel: one to look at the torus, one to dissolve it. */
+  min-height: 200vh;
+  background: var(--c-void);
+}
+
+.pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  align-items: center;
+  overflow: hidden;
+}
+
+.canvas,
+.poster {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-canvas);
+}
+
+.poster {
+  background: var(--c-void);
+}
+
+.copy {
+  position: relative;
+  z-index: var(--z-content);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: min(44ch, 100%);
+  margin-inline-start: clamp(1rem, 6vw, 5rem);
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+  border-radius: var(--r-lg);
+  background: radial-gradient(
+    130% 120% at 30% 50%,
+    var(--c-void-85) 0%,
+    var(--c-void-00) 100%
+  );
+}
+
+.body {
+  color: var(--c-text-dim);
+}
+
+@media (max-width: 1023px) {
+  .pin {
+    align-items: end;
+  }
+  .copy {
+    margin-inline: auto;
+    margin-bottom: 3rem;
+    width: min(50ch, calc(100% - 2rem));
+  }
+}
