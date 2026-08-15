@@ -1,0 +1,41 @@
+.root {
+  position: absolute;
+  inset: 0;
+  background: var(--c-void);
+}
+
+.root canvas {
+  /* The hero copy sits in a column beside the attractor and must stay
+     clickable; the canvas takes pointer events only where it is uncovered. */
+  touch-action: pan-y;
+}
+
+/**
+ * Static fallback — shown under prefers-reduced-motion, when WebGL is
+ * unavailable, and if the GPU drops the context.
+ *
+ * It is not a neutral placeholder: it reproduces the scene's own composition
+ * (a spring-green glow at the lower centre rising through violet into magenta)
+ * so the hero keeps its contrast relationship with the copy either way.
+ */
+.fallback {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      60% 42% at 50% 100%,
+      color-mix(in srgb, var(--c-spring) 42%, transparent) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      45% 55% at 46% 55%,
+      color-mix(in srgb, var(--c-amber) 22%, transparent) 0%,
+      transparent 72%
+    ),
+    radial-gradient(
+      70% 70% at 55% 8%,
+      color-mix(in srgb, var(--c-magenta) 30%, transparent) 0%,
+      transparent 70%
+    ),
+    var(--c-void);
+}
