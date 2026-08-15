@@ -27,6 +27,13 @@
   --c-spring:      #5CF2A8;   /* green     — success, base-disk glow, tech accents */
   --c-core:        #CDE8FF;   /* white-blue core / specular highlights */
 
+  /* Two intermediate hues that exist to fill the gaps in the accretion disk's
+     temperature ramp. Gold jumped straight to pink and violet straight to cyan,
+     which banded visibly once the disk was large enough to see the ramp across.
+     Available to any scene, but sized for that one. */
+  --c-ember:       #FF7A3D;   /* orange    — between amber and magenta */
+  --c-indigo:      #4C6BFF;   /* blue      — between violet and cyan */
+
   /* — third-party brand marks —
      Only ever used to tint that platform's own icon on hover. They live here
      rather than in the component so tokens.css stays the one file with colour;

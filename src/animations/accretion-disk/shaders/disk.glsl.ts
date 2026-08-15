@@ -68,8 +68,10 @@ export const diskFragmentShader = /* glsl */ `
 
   uniform vec3 uCore;
   uniform vec3 uAmber;
+  uniform vec3 uEmber;
   uniform vec3 uMagenta;
   uniform vec3 uViolet;
+  uniform vec3 uIndigo;
   uniform vec3 uCyan;
   uniform vec3 uSpring;
 
@@ -85,14 +87,20 @@ export const diskFragmentShader = /* glsl */ `
 
   void main() {
     // Temperature by radius: white-hot at the inner edge, cooling out through
-    // amber and magenta into violet and cyan at the rim.
+    // gold, orange and pink into violet, blue and cyan at the rim.
+    //
+    // Eight stops rather than six. At this size the ramp is spread across most
+    // of the frame, and the old gold-to-pink and violet-to-cyan jumps were wide
+    // enough to read as bands rather than as a gradient.
     float t = clamp((vRadius - uInner) / (uOuter - uInner), 0.0, 1.0);
 
-    vec3 colour = mix(uCore, uAmber, smoothstep(0.00, 0.16, t));
-    colour = mix(colour, uMagenta, smoothstep(0.16, 0.40, t));
-    colour = mix(colour, uViolet, smoothstep(0.40, 0.66, t));
-    colour = mix(colour, uCyan, smoothstep(0.66, 0.88, t));
-    colour = mix(colour, uSpring, smoothstep(0.88, 1.00, t) * 0.5);
+    vec3 colour = mix(uCore, uAmber, smoothstep(0.00, 0.12, t));
+    colour = mix(colour, uEmber, smoothstep(0.12, 0.26, t));
+    colour = mix(colour, uMagenta, smoothstep(0.26, 0.42, t));
+    colour = mix(colour, uViolet, smoothstep(0.42, 0.58, t));
+    colour = mix(colour, uIndigo, smoothstep(0.58, 0.72, t));
+    colour = mix(colour, uCyan, smoothstep(0.72, 0.88, t));
+    colour = mix(colour, uSpring, smoothstep(0.88, 1.00, t) * 0.6);
 
     // Relativistic beaming. The approaching side is dramatically brighter and
     // shifts toward the core colour; the receding side falls away. Without

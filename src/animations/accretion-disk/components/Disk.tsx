@@ -50,8 +50,10 @@ export function Disk({
       uniforms: {
         uCore: { value: palette.core },
         uAmber: { value: palette.amber },
+        uEmber: { value: palette.ember },
         uMagenta: { value: palette.magenta },
         uViolet: { value: palette.violet },
+        uIndigo: { value: palette.indigo },
         uCyan: { value: palette.cyan },
         uSpring: { value: palette.spring },
         uTime: { value: 0 },

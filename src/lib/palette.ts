@@ -24,6 +24,8 @@ export const COLOR_TOKENS = [
   'cyan',
   'amber',
   'spring',
+  'ember',
+  'indigo',
   'core',
   'text',
   'text-dim',
