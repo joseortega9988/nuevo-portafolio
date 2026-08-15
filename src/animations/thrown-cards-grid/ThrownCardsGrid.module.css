@@ -1,0 +1,127 @@
+.stage {
+  position: relative;
+  width: 100%;
+  perspective: 1200px;
+}
+
+/* ── phase 1 + 2: scattered ──
+   Cards are absolutely placed; the stage keeps a viewport-ish height so the
+   float has somewhere to happen. */
+.stage[data-phase='waiting'] .track,
+.stage[data-phase='scattered'] .track {
+  position: relative;
+  min-height: clamp(520px, 78vh, 760px);
+}
+
+.stage[data-phase='waiting'] .card,
+.stage[data-phase='scattered'] .card {
+  position: absolute;
+  width: min(300px, 74vw);
+}
+
+/* ── phase 3: the grid ──
+   Flip animates the transition into this layout using the same elements. */
+.stage[data-phase='grid'] .track {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: clamp(1rem, 2.4vw, 1.75rem);
+}
+
+.stage[data-phase='grid'] .card {
+  position: relative;
+  width: auto;
+  rotate: none;
+}
+
+.card {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.float,
+.parallax {
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.link {
+  display: block;
+  height: 100%;
+  border-radius: var(--r-md);
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  align-items: flex-start;
+  height: 100%;
+  padding: 1.25rem;
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--c-surface) 92%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition:
+    border-color var(--dur-base) var(--ease-signature),
+    box-shadow var(--dur-base) var(--ease-signature);
+}
+
+/* Hover rim uses the primary gradient, applied as a border image so it can
+   travel around all four edges (§C, A8 row). */
+.link:hover .inner,
+.link:focus-visible .inner {
+  border-color: transparent;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--c-surface) 92%, transparent), color-mix(in srgb, var(--c-surface) 92%, transparent)),
+    var(--g-primary);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: var(--glow-magenta);
+}
+
+.title {
+  font-size: var(--step-1);
+  color: var(--c-text);
+}
+
+.summary {
+  font-size: var(--step--1);
+  color: var(--c-text-dim);
+  /* Cards in a grid must share a height rhythm; clamping the summary is what
+     keeps the row from being set by whichever entry has the longest copy. */
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.cta {
+  margin-top: auto;
+  padding-top: 0.5rem;
+  color: var(--c-cyan);
+  font-size: var(--step--1);
+  font-weight: 600;
+}
+
+/* Static fallback: straight to the grid, faded in. */
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    will-change: auto;
+    animation: appear var(--dur-slow) var(--ease-signature) both;
+  }
+  .parallax {
+    transform: none !important;
+  }
+}
+
+@keyframes appear {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
