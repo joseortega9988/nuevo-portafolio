@@ -1,0 +1,24 @@
+.root {
+  position: absolute;
+  inset: 0;
+  background: var(--c-void);
+  /* Background only: the grid cards in front must receive every click. */
+  pointer-events: none;
+}
+
+/* Static fallback: the same temperature ramp, frozen into an ellipse. */
+.fallback {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      58% 26% at 50% 52%,
+      color-mix(in srgb, var(--c-core) 40%, transparent) 0%,
+      color-mix(in srgb, var(--c-amber) 26%, transparent) 22%,
+      color-mix(in srgb, var(--c-magenta) 20%, transparent) 44%,
+      color-mix(in srgb, var(--c-violet) 16%, transparent) 62%,
+      color-mix(in srgb, var(--c-cyan) 12%, transparent) 78%,
+      transparent 92%
+    ),
+    var(--c-void);
+}
