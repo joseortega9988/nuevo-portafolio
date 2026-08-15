@@ -3,7 +3,13 @@
   /* Tall enough that the sunrise→night progression has room to be read as a
      progression rather than a jump. */
   min-height: 260vh;
-  padding-block: clamp(4rem, 10vh, 8rem);
+  /*
+   * No block padding here. The canvas is this section's first child, so top
+   * padding pushed it down and left a strip of bare background between the
+   * hero above and the sea — a black band across the handoff. .content carries
+   * its own padding already, so the canvas can start at the section's very top
+   * edge and the two scenes meet directly.
+   */
   background: var(--c-void);
 }
 
