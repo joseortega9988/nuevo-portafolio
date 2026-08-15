@@ -14,6 +14,25 @@
     transform var(--dur-base) var(--ease-signature);
 }
 
+/* One label or the other, never both. The full wording is the default; the
+   phone gets the bare noun so the navbar still fits the burger and the
+   language toggle. */
+.short {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .full {
+    display: none;
+  }
+  .short {
+    display: inline;
+  }
+  .button {
+    padding-inline: 0.9rem;
+  }
+}
+
 .icon {
   font-size: 1em;
   transition: transform var(--dur-base) var(--ease-signature);

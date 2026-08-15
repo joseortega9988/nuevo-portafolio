@@ -117,11 +117,27 @@ export function ExperienceProjectsSection() {
           : SUN_ENTRY_SHARE +
             (1 - SUN_ENTRY_SHARE) * shapeSunProgress(pinned, cards.length);
 
-      const index = Math.min(
-        cards.length - 1,
-        Math.floor(pinned * cards.length),
-      );
-      setActiveIndex((current) => (current === index ? current : index));
+      /**
+       * Which card is active, with a deadband at each boundary.
+       *
+       * The raw band index alone made the carousel flip back and forth
+       * constantly on a phone: `entry` is derived from window.innerHeight,
+       * which changes as the browser's own chrome hides and shows during a
+       * scroll, so `pinned` twitches every frame and any position sitting near
+       * a boundary crossed it repeatedly. Requiring the scroll to travel
+       * properly into the next band before committing means that twitch can no
+       * longer move the card, while a real scroll still advances it.
+       */
+      const exact = pinned * cards.length;
+      const raw = Math.min(cards.length - 1, Math.floor(exact));
+      setActiveIndex((current) => {
+        if (current === raw) return current;
+        const into = exact - raw; // how far into the new band, 0→1
+        const margin = 0.2;
+        if (raw > current && into < margin) return current;
+        if (raw < current && into > 1 - margin) return current;
+        return raw;
+      });
     },
   });
 

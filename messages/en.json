@@ -15,6 +15,7 @@
     "home": "Home",
     "projects": "Projects",
     "downloadCv": "Download CV",
+    "cvShort": "CV",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "switchLanguage": "Switch language",
@@ -67,7 +68,7 @@
     "body": "Everything here is real work with a repository or a production system behind it: two engineering roles and three builds, ordered by what they demanded rather than how they look.",
     "gridTitle": "All work",
     "gridHint": "Select any card to open the full case.",
-    "torusHint": "Drag to spin it",
+    "torusHint": "Tap it to interact with the donut",
     "cardsHint": "Drag the deck"
   },
 

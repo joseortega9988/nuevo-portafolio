@@ -88,7 +88,13 @@ export function MobileMenu({
           <ul className={styles.list}>
             {NAV_ITEMS.map((item) => (
               <motion.li key={item.href} variants={ITEM}>
-                <Link href={item.href} className={styles.link} onClick={onClose}>
+                {/* No onClick={onClose} here on purpose. Closing on the click
+                    flipped `open` synchronously, which tore this overlay — and
+                    the Link inside it — down while Next was still handling the
+                    navigation, so the menu shut and the page never changed.
+                    The route-change effect above closes it instead, once the
+                    navigation has actually happened. */}
+                <Link href={item.href} className={styles.link}>
                   {t(item.labelKey)}
                 </Link>
               </motion.li>

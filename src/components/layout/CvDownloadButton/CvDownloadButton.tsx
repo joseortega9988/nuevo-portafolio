@@ -34,7 +34,13 @@ export function CvDownloadButton({
         .join(' ')}
     >
       <FiDownload aria-hidden className={styles.icon} />
-      <span>{t('downloadCv')}</span>
+      {/* "Download CV" on a phone left no room for the burger and the language
+          toggle beside it. The verb is dropped there and the icon carries it —
+          the label stays in the accessible name either way. */}
+      <span className={styles.full}>{t('downloadCv')}</span>
+      <span className={styles.short} aria-hidden>
+        {t('cvShort')}
+      </span>
     </a>
   );
 }

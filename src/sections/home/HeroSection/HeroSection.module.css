@@ -62,6 +62,8 @@
 .actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  align-self: center;
   gap: 0.75rem;
   margin-top: 0.5rem;
 }
@@ -143,6 +145,19 @@
   .copy {
     margin-inline: auto;
     width: min(52ch, calc(100% - 2rem));
+  }
+  /*
+   * The hint moves above the copy on a phone.
+   *
+   * The section is bottom-aligned here, so the copy runs all the way down and
+   * a hint pinned near the bottom landed on the call-to-action buttons and the
+   * scroll cue — three things stacked in the same place, none of them
+   * readable. At the top it sits over the attractor, which is what it is
+   * talking about anyway.
+   */
+  .hint {
+    top: calc(var(--navbar-h) + 1rem);
+    bottom: auto;
   }
   .title {
     font-size: var(--step-5);

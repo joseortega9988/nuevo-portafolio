@@ -15,6 +15,7 @@
     "home": "Inicio",
     "projects": "Proyectos",
     "downloadCv": "Descargar CV",
+    "cvShort": "CV",
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú",
     "switchLanguage": "Cambiar idioma",
@@ -67,7 +68,7 @@
     "body": "Todo lo que ves aquí es trabajo real, con un repositorio o un sistema en producción detrás: dos roles de ingeniería y tres proyectos, ordenados por lo que exigieron y no por cómo se ven.",
     "gridTitle": "Todo el trabajo",
     "cardsHint": "Arrastra las tarjetas",
-    "torusHint": "Arrástralo para girarlo",
+    "torusHint": "Tócalo para interactuar con el donut",
     "gridHint": "Elige cualquier tarjeta para abrir el caso completo."
   },
 
