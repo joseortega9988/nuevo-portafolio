@@ -49,7 +49,16 @@
   z-index: var(--z-content);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /*
+   * Stacked from the top, not centred.
+   *
+   * Centring balanced the heading and the carousel as one block, which left a
+   * dead band between them and pushed the cards so low their lower border ran
+   * off the bottom of the viewport. Starting at the top puts the cards
+   * directly under the title and hands the space they were losing back to the
+   * stage.
+   */
+  justify-content: flex-start;
   gap: clamp(0.75rem, 2.5vh, 2rem);
   max-width: 1200px;
   margin-inline: auto;

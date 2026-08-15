@@ -26,7 +26,7 @@
    * bottom — measured at 60vh the card ran 153px past the fold. Raising this
    * further means taking the space from the heading, not from the fold.
    */
-  height: clamp(260px, 42vh, 440px);
+  height: clamp(300px, 56vh, 580px);
   perspective: 1400px;
   perspective-origin: 50% 50%;
   border-radius: var(--r-lg);
