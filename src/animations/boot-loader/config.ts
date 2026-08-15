@@ -1,7 +1,7 @@
 /** Tunable timings for the boot loader. No colours here — those are tokens. */
 export const BOOT_LOADER_CONFIG = {
-  /** Delay between letters lighting up. Seven letters spell in ~0.85s. */
-  letterIntervalMs: 120,
+  /** Delay between letters lighting up. Seven letters spell in ~0.76s. */
+  letterIntervalMs: 109,
   /** How long the caret blinks after the word completes, before looping. */
   caretHoldMs: 900,
   /** Fade + scale-up on dismissal (§D A1). */
@@ -15,12 +15,13 @@ export const BOOT_LOADER_CONFIG = {
    * one full spelling of the word (7 x letterIntervalMs) plus a beat, so the
    * loader is seen and read without ever feeling like a wait.
    */
-  minVisibleMs: 1000,
+  minVisibleMs: 3000,
   /**
-   * Hard ceiling. Whatever the hero scene is doing, the loader leaves at six
-   * seconds — a preloader that can trap the visitor is worse than no preloader.
+   * Hard ceiling. Whatever the scene is doing, the loader leaves — a preloader
+   * that can trap the visitor is worse than no preloader. Sits comfortably
+   * above minVisibleMs so the floor is never the thing that trips it.
    */
-  timeoutMs: 6000,
+  timeoutMs: 8000,
 } as const;
 
 export const LOADER_WORD = 'LOADING';

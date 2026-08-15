@@ -6,6 +6,8 @@ export interface SocialLink {
   href: string;
   label: string;
   Icon: IconType;
+  /** Custom property in tokens.css holding that platform's brand colour. */
+  brandVar: string;
 }
 
 /**
@@ -18,12 +20,14 @@ export const SOCIAL_LINKS: readonly SocialLink[] = [
     href: 'https://www.linkedin.com/in/joseortega9988/',
     label: 'LinkedIn',
     Icon: FaLinkedin,
+    brandVar: '--c-brand-linkedin',
   },
   {
     id: 'github',
     href: 'https://github.com/joseortega9988',
     label: 'GitHub',
     Icon: FaGithub,
+    brandVar: '--c-brand-github',
   },
 ];
 

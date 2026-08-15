@@ -27,6 +27,14 @@
   --c-spring:      #5CF2A8;   /* green     — success, base-disk glow, tech accents */
   --c-core:        #CDE8FF;   /* white-blue core / specular highlights */
 
+  /* — third-party brand marks —
+     Only ever used to tint that platform's own icon on hover. They live here
+     rather than in the component so tokens.css stays the one file with colour;
+     GitHub's mark is its dark-theme foreground, since its true black would be
+     invisible on these surfaces. */
+  --c-brand-linkedin: #0A66C2;
+  --c-brand-github:   #F0F6FC;
+
   /* — text — */
   --c-text:        #EAF0FA;
   --c-text-dim:    #A7B2C8;

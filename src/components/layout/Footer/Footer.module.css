@@ -135,11 +135,14 @@
     box-shadow var(--dur-base) var(--ease-signature);
 }
 
-.socialLink:hover {
-  color: var(--c-magenta);
-  border-color: var(--c-magenta);
+/* Each mark takes its own platform's colour on hover; --brand is set per link
+   from the data so the stylesheet does not learn the list of networks. */
+.socialLink:hover,
+.socialLink:focus-visible {
+  color: var(--brand, var(--c-magenta));
+  border-color: var(--brand, var(--c-magenta));
   transform: translateY(-3px);
-  box-shadow: var(--glow-magenta);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--brand, var(--c-magenta)) 45%, transparent);
 }
 
 .copyright {

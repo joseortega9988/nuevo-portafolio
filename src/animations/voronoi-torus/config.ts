@@ -20,6 +20,12 @@ export const TORUS_CONFIG = {
 
   camera: { fov: 48, position: [0, 0.9, 5.1] as const },
   idleRotation: { x: 0.055, y: 0.11 },
+  /**
+   * Drag-to-spin. Radians per pixel, plus the per-second decay applied to the
+   * throw once the pointer is released — high enough that a flick keeps
+   * turning for a moment, low enough that it always comes to rest.
+   */
+  drag: { sensitivity: 0.006, friction: 2.6, maxVelocity: 6 },
   bloom: { intensity: 0.9, threshold: 0.2 },
 
   /**

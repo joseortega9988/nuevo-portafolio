@@ -69,25 +69,6 @@ export async function EntryDetailSection({
         <span aria-hidden>←</span> {t('backToProjects')}
       </Link>
 
-      {/* The gallery opens the page: for a project the screenshots are the
-          fastest way to understand what it is, so they lead rather than sitting
-          below the stack. Experience entries have none and start at the header. */}
-      {!isExperience && images.length > 0 && (
-        <section className={styles.gallery} style={rise()}>
-          <Carousel
-            images={images.map((image) => ({
-              src: image.src,
-              alt: image.alt[locale],
-            }))}
-            labels={{
-              previous: t('previousImage'),
-              next: t('nextImage'),
-              imageOf: t('imageOf', { index: '{index}', total: '{total}' }),
-            }}
-          />
-        </section>
-      )}
-
       <header className={styles.header} style={rise()}>
         <div className={styles.meta}>
           <Badge type={entry.type}>
@@ -103,6 +84,25 @@ export async function EntryDetailSection({
         <h1 className={styles.title}>{entry.title[locale]}</h1>
         <p className={styles.lead}>{entry.shortDescription[locale]}</p>
       </header>
+
+      {/* Directly under the title: the visitor knows what they are looking at,
+          and the screenshots are then the fastest way to understand it.
+          Experience entries have no gallery and go straight to the stack. */}
+      {!isExperience && images.length > 0 && (
+        <section className={styles.gallery} style={rise()}>
+          <Carousel
+            images={images.map((image) => ({
+              src: image.src,
+              alt: image.alt[locale],
+            }))}
+            labels={{
+              previous: t('previousImage'),
+              next: t('nextImage'),
+              imageOf: t('imageOf', { index: '{index}', total: '{total}' }),
+            }}
+          />
+        </section>
+      )}
 
       <section className={styles.block} style={rise()}>
         <h2 className={styles.blockTitle}>

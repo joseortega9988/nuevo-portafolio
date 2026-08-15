@@ -36,24 +36,42 @@
   width: min(228px, 58vw);
 }
 
+/* `data-settling` is present for the length of the Flip tween. The cards must
+   stay compact through it — growing them the moment the grid layout lands
+   leaves full-size cards sitting at their scattered positions, overlapping
+   each other, until the tween catches up. */
 .stage[data-phase='waiting'] .summary,
 .stage[data-phase='scattered'] .summary,
+.stage[data-settling] .summary,
 .stage[data-phase='waiting'] .chips,
 .stage[data-phase='scattered'] .chips,
+.stage[data-settling] .chips,
 .stage[data-phase='waiting'] .cta,
-.stage[data-phase='scattered'] .cta {
+.stage[data-phase='scattered'] .cta,
+.stage[data-settling] .cta {
   display: none;
 }
 
 .stage[data-phase='waiting'] .inner,
-.stage[data-phase='scattered'] .inner {
+.stage[data-phase='scattered'] .inner,
+.stage[data-settling] .inner {
   padding: 0.85rem;
   gap: 0.5rem;
 }
 
 .stage[data-phase='waiting'] .title,
-.stage[data-phase='scattered'] .title {
+.stage[data-phase='scattered'] .title,
+.stage[data-settling] .title {
   font-size: var(--step-0);
+}
+
+/* Width is NOT constrained while settling: the grid already owns it by then,
+   and forcing the flight width would make each card snap out to its cell the
+   moment the tween ended. Only the copy is held back, and it fades in. */
+.stage:not([data-settling])[data-phase='grid'] .summary,
+.stage:not([data-settling])[data-phase='grid'] .chips,
+.stage:not([data-settling])[data-phase='grid'] .cta {
+  animation: appear var(--dur-base) var(--ease-signature) both;
 }
 
 /* ── phase 3: the grid ──

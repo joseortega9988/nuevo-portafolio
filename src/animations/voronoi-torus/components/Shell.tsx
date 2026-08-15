@@ -14,6 +14,7 @@ import {
 import { buildPalette } from '@/lib/palette';
 
 import { TORUS_CONFIG } from '../config';
+import { useDragSpin } from '../hooks/useDragSpin';
 import { shellFragmentShader, shellVertexShader } from '../shaders/shell.glsl';
 import { buildShatteredTorus } from '../utils/buildShatteredTorus';
 
@@ -31,6 +32,10 @@ export function Shell({
   const readyRef = useRef(false);
   const cursor = useMemo(() => new Vector2(2, 2), []); // starts far off-screen
   const pointer = useThree((state) => state.pointer);
+  const spin = useDragSpin();
+  /** Idle drift accumulates separately so a drag adds to it rather than
+   *  fighting it, and the object never snaps back when released. */
+  const drift = useRef({ x: 0, y: 0 });
 
   const { geometry, material } = useMemo(() => {
     const shattered = buildShatteredTorus(gridSize);
@@ -83,9 +88,16 @@ export function Shell({
     cursor.lerp(pointer, Math.min(1, delta * 6));
     if (uCursor) (uCursor.value as Vector2).copy(cursor);
 
+    spin.update(delta);
+
     if (groupRef.current) {
-      groupRef.current.rotation.x += delta * TORUS_CONFIG.idleRotation.x;
-      groupRef.current.rotation.y += delta * TORUS_CONFIG.idleRotation.y;
+      // Idle drift pauses while the visitor is holding the object.
+      if (!spin.dragging) {
+        drift.current.x += delta * TORUS_CONFIG.idleRotation.x;
+        drift.current.y += delta * TORUS_CONFIG.idleRotation.y;
+      }
+      groupRef.current.rotation.x = drift.current.x + spin.offset.x;
+      groupRef.current.rotation.y = drift.current.y + spin.offset.y;
     }
 
     // A pure function of scroll position, so the shell reassembles on the way

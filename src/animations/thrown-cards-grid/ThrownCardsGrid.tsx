@@ -36,7 +36,12 @@ export function ThrownCardsGrid({
 }: ThrownCardsGridProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
-  const phase = useThrowSequence(stageRef, CARD_SELECTOR, active, reducedMotion);
+  const { phase, settling } = useThrowSequence(
+    stageRef,
+    CARD_SELECTOR,
+    active,
+    reducedMotion,
+  );
 
   usePointerParallax(stageRef, CARD_SELECTOR, phase === 'scattered' && !reducedMotion);
 
@@ -45,6 +50,7 @@ export function ThrownCardsGrid({
       ref={stageRef}
       className={[styles.stage, className].filter(Boolean).join(' ')}
       data-phase={phase}
+      data-settling={settling || undefined}
     >
       <ul data-track className={styles.track}>
         {cards.map((card, index) => {

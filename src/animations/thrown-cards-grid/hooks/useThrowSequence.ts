@@ -13,6 +13,15 @@ gsap.registerPlugin(Flip, ScrollTrigger);
 
 export type ThrowPhase = 'waiting' | 'scattered' | 'grid';
 
+export interface ThrowState {
+  phase: ThrowPhase;
+  /** True while Flip is moving the cards into the grid. The cards must stay
+   *  compact for this window: expanding them the moment the grid layout lands
+   *  leaves full-size cards sitting at scattered positions, overlapping, for
+   *  the whole length of the tween. */
+  settling: boolean;
+}
+
 /**
  * The throw → float → settle sequence.
  *
@@ -33,8 +42,9 @@ export function useThrowSequence(
   cardSelector: string,
   active: boolean,
   reducedMotion: boolean,
-): ThrowPhase {
+): ThrowState {
   const [phase, setPhase] = useState<ThrowPhase>('waiting');
+  const [settling, setSettling] = useState(false);
   /** True once the throw-in has finished playing. The settle waits on it, so
    *  scrolling quickly can never skip straight past the flight. */
   const [thrown, setThrown] = useState(false);
@@ -131,6 +141,7 @@ export function useThrowSequence(
           gsap.utils.toArray<HTMLElement>(cardSelector),
           { props: 'rotation' },
         );
+        setSettling(true);
         setPhase('grid');
       },
     });
@@ -168,10 +179,13 @@ export function useThrowSequence(
           clearProps: 'all',
         });
         if (track) track.style.minHeight = '';
+        // Only now may the cards grow back to their full content: doing it at
+        // the start of the tween put full-size cards at scattered positions.
+        setSettling(false);
         ScrollTrigger.refresh();
       },
     });
   }, [phase, cardSelector, stageRef]);
 
-  return phase;
+  return { phase, settling };
 }

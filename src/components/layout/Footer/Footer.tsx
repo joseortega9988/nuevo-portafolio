@@ -55,7 +55,7 @@ export async function Footer({ variant = 'default' }: FooterProps) {
         <div className={styles.social}>
           <h2 className={styles.headingSmall}>{t('officialLinks')}</h2>
           <ul className={styles.socialList}>
-            {SOCIAL_LINKS.map(({ id, href, label, Icon }) => (
+            {SOCIAL_LINKS.map(({ id, href, label, Icon, brandVar }) => (
               <li key={id}>
                 <a
                   href={href}
@@ -63,6 +63,7 @@ export async function Footer({ variant = 'default' }: FooterProps) {
                   rel="noreferrer noopener"
                   className={styles.socialLink}
                   aria-label={label}
+                  style={{ '--brand': `var(${brandVar})` } as React.CSSProperties}
                 >
                   <Icon aria-hidden />
                 </a>
