@@ -10,6 +10,7 @@ import { getCardViewModels } from '@/data/viewModels';
 import type { Locale } from '@/i18n/routing';
 import { useInViewport } from '@/lib/motion/useInViewport';
 import { useScrollProgress } from '@/lib/motion/useScrollProgress';
+import { useScrollTo } from '@/lib/motion/useScrollTo';
 import { MOUNT_MARGINS } from '@/lib/webgl/contextBudget';
 import { useRafPause } from '@/lib/webgl/useRafPause';
 
@@ -93,23 +94,24 @@ export function ExperienceProjectsSection() {
     },
   });
 
-  // The inverse mapping: scroll to the middle of a card's band.
+  // The inverse mapping: scroll to the middle of a card's band. Routed through
+  // useScrollTo because a bare window.scrollTo is overwritten by Lenis on the
+  // next frame — the arrows and dots would appear to do nothing.
+  const scrollTo = useScrollTo();
   const scrollToIndex = useCallback(
     (index: number) => {
       const section = sectionRef.current;
       if (!section) return;
       const travel = section.offsetHeight - window.innerHeight;
-      const target =
-        section.offsetTop + ((index + 0.5) / cards.length) * travel;
-      window.scrollTo({ top: target, behavior: 'smooth' });
+      scrollTo(section.offsetTop + ((index + 0.5) / cards.length) * travel);
     },
-    [cards.length],
+    [cards.length, scrollTo],
   );
 
   return (
     <section ref={sectionRef} className={styles.section}>
       <div className={styles.canvas} aria-hidden>
-        {visible && <SunsetScrollSea progress={sunProgress} paused={paused} />}
+        <SunsetScrollSea progress={sunProgress} paused={paused} />
       </div>
 
       <div className={styles.content}>

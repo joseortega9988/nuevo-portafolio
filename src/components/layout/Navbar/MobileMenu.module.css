@@ -45,31 +45,59 @@
   border-color: var(--c-cyan);
 }
 
+/**
+ * One column, everything on the same axis and the same width.
+ *
+ * Navigation, language and the CV button previously sat on two axes — a
+ * stacked list above a horizontal row — which read as two unrelated groups
+ * rather than one menu.
+ */
 .list {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1.25rem;
+  align-items: stretch;
+  gap: 0.5rem;
   z-index: 1;
+  width: min(320px, 78vw);
 }
 
 .link {
-  font-size: var(--step-4);
+  display: block;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--c-surface) 70%, transparent);
+  font-size: var(--step-2);
   font-weight: 600;
   letter-spacing: var(--tracking-display);
-  transition: color var(--dur-base) var(--ease-signature);
+  text-align: center;
+  transition:
+    color var(--dur-base) var(--ease-signature),
+    border-color var(--dur-base) var(--ease-signature);
 }
 
-.link:hover {
+.link:hover,
+.link:focus-visible {
   color: var(--c-magenta);
-  text-shadow: var(--glow-magenta);
+  border-color: var(--c-magenta);
 }
 
 .footer {
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
   z-index: 1;
+  width: min(320px, 78vw);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--c-line);
+}
+
+/* The two controls in the footer are different components, so they are
+   centred and stretched from here rather than each knowing about the menu. */
+.footer > * {
+  align-self: center;
+  justify-content: center;
 }
 
 /* The overlay is a small-screen affordance only. */

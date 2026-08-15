@@ -46,6 +46,17 @@
   color: var(--c-text-dim);
 }
 
+/* The copy fades out with the torus so the hero empties cleanly into the
+   cards, and fades back in on the way up. */
+.copy {
+  transition: opacity var(--dur-slow) var(--ease-signature);
+}
+
+.copy[data-faded] {
+  opacity: 0;
+  pointer-events: none;
+}
+
 @media (max-width: 1023px) {
   .pin {
     align-items: end;

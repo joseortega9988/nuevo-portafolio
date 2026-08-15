@@ -22,7 +22,15 @@ export const TORUS_CONFIG = {
   idleRotation: { x: 0.055, y: 0.11 },
   bloom: { intensity: 0.9, threshold: 0.2 },
 
-  /** The dissolve completes over the first 60% of the hero's exit (§D A7). */
-  dissolveWindow: 0.6,
+  /**
+   * Scroll range over which the shell comes apart, as a fraction of the hero.
+   *
+   * It starts late and finishes late on purpose. Dissolving over the first 60%
+   * left the torus invisible for most of the hero — and, scrolling back up from
+   * the cards, meant a long stretch of black before it reassembled. Holding it
+   * intact through the first 40% keeps the hero populated in both directions.
+   */
+  dissolveStart: 0.4,
+  dissolveEnd: 0.88,
   dissolveDistance: 3.4,
 } as const;

@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 
 import styles from './BootLoader.module.css';
-import { BOOT_LOADER_CONFIG, LOADER_WORD } from './config';
+import { LOADER_WORD } from './config';
 import { useBootSequence } from './hooks/useBootSequence';
 import type { BootLoaderProps } from './types';
 import { SEGMENT_NAMES, segmentsFor } from './utils/segments';
@@ -28,30 +28,22 @@ export function BootLoader({
 }: BootLoaderProps) {
   const reducedMotion = useReducedMotion();
   const t = useTranslations('loader');
-  // Null until the session flag has been read, so the server-rendered markup
-  // and the first client paint agree.
+  /**
+   * The loader runs on every page load, not once per session.
+   *
+   * It was originally gated behind a sessionStorage flag, which meant a
+   * refresh in the same tab skipped it — so the heaviest scenes rebuilt with
+   * nothing covering them. Showing it every time gives the WebGL work a
+   * consistent window to start in, and it is the first impression of the site.
+   *
+   * Null on the first render so the server markup and the first client paint
+   * agree; the effect below switches it on immediately after mount.
+   */
   const [active, setActive] = useState<boolean | null>(null);
   const onDismissedRef = useRef(onDismissed);
   onDismissedRef.current = onDismissed;
 
-  const initialisedRef = useRef(false);
-
-  // Runs exactly once. The effect writes the very flag it reads, so a second
-  // pass would see its own flag and dismiss the loader instantly — which is
-  // precisely what StrictMode's double-invoked effects do in development, and
-  // what an unstable `onDismissed` in the dependency list would do in
-  // production. The ref survives StrictMode's simulated remount; the flag in
-  // sessionStorage does not need to.
   useEffect(() => {
-    if (initialisedRef.current) return;
-    initialisedRef.current = true;
-
-    if (sessionStorage.getItem(BOOT_LOADER_CONFIG.sessionKey)) {
-      setActive(false);
-      onDismissedRef.current?.();
-      return;
-    }
-    sessionStorage.setItem(BOOT_LOADER_CONFIG.sessionKey, '1');
     setActive(true);
   }, []);
 

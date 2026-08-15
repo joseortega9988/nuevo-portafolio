@@ -88,7 +88,13 @@ export function Shell({
       groupRef.current.rotation.y += delta * TORUS_CONFIG.idleRotation.y;
     }
 
-    const t = Math.min(1, progress.current / TORUS_CONFIG.dissolveWindow);
+    // A pure function of scroll position, so the shell reassembles on the way
+    // back up without any extra state.
+    const { dissolveStart, dissolveEnd } = TORUS_CONFIG;
+    const t = Math.min(
+      1,
+      Math.max(0, (progress.current - dissolveStart) / (dissolveEnd - dissolveStart)),
+    );
     if (uDissolve) uDissolve.value = t;
     if (uOpacity) uOpacity.value = 1 - t;
 

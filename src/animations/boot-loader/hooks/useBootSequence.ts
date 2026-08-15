@@ -36,6 +36,9 @@ export function useBootSequence(
   const [fontsReady, setFontsReady] = useState(false);
   const [expired, setExpired] = useState(false);
   const dismissedRef = useRef(false);
+  const scheduledRef = useRef(false);
+  /** When the overlay first went up, for the minimum-display floor. */
+  const shownAtRef = useRef<number | null>(null);
   // Held in a ref so an inline callback from the parent cannot restart the
   // exit timer on every render.
   const onDismissedRef = useRef(onDismissed);
@@ -80,16 +83,31 @@ export function useBootSequence(
 
   // ── exit ──
   useEffect(() => {
-    if (!active || dismissedRef.current) return;
+    if (!active || scheduledRef.current) return;
+    if (shownAtRef.current === null) shownAtRef.current = performance.now();
     if (!((sceneReady && fontsReady) || expired)) return;
 
-    dismissedRef.current = true;
-    setPhase('leaving');
-    const id = window.setTimeout(() => {
+    scheduledRef.current = true;
+
+    // The gate is open, but the overlay still owes the visitor its minimum
+    // display time — otherwise the word never finishes spelling.
+    const elapsed = performance.now() - shownAtRef.current;
+    const hold = Math.max(0, BOOT_LOADER_CONFIG.minVisibleMs - elapsed);
+
+    const startExit = window.setTimeout(() => {
+      dismissedRef.current = true;
+      setPhase('leaving');
+    }, hold);
+
+    const finish = window.setTimeout(() => {
       setPhase('gone');
       onDismissedRef.current?.();
-    }, BOOT_LOADER_CONFIG.exitDurationMs);
-    return () => window.clearTimeout(id);
+    }, hold + BOOT_LOADER_CONFIG.exitDurationMs);
+
+    return () => {
+      window.clearTimeout(startExit);
+      window.clearTimeout(finish);
+    };
   }, [active, sceneReady, fontsReady, expired]);
 
   return { lit, phase };

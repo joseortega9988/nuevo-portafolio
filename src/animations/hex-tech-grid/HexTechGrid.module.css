@@ -8,12 +8,11 @@
 .cluster {
   /* --cols is the honeycomb's column count at the current breakpoint. The
      alternate-row offset rules below are written against it. */
-  --hex-width: 92px;
+  --hex-width: 104px;
   /* --hex-ratio is 2/√3, supplied by config.ts so the constant lives in one
      place. Falls back to the same value if the inline style is ever missing. */
   --hex-height: calc(var(--hex-width) * var(--hex-ratio, 1.1547));
-  --hex-gap: 10px;
-  --cols: 6;
+  --cols: 8;
 
   display: flex;
   flex-direction: column;
@@ -29,15 +28,28 @@
   text-align: center;
 }
 
+/**
+ * Zero-gap, centre-justified rows.
+ *
+ * Pointy-top hexagons are exactly --hex-width apart when they touch, so a gap
+ * of zero closes the honeycomb up with no seams. `justify-content: center` is
+ * what centres a short final row — a grid with a fixed column count would leave
+ * those last few hexagons hanging on the left.
+ *
+ * The row length is set by capping the container at --cols hexagons rather than
+ * by a column template, so wrapping stays predictable without giving up
+ * centring.
+ */
 .comb {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: var(--hex-gap);
-  /* Rows are pulled together, but only part way. A mathematically tight
-     honeycomb overlaps rows by a quarter of the hex height; here the overlap
-     is reduced to leave a band for the names under each hexagon. */
-  row-gap: 0.35rem;
+  gap: 0;
+  /* Just enough to clear the names; a tight honeycomb would overlap rows by a
+     quarter of the hex height and leave the labels nowhere to sit. */
+  row-gap: 0.4rem;
+  max-width: calc(var(--hex-width) * var(--cols));
+  margin-inline: auto;
 }
 
 .cell {
@@ -90,11 +102,15 @@
     color var(--dur-base) var(--ease-signature);
 }
 
+/* Constrained to the cell: with zero column gap a long name would otherwise
+   run under its neighbour's hexagon. */
 .name {
-  max-width: calc(var(--hex-width) + 18px);
+  max-width: 100%;
+  padding-inline: 2px;
   font-size: var(--step--2);
-  line-height: 1.25;
+  line-height: 1.2;
   text-align: center;
+  overflow-wrap: break-word;
   color: var(--c-text-muted);
   transition: color var(--dur-base) var(--ease-signature);
 }
@@ -123,87 +139,30 @@
   color: var(--c-text);
 }
 
-/* ── alternate-row offset ──
-   CSS cannot address a wrapped flex row, so the half-cell shift is expressed
-   as nth-child cycles of 2×--cols. One block per breakpoint, matching the
-   column count set alongside it. */
+/* ── breakpoints ──
+   Only the hexagon size and the row length change; there is no per-row
+   transform any more. The previous half-row offset had to shift cells with
+   margins, which dragged their neighbours on top of them, and it fought
+   centring — a shifted row can no longer be centred. */
 
-/* ≥1024px — six columns: shift items 7–12 of every twelve. */
-.comb > .cell:nth-child(12n + 7),
-.comb > .cell:nth-child(12n + 8),
-.comb > .cell:nth-child(12n + 9),
-.comb > .cell:nth-child(12n + 10),
-.comb > .cell:nth-child(12n + 11),
-.comb > .cell:nth-child(12n + 12) {
-  margin-inline-start: calc(var(--hex-width) / 2 + var(--hex-gap) / 2);
-  margin-inline-end: calc(var(--hex-width) / -2 - var(--hex-gap) / 2);
+@media (max-width: 1279px) {
+  .cluster { --cols: 6; --hex-width: 96px; }
 }
 
-@media (max-width: 1024px) {
-  .cluster {
-    --cols: 5;
-    --hex-width: 86px;
-  }
-  .comb > .cell {
-    margin-inline: 0;
-  }
-  .comb > .cell:nth-child(10n + 6),
-  .comb > .cell:nth-child(10n + 7),
-  .comb > .cell:nth-child(10n + 8),
-  .comb > .cell:nth-child(10n + 9),
-  .comb > .cell:nth-child(10n + 10) {
-    margin-inline-start: calc(var(--hex-width) / 2 + var(--hex-gap) / 2);
-    margin-inline-end: calc(var(--hex-width) / -2 - var(--hex-gap) / 2);
-  }
+@media (max-width: 1023px) {
+  .cluster { --cols: 5; --hex-width: 88px; }
 }
 
 @media (max-width: 768px) {
-  .cluster {
-    --cols: 4;
-    --hex-width: 80px;
-  }
-  .comb > .cell {
-    margin-inline: 0;
-  }
-  .comb > .cell:nth-child(8n + 5),
-  .comb > .cell:nth-child(8n + 6),
-  .comb > .cell:nth-child(8n + 7),
-  .comb > .cell:nth-child(8n + 8) {
-    margin-inline-start: calc(var(--hex-width) / 2 + var(--hex-gap) / 2);
-    margin-inline-end: calc(var(--hex-width) / -2 - var(--hex-gap) / 2);
-  }
+  .cluster { --cols: 4; --hex-width: 82px; }
 }
 
 @media (max-width: 550px) {
-  .cluster {
-    --cols: 3;
-    --hex-width: 74px;
-    --hex-gap: 8px;
-  }
-  .comb > .cell {
-    margin-inline: 0;
-  }
-  .comb > .cell:nth-child(6n + 4),
-  .comb > .cell:nth-child(6n + 5),
-  .comb > .cell:nth-child(6n + 6) {
-    margin-inline-start: calc(var(--hex-width) / 2 + var(--hex-gap) / 2);
-    margin-inline-end: calc(var(--hex-width) / -2 - var(--hex-gap) / 2);
-  }
+  .cluster { --cols: 4; --hex-width: 74px; }
 }
 
 @media (max-width: 480px) {
-  .cluster {
-    --cols: 2;
-    --hex-width: 68px;
-  }
-  .comb > .cell {
-    margin-inline: 0;
-  }
-  .comb > .cell:nth-child(4n + 3),
-  .comb > .cell:nth-child(4n + 4) {
-    margin-inline-start: calc(var(--hex-width) / 2 + var(--hex-gap) / 2);
-    margin-inline-end: calc(var(--hex-width) / -2 - var(--hex-gap) / 2);
-  }
+  .cluster { --cols: 3; --hex-width: 70px; }
 }
 
 /* Static fallback: the tint and the icon still respond, the tile does not move. */

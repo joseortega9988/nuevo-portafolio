@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { FiX } from 'react-icons/fi';
 
 import { Link, usePathname } from '@/i18n/navigation';
@@ -33,16 +33,26 @@ export function MobileMenu({
   const t = useTranslations('nav');
   const pathname = usePathname();
 
-  // Close on route change: without this the overlay would survive navigation
-  // and cover the page the visitor just asked for.
+  // Held in a ref so the effects below can depend on `pathname` and `open`
+  // alone. Depending on the callback itself is what made this menu open and
+  // then immediately shut: the parent passes an inline arrow, so every render
+  // produced a new identity and re-fired the close-on-navigation effect.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
+  const previousPath = useRef(pathname);
+
+  // Close on route change only — not on mount, and not on re-render.
   useEffect(() => {
-    onClose();
-  }, [pathname, onClose]);
+    if (previousPath.current === pathname) return;
+    previousPath.current = pathname;
+    onCloseRef.current();
+  }, [pathname]);
 
   useEffect(() => {
     if (!open) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape') onCloseRef.current();
     };
     document.addEventListener('keydown', onKey);
     // Lenis keeps scrolling the page behind a fixed overlay otherwise.
@@ -51,7 +61,7 @@ export function MobileMenu({
       document.removeEventListener('keydown', onKey);
       document.documentElement.classList.remove('lenis-stopped');
     };
-  }, [open, onClose]);
+  }, [open]);
 
   return (
     <AnimatePresence>

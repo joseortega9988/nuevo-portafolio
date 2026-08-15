@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { FiMenu } from 'react-icons/fi';
 
 import { OWNER } from '@/data/social';
@@ -29,9 +29,13 @@ export function Navbar({ variant = 'default' }: NavbarProps) {
   const t = useTranslations('nav');
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  // Stable identity: MobileMenu keys effects off this, and a fresh arrow each
+  // render would make them churn.
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   return (
-    <header className={styles.header} data-variant={variant}>
+    <>
+      <header className={styles.header} data-variant={variant}>
       <nav className={styles.inner} aria-label={t('home')}>
         <Link href="/" className={styles.logo}>
           <Image
@@ -82,8 +86,13 @@ export function Navbar({ variant = 'default' }: NavbarProps) {
           </button>
         </div>
       </nav>
+      </header>
 
-      <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
-    </header>
+      {/* Rendered as a sibling of <header>, not inside it. The header carries
+          backdrop-filter, which makes it a containing block for fixed-position
+          descendants — nested here, the full-screen overlay was being sized to
+          the 64px navbar instead of the viewport. */}
+      <MobileMenu open={menuOpen} onClose={closeMenu} />
+    </>
   );
 }

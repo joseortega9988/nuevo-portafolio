@@ -16,34 +16,46 @@ const VoronoiTorus = dynamic(
   { ssr: false, loading: () => <div className={styles.poster} /> },
 );
 
-/** The dissolve finishes at 60% of the hero's travel; a little past that the
- *  canvas is torn down, which is what frees the context before the grid's
- *  own work begins (restriction 13). */
-const DISPOSE_AT = 0.72;
+/**
+ * Point at which the cards below are released. The torus is fully scattered by
+ * now; it is *not* unmounted here.
+ */
+const RELEASE_CARDS_AT = 0.72;
 
 export interface ProjectsHeroSectionProps {
-  /** Raised once the torus is gone, releasing the thrown-cards sequence. */
+  /** Raised once the torus has scattered, releasing the thrown-cards sequence. */
   onDissolved?: (dissolved: boolean) => void;
 }
 
 export function ProjectsHeroSection({ onDissolved }: ProjectsHeroSectionProps) {
   const t = useTranslations('projectsPage');
   const sectionRef = useRef<HTMLElement>(null);
-  const [disposed, setDisposed] = useState(false);
+  const [scattered, setScattered] = useState(false);
 
-  const visible = useInViewport(sectionRef, { rootMargin: '0px' });
-  const paused = useRafPause(visible, disposed);
+  const visible = useInViewport(sectionRef, { rootMargin: '100% 0px 100% 0px' });
+  const paused = useRafPause(visible);
 
-  // The torus reads this every frame to drive its scatter; the section also
-  // watches it to decide when the canvas is no longer worth keeping alive.
+  /**
+   * The torus reads this every frame to drive its scatter. Because the scatter
+   * is a pure function of scroll position, it reverses on the way back up for
+   * free — which is the whole reason the canvas is no longer torn down at the
+   * bottom of the hero. Unmounting it meant scrolling up from the cards showed
+   * nothing but black while 2500 Voronoi cells were rebuilt from scratch, and
+   * the shell was still fully dissolved by the time it returned.
+   */
   const progress = useScrollProgress(sectionRef, {
     mode: 'section',
-    onChange: (value) => setDisposed(value >= DISPOSE_AT),
+    onChange: (value) => {
+      setScattered((current) => {
+        const next = value >= RELEASE_CARDS_AT;
+        return current === next ? current : next;
+      });
+    },
   });
 
   useEffect(() => {
-    onDissolved?.(disposed);
-  }, [disposed, onDissolved]);
+    onDissolved?.(scattered);
+  }, [scattered, onDissolved]);
 
   return (
     <section ref={sectionRef} className={styles.section}>
@@ -51,10 +63,10 @@ export function ProjectsHeroSection({ onDissolved }: ProjectsHeroSectionProps) {
           into the rest of the page (§D A7). */}
       <div className={styles.pin}>
         <div className={styles.canvas} aria-hidden>
-          {!disposed && <VoronoiTorus progress={progress} paused={paused} />}
+          <VoronoiTorus progress={progress} paused={paused} />
         </div>
 
-        <div className={styles.copy}>
+        <div className={styles.copy} data-faded={scattered || undefined}>
           <SectionHeading
             eyebrow={t('eyebrow')}
             title={t('title')}

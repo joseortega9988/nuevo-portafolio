@@ -42,10 +42,11 @@ export function HeroSection() {
     <section ref={sectionRef} className={styles.section}>
       <BootLoader sceneReady={sceneReady} />
 
+      {/* Mounted for the life of the page and merely paused when off-screen —
+          see contextBudget.ts. Unmounting made the scene rebuild itself the
+          moment the visitor scrolled back to it. */}
       <div className={styles.canvas} aria-hidden>
-        {visible && (
-          <AizawaAttractor paused={paused} onReady={() => setSceneReady(true)} />
-        )}
+        <AizawaAttractor paused={paused} onReady={() => setSceneReady(true)} />
       </div>
 
       <div className={styles.copy}>

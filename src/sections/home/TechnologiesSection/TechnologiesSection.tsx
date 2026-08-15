@@ -36,7 +36,7 @@ export function TechnologiesSection() {
   return (
     <section ref={sectionRef} className={styles.section}>
       <div className={styles.canvas} aria-hidden>
-        {visible && <HopfFibration paused={paused} />}
+        <HopfFibration paused={paused} />
       </div>
 
       <div className={styles.content}>
