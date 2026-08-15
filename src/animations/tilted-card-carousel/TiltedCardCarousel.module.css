@@ -40,7 +40,19 @@
 
 .slide {
   position: absolute;
-  top: 50%;
+  /*
+   * top: 0, not 50% — and no centring translate.
+   *
+   * This used to be `top: 50%` with `transform: translateY(-50%)`. Motion
+   * writes its own inline transform for the arc, which overwrites that
+   * translate outright, so only the offset survived: every card was pushed
+   * down half a stage with nothing pulling it back. That was the dead band
+   * under the title and the reason the lower border fell off the bottom.
+   *
+   * The slide fills the stage now, so it needs no centring at all, and the
+   * transform is left entirely to Motion.
+   */
+  top: 0;
   left: 50%;
   /* One source for the width: the centring margin has to be exactly half of
      it, and repeating the expression invites the two drifting apart. Wider
@@ -48,6 +60,8 @@
   --slide-w: min(480px, 84vw);
   width: var(--slide-w);
   margin-left: calc(var(--slide-w) / -2);
+  /* Horizontal centring stays a margin for the same reason: a translateX here
+     would be overwritten by Motion too. */
   /* Bound to the stage rather than sized by content. The card's own height was
      the media's aspect ratio plus however much copy an entry happened to have,
      which on a laptop ran past the bottom of the viewport and cut the card's
