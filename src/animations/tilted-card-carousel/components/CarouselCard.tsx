@@ -76,6 +76,11 @@ export function CarouselCard({
             {card.period && <span className={styles.cardPeriod}>{card.period}</span>}
           </div>
           <h3 className={styles.cardTitle}>{card.title}</h3>
+          {/* The resting card used to stop at the title, which said what a
+              thing was called but nothing about what it is. Hidden once the
+              card opens, where the preview carries the same text alongside the
+              areas and the stack. */}
+          <p className={styles.cardSummary}>{card.shortDescription}</p>
         </div>
 
         <AnimatePresence>

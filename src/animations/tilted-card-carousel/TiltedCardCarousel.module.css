@@ -13,7 +13,11 @@
   /* Sized against the viewport rather than a fixed floor: on a short screen a
      tall minimum would push the cards below the fold, which is exactly what
      this section must never do. */
-  height: clamp(250px, 46vh, 500px);
+  /* Taller than it was: the resting card now carries a summary, and there was
+     a screen's worth of unused height above the arc doing nothing. Still
+     clamped against the viewport, so a short screen cannot push the cards
+     below the fold — which is the one thing this section must never do. */
+  height: clamp(300px, 54vh, 560px);
   perspective: 1400px;
   perspective-origin: 50% 50%;
   border-radius: var(--r-lg);
@@ -29,8 +33,12 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: min(420px, 78vw);
-  margin-left: calc(min(420px, 78vw) / -2);
+  /* One source for the width: the centring margin has to be exactly half of
+     it, and repeating the expression invites the two drifting apart. Wider
+     than before to give the summary a sensible measure. */
+  --slide-w: min(480px, 84vw);
+  width: var(--slide-w);
+  margin-left: calc(var(--slide-w) / -2);
   transform: translateY(-50%);
   transform-style: preserve-3d;
   will-change: transform, scale;
@@ -86,6 +94,25 @@
 .cardTitle {
   font-size: var(--step-2);
   color: var(--c-text);
+}
+
+/* Clamped rather than left to run: five entries with copy of different lengths
+   would otherwise each set their own card height, and the arc only reads as one
+   object if the cards match. */
+.cardSummary {
+  font-size: var(--step--1);
+  line-height: 1.45;
+  color: var(--c-text-dim);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* The open preview carries this text already, next to the areas and the
+   stack — showing it twice would just repeat itself. */
+.slide[data-open] .cardSummary {
+  display: none;
 }
 
 .preview {
