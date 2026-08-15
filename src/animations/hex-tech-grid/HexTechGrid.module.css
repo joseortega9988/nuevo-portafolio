@@ -21,10 +21,14 @@
 
 .clusterLabel {
   font-family: var(--font-mono);
-  font-size: var(--step--1);
+  font-size: var(--step-0);
+  font-weight: 600;
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   color: var(--accent);
+  /* Same reason as .name: the category has to hold up against whatever the
+     animation is doing behind it. */
+  text-shadow: 0 1px 3px var(--c-void), 0 0 10px var(--c-void);
   text-align: center;
 }
 
@@ -107,11 +111,22 @@
 .name {
   max-width: 100%;
   padding-inline: 2px;
-  font-size: var(--step--2);
-  line-height: 1.2;
+  /*
+   * Legibility over a moving background.
+   *
+   * These were --c-text-muted at the smallest step, which is about 3.5:1 on
+   * this surface — under the 4.5:1 small text needs, and the animated grid
+   * behind them took away what little was left. One step up in size and to the
+   * dim text token clears AA, and the shadow keeps the name readable when a
+   * bright filament passes underneath rather than relying on the backdrop
+   * staying dark.
+   */
+  font-size: var(--step--1);
+  line-height: 1.25;
   text-align: center;
   overflow-wrap: break-word;
-  color: var(--c-text-muted);
+  color: var(--c-text-dim);
+  text-shadow: 0 1px 3px var(--c-void), 0 0 8px var(--c-void);
   transition: color var(--dur-base) var(--ease-signature);
 }
 
