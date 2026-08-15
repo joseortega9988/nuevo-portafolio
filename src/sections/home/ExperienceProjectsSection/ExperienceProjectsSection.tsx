@@ -20,6 +20,30 @@ const SunsetScrollSea = dynamic(
   { ssr: false, loading: () => <div className={styles.poster} /> },
 );
 
+function smoothstep(edge0: number, edge1: number, x: number): number {
+  const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
+  return t * t * (3 - 2 * t);
+}
+
+/**
+ * Reshapes linear scroll into the sun's actual travel.
+ *
+ * Raw progress would move the sun at a constant rate, which reads as unrelated
+ * to the cards. Instead each card gets a band, and within a band the sun moves
+ * quickly at the edges and holds through the middle. The effect is that the sky
+ * changes *as one card gives way to the next* and settles while a card is
+ * centred and being read — the transition belongs to the hand-off, not to the
+ * dwell.
+ */
+function shapeSunProgress(raw: number, bands: number): number {
+  const scaled = raw * bands;
+  const index = Math.min(bands - 1, Math.floor(scaled));
+  const t = Math.min(1, scaled - index);
+  // Steep near t=0 and t=1 (either side of a card change), flat between.
+  const eased = 0.5 * (smoothstep(0, 0.32, t) + smoothstep(0.68, 1, t));
+  return (index + eased) / bands;
+}
+
 /**
  * Experience and selected work — one carousel carrying both, in the canonical
  * order (§E, explicit and non-negotiable).
@@ -47,13 +71,20 @@ export function ExperienceProjectsSection() {
   const [activeIndex, setActiveIndex] = useState(0);
 
   /**
-   * Maps progress to a card. The final card needs its own share of the scroll
-   * rather than only the last instant, so progress is divided into `length`
-   * equal bands and the result clamped.
+   * The value the sea actually reads. It is the raw scroll progress reshaped
+   * by shapeSunProgress, held in its own ref so the shader can sample it every
+   * frame without this component re-rendering.
    */
-  const progress = useScrollProgress(sectionRef, {
+  const sunProgress = useRef(0);
+
+  /**
+   * Each card gets an equal band of the scroll — including the last, which
+   * would otherwise only be active for the final instant.
+   */
+  useScrollProgress(sectionRef, {
     mode: 'section',
     onChange: (value) => {
+      sunProgress.current = shapeSunProgress(value, cards.length);
       const index = Math.min(
         cards.length - 1,
         Math.floor(value * cards.length),
@@ -78,7 +109,7 @@ export function ExperienceProjectsSection() {
   return (
     <section ref={sectionRef} className={styles.section}>
       <div className={styles.canvas} aria-hidden>
-        {visible && <SunsetScrollSea progress={progress} paused={paused} />}
+        {visible && <SunsetScrollSea progress={sunProgress} paused={paused} />}
       </div>
 
       <div className={styles.content}>

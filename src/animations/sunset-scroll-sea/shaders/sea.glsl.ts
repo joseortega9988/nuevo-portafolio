@@ -152,9 +152,12 @@ export const seaFragmentShader = /* glsl */ `
     float vignette = 1.0 - length(uv - 0.5) * 0.55;
     colour *= vignette;
 
-    // The descent into night. Reaching literally zero at uPhase = 1 is what
-    // makes the handoff to the next section seamless.
-    colour *= 1.0 - smoothstep(0.80, 1.0, uPhase);
+    // Darkness at both ends. The section is entered from the void of the hero
+    // and left into the void of the starfield, so the scene rises out of black
+    // and returns to it — reaching literally zero at both 0 and 1 is what makes
+    // each handoff seamless rather than a cut.
+    colour *= smoothstep(0.0, 0.14, uPhase);
+    colour *= 1.0 - smoothstep(0.86, 1.0, uPhase);
 
     gl_FragColor = vec4(colour, 1.0);
   }
