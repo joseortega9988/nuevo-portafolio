@@ -66,8 +66,8 @@
     "title": "Proyectos y Experiencia",
     "body": "Todo lo que ves aquí es trabajo real, con un repositorio o un sistema en producción detrás: dos roles de ingeniería y tres proyectos, ordenados por lo que exigieron y no por cómo se ven.",
     "gridTitle": "Todo el trabajo",
-    "cardsHint": "Las tarjetas siguen tu cursor",
-    "torusHint": "Arrástralo para girarlo — mueve el cursor sobre él para abrir la estructura",
+    "cardsHint": "Arrastra las tarjetas",
+    "torusHint": "Arrástralo para girarlo",
     "gridHint": "Elige cualquier tarjeta para abrir el caso completo."
   },
 

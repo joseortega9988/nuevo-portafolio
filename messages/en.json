@@ -67,8 +67,8 @@
     "body": "Everything here is real work with a repository or a production system behind it: two engineering roles and three builds, ordered by what they demanded rather than how they look.",
     "gridTitle": "All work",
     "gridHint": "Select any card to open the full case.",
-    "torusHint": "Drag to spin it — move your cursor across it to open the shell",
-    "cardsHint": "The deck follows your cursor"
+    "torusHint": "Drag to spin it",
+    "cardsHint": "Drag the deck"
   },
 
   "entryTypes": {

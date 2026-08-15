@@ -109,7 +109,6 @@
 /* Constrained to the cell: with zero column gap a long name would otherwise
    run under its neighbour's hexagon. */
 .name {
-  max-width: 100%;
   padding-inline: 2px;
   /*
    * Legibility over a moving background.
@@ -124,6 +123,17 @@
   font-size: var(--step--1);
   line-height: 1.25;
   text-align: center;
+  /*
+   * Names may spill past their hexagon rather than break inside a word.
+   *
+   * break-word split "TypeScript" into "TypeScrip / t" and "Playwright" into
+   * "Playwrigh / t" on a phone, where the hexagon is only ~70px wide. A name
+   * that is slightly wider than its tile reads fine; a name broken mid-word
+   * does not. break-word is kept as the last resort for anything genuinely
+   * longer than the cell.
+   */
+  width: max-content;
+  max-width: calc(var(--hex-width) * 1.5);
   overflow-wrap: break-word;
   color: var(--c-text-dim);
   text-shadow: 0 1px 3px var(--c-void), 0 0 8px var(--c-void);
@@ -168,16 +178,29 @@
   .cluster { --cols: 5; --hex-width: 88px; }
 }
 
+/*
+ * Phones keep five per row rather than dropping to three or four.
+ *
+ * The honeycomb reads as a comb only when the rows are long enough to
+ * interlock; at three across it was a narrow column with a lot of dead space
+ * either side. Five fits because the hexagons shrink with the breakpoint — the
+ * names are allowed to overhang their tile (see .name) so a smaller hexagon no
+ * longer forces the label to break mid-word.
+ */
 @media (max-width: 768px) {
-  .cluster { --cols: 4; --hex-width: 82px; }
+  .cluster { --cols: 5; --hex-width: 74px; }
 }
 
 @media (max-width: 550px) {
-  .cluster { --cols: 4; --hex-width: 74px; }
+  .cluster { --cols: 5; --hex-width: 64px; }
 }
 
 @media (max-width: 480px) {
-  .cluster { --cols: 3; --hex-width: 70px; }
+  .cluster { --cols: 5; --hex-width: 58px; }
+}
+
+@media (max-width: 380px) {
+  .cluster { --cols: 5; --hex-width: 52px; }
 }
 
 /* Static fallback: the tint and the icon still respond, the tile does not move. */

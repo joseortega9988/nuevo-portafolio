@@ -47,8 +47,18 @@
   position: absolute;
   display: block;
   border-radius: 1px;
-  background: var(--c-line);
-  opacity: 0.32;
+  /*
+   * The unlit segments have to be visible in their own right.
+   *
+   * At --c-line and 0.32 the dormant display was effectively invisible on a
+   * phone — the loader read as a plain black screen with nothing happening on
+   * it until a letter happened to light, which on a slower device is a long
+   * wait. Brighter, and on the dim text token rather than the line token, the
+   * word is legible from the first frame and the lighting reads as the
+   * animation rather than as the only thing drawn.
+   */
+  background: var(--c-text-muted);
+  opacity: 0.45;
   transition:
     opacity var(--dur-base) var(--ease-signature),
     background-color var(--dur-base) var(--ease-signature),

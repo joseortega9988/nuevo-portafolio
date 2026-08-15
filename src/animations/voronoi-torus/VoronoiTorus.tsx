@@ -3,6 +3,7 @@
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
 
 import { CanvasStage } from '@/lib/webgl/CanvasStage';
+import { useNarrowViewport } from '@/lib/webgl/useNarrowViewport';
 import { useQuality } from '@/lib/webgl/quality';
 
 import { Shell } from './components/Shell';
@@ -31,6 +32,7 @@ export function VoronoiTorus({
   onReady,
 }: VoronoiTorusProps) {
   const quality = useQuality(tierOverride);
+  const narrow = useNarrowViewport();
   const gridSize = TORUS_CONFIG.seedGrid[quality.tier];
 
   return (
@@ -40,7 +42,11 @@ export function VoronoiTorus({
         paused={paused}
         camera={{
           fov: TORUS_CONFIG.camera.fov,
-          position: [...TORUS_CONFIG.camera.position],
+          position: [
+            ...(narrow
+              ? TORUS_CONFIG.camera.positionNarrow
+              : TORUS_CONFIG.camera.position),
+          ],
         }}
         fallback={<div className={styles.fallback} />}
       >

@@ -6,6 +6,7 @@ import { useRef } from 'react';
 
 import { CanvasStage } from '@/lib/webgl/CanvasStage';
 import { useQuality } from '@/lib/webgl/quality';
+import { useNarrowViewport } from '@/lib/webgl/useNarrowViewport';
 
 import styles from './AccretionDisk.module.css';
 import { Disk } from './components/Disk';
@@ -49,6 +50,7 @@ export function AccretionDisk({
   onReady,
 }: AccretionDiskProps) {
   const quality = useQuality(tierOverride);
+  const narrow = useNarrowViewport();
   const count = DISK_CONFIG.particles[quality.tier];
   const fade = useRef(0);
 
@@ -59,7 +61,11 @@ export function AccretionDisk({
         paused={paused}
         camera={{
           fov: DISK_CONFIG.camera.fov,
-          position: [...DISK_CONFIG.camera.position],
+          position: [
+            ...(narrow
+              ? DISK_CONFIG.camera.positionNarrow
+              : DISK_CONFIG.camera.position),
+          ],
         }}
         fallback={<div className={styles.fallback} />}
       >

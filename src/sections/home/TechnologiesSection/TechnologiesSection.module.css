@@ -1,6 +1,19 @@
 .section {
   position: relative;
-  padding-block: clamp(4rem, 12vh, 9rem);
+  /*
+   * Above the section before it.
+   *
+   * The carousel's content sits at --z-content, and this section had no
+   * z-index at all, so that content painted straight over this one's opaque
+   * background: on a phone the last card's summary showed through the
+   * "Languages & Technologies" heading during the handoff. Matching
+   * --z-content is enough — this section comes later in the document, so at
+   * equal z-index it wins.
+   */
+  z-index: var(--z-content);
+  /* Roomier on a phone, where the previous section runs right up to this one
+     and the two headings were nearly touching. */
+  padding-block: clamp(5rem, 12vh, 9rem);
   /* Void, the same colour the sea above resolves to at the end of its descent.
      The handoff is seamless because both sides are literally this value. */
   background: var(--c-void);

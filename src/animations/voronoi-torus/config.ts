@@ -18,7 +18,16 @@ export const TORUS_CONFIG = {
    *  the same at every viewport size. */
   cursor: { radius: 0.38, maxLift: 0.42, maxAngle: 1.15 },
 
-  camera: { fov: 48, position: [0, 0.9, 5.1] as const },
+  camera: {
+    fov: 48,
+    position: [0, 0.9, 5.1] as const,
+    /**
+     * Phones look at the shell from further back. The frustum is tall and
+     * narrow there, so the reference framing put the torus wider than the
+     * screen and it arrived cropped on both sides.
+     */
+    positionNarrow: [0, 0.9, 7.6] as const,
+  },
   idleRotation: { x: 0.055, y: 0.11 },
   /**
    * Drag-to-spin. Radians per pixel, plus the per-second decay applied to the

@@ -57,7 +57,7 @@
   /* One source for the width: the centring margin has to be exactly half of
      it, and repeating the expression invites the two drifting apart. Wider
      than before to give the summary a sensible measure. */
-  --slide-w: min(480px, 84vw);
+  --slide-w: min(480px, 78vw);
   width: var(--slide-w);
   margin-left: calc(var(--slide-w) / -2);
   /* Horizontal centring stays a margin for the same reason: a translateX here

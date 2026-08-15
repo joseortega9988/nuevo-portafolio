@@ -104,6 +104,16 @@
   .pin {
     align-items: end;
   }
+  /*
+   * The copy is bottom-aligned on a phone and fills the lower half, so a hint
+   * pinned near the bottom landed straight on top of it and neither could be
+   * read. It moves to the top, over the shell itself, where there is nothing
+   * to collide with.
+   */
+  .hint {
+    top: calc(var(--navbar-h) + 1rem);
+    bottom: auto;
+  }
   .copy {
     margin-inline: auto;
     margin-bottom: 3rem;
