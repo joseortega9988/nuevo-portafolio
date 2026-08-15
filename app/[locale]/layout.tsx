@@ -3,8 +3,12 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import { Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 
+import { Footer } from '@/components/layout/Footer';
+import { Navbar } from '@/components/layout/Navbar';
+import { PageTransition } from '@/components/layout/PageTransition';
 import { routing } from '@/i18n/routing';
 import { readLocale, resolveLocale, type LocaleParams } from '@/i18n/resolveLocale';
+import { LenisProvider } from '@/lib/motion/LenisProvider';
 import '@/styles/globals.css';
 
 const display = Space_Grotesk({
@@ -32,15 +36,17 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: 'metadata' });
 
   return {
-    title: {
-      default: t('home.title'),
-      template: `%s — ${t('siteName')}`,
-    },
+    title: { default: t('home.title'), template: `%s — ${t('siteName')}` },
     description: t('home.description'),
     icons: { icon: '/logo/LOGOCV.png' },
   };
 }
 
+/**
+ * The one place Navbar and Footer are rendered (§B injectability). ESLint
+ * rejects an import of either from any page or section file, so a page that
+ * wants a different chrome passes a `variant` rather than duplicating them.
+ */
 export default async function LocaleLayout({
   children,
   params,
@@ -53,7 +59,13 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className={`${display.variable} ${mono.variable}`}>
       <body>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <LenisProvider>
+            <Navbar />
+            <PageTransition>{children}</PageTransition>
+            <Footer />
+          </LenisProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

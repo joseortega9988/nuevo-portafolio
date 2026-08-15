@@ -1,0 +1,91 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
+import { useReducedMotion } from '@/lib/motion/useReducedMotion';
+
+export type QualityTier = 'high' | 'medium' | 'low';
+
+export interface QualitySettings {
+  tier: QualityTier;
+  /** [min, max] device pixel ratio handed to the renderer. */
+  dpr: [number, number];
+  /** Multiplier on each scene's designed bloom strength. */
+  bloom: number;
+  /** Multiplier on particle / filament / fragment counts. */
+  density: number;
+  /** False when WebGL is unavailable — sections render their static poster. */
+  enabled: boolean;
+}
+
+const TIERS: Record<QualityTier, Omit<QualitySettings, 'enabled'>> = {
+  high: { tier: 'high', dpr: [1, 2], bloom: 1, density: 1 },
+  medium: { tier: 'medium', dpr: [1, 1.5], bloom: 0.8, density: 0.65 },
+  // 1.25 is the mobile cap the brief sets for the sea shader; applying it to
+  // every scene keeps fill rate predictable on phones.
+  low: { tier: 'low', dpr: [1, 1.25], bloom: 0.6, density: 0.4 },
+};
+
+function supportsWebGL(): boolean {
+  try {
+    const canvas = document.createElement('canvas');
+    return Boolean(
+      canvas.getContext('webgl2') ?? canvas.getContext('webgl'),
+    );
+  } catch {
+    return false;
+  }
+}
+
+interface DeviceHints {
+  deviceMemory?: number;
+}
+
+function detectTier(): QualityTier {
+  const width = window.innerWidth;
+  const cores = navigator.hardwareConcurrency ?? 4;
+  // deviceMemory is Chromium-only; absence is not a signal either way.
+  const memory = (navigator as Navigator & DeviceHints).deviceMemory ?? 8;
+
+  if (width < 768) return 'low';
+  if (cores <= 4 || memory <= 4) return 'medium';
+  if (width < 1280) return 'medium';
+  return 'high';
+}
+
+export function detectQuality(): QualitySettings {
+  if (typeof window === 'undefined') {
+    return { ...TIERS.medium, enabled: false };
+  }
+  if (!supportsWebGL()) {
+    return { ...TIERS.low, enabled: false };
+  }
+  return { ...TIERS[detectTier()], enabled: true };
+}
+
+export function settingsForTier(tier: QualityTier): QualitySettings {
+  return { ...TIERS[tier], enabled: true };
+}
+
+/**
+ * Device-appropriate render settings.
+ *
+ * Starts disabled and resolves after mount: detection needs `window`, and
+ * guessing on the server would either block first paint or flash a canvas the
+ * device cannot afford (restriction 14).
+ */
+export function useQuality(override?: QualityTier): QualitySettings {
+  const reducedMotion = useReducedMotion();
+  const [settings, setSettings] = useState<QualitySettings>(() => ({
+    ...TIERS.medium,
+    enabled: false,
+  }));
+
+  useEffect(() => {
+    setSettings(detectQuality());
+  }, []);
+
+  if (reducedMotion) return { ...settings, enabled: false };
+  if (override && settings.enabled) return settingsForTier(override);
+  return settings;
+}

@@ -104,8 +104,10 @@ const eslintConfig = [
 
   {
     // §E injectability: Navbar and Footer are rendered once, by the layout.
+    // The exemption is matched by filename rather than by path because a
+    // literal "[locale]" segment would be parsed as a glob character class.
     files: ['app/**/*.{ts,tsx}', 'src/sections/**/*.{ts,tsx}'],
-    ignores: ['app/[locale]/layout.tsx'],
+    ignores: ['**/layout.tsx'],
     rules: {
       'no-restricted-imports': [
         'error',

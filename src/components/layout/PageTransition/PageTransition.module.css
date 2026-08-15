@@ -1,0 +1,6 @@
+.page {
+  /* A plain block box. No transform, filter or will-change is set here on
+     purpose: any of those would make this a containing block for the fixed and
+     sticky elements inside (the loader overlay, the pinned torus hero). */
+  min-height: 100%;
+}

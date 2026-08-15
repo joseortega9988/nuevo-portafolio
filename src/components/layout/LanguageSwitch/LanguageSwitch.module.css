@@ -1,0 +1,36 @@
+.group {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-sm);
+  background: var(--c-deep);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-wide);
+}
+
+.group[data-pending] {
+  opacity: 0.6;
+}
+
+.option {
+  padding: 0.35rem 0.6rem;
+  border-radius: calc(var(--r-sm) - 3px);
+  color: var(--c-text-muted);
+  transition:
+    color var(--dur-fast) var(--ease-signature),
+    background-color var(--dur-fast) var(--ease-signature);
+}
+
+.option:hover {
+  color: var(--c-cyan);
+}
+
+/* The active locale is the pressed one — styling keys off aria-pressed so the
+   visual state and the accessible state can never drift apart. */
+.option[aria-pressed='true'] {
+  color: var(--c-void);
+  background-image: var(--g-cool);
+  font-weight: 700;
+}

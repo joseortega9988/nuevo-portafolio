@@ -1,0 +1,80 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  background: var(--c-void);
+}
+
+/* A faint brand wash so the overlay is not a flat black rectangle. */
+.overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 30%,
+    color-mix(in srgb, var(--c-violet) 18%, transparent),
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+.close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-sm);
+  color: var(--c-text-dim);
+  font-size: 1.35rem;
+  transition:
+    color var(--dur-fast) var(--ease-signature),
+    border-color var(--dur-fast) var(--ease-signature);
+}
+
+.close:hover {
+  color: var(--c-cyan);
+  border-color: var(--c-cyan);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  z-index: 1;
+}
+
+.link {
+  font-size: var(--step-4);
+  font-weight: 600;
+  letter-spacing: var(--tracking-display);
+  transition: color var(--dur-base) var(--ease-signature);
+}
+
+.link:hover {
+  color: var(--c-magenta);
+  text-shadow: var(--glow-magenta);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 1;
+}
+
+/* The overlay is a small-screen affordance only. */
+@media (min-width: 900px) {
+  .overlay {
+    display: none;
+  }
+}

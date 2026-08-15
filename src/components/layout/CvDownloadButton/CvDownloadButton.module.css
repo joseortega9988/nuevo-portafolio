@@ -1,0 +1,59 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.05rem;
+  border-radius: var(--r-sm);
+  font-size: var(--step--1);
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    color var(--dur-base) var(--ease-signature),
+    border-color var(--dur-base) var(--ease-signature),
+    box-shadow var(--dur-base) var(--ease-signature),
+    transform var(--dur-base) var(--ease-signature);
+}
+
+.icon {
+  font-size: 1em;
+  transition: transform var(--dur-base) var(--ease-signature);
+}
+
+.button:hover .icon {
+  transform: translateY(2px);
+}
+
+/* Ghost — the navbar treatment: reads as an outline until touched. */
+.ghost {
+  color: var(--c-text-dim);
+  border: 1px solid var(--c-line);
+  background: transparent;
+}
+
+.ghost:hover,
+.ghost:focus-visible {
+  color: var(--c-cyan);
+  border-color: var(--c-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+/* Solid — the hero CTA: warm glow, per §C's "CTA glow" role for amber. */
+.solid {
+  color: var(--c-void);
+  border: 1px solid transparent;
+  background-image: var(--g-warm);
+  font-weight: 600;
+}
+
+.solid:hover,
+.solid:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: var(--glow-magenta);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button:hover .icon,
+  .solid:hover {
+    transform: none;
+  }
+}
