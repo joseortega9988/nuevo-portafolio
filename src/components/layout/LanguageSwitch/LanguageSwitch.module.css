@@ -15,12 +15,23 @@
 }
 
 .option {
-  padding: 0.45rem 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.7rem;
   border-radius: calc(var(--r-sm) - 3px);
   color: var(--c-text-muted);
   transition:
     color var(--dur-fast) var(--ease-signature),
     background-color var(--dur-fast) var(--ease-signature);
+}
+
+/* Slightly under the code beside it: the flag is a cue, not the label, and at
+   matching size it started to read as the control itself. Line-height 1 keeps
+   the emoji from padding the button out on the platforms that give it extra. */
+.flag {
+  font-size: 0.9em;
+  line-height: 1;
 }
 
 .option:hover {

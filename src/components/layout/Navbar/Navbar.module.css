@@ -59,6 +59,30 @@
   gap: clamp(1.25rem, 2.5vw, 2.25rem);
 }
 
+/*
+ * Desktop: the links sit in the centre of the bar.
+ *
+ * Taken out of the flex flow to get there. Left in it they would centre in
+ * whatever space the logo and the actions did not claim, which is not the
+ * middle of the bar and shifts as either side changes width — the CV button
+ * alone is far wider than the logo. Absolute against .inner pins them to the
+ * true centre whatever flanks them.
+ *
+ * Only above the burger breakpoint; below it the links live in the mobile
+ * menu instead.
+ */
+@media (min-width: 1024px) {
+  .inner {
+    position: relative;
+  }
+
+  .links {
+    position: absolute;
+    left: 50%;
+    translate: -50% 0;
+  }
+}
+
 .link {
   position: relative;
   padding-block: 0.5rem;

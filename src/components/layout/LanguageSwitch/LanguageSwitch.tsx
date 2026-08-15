@@ -9,6 +9,15 @@ import { LOCALES, type Locale } from '@/i18n/routing';
 import styles from './LanguageSwitch.module.css';
 
 /**
+ * Flags, as emoji rather than images: no request, no asset to keep in sync
+ * with LOCALES, and they inherit the button's own size.
+ *
+ * Decorative only — they are marked aria-hidden and the locale code beside
+ * them carries the meaning, because a flag names a country and not a language.
+ */
+const FLAGS: Record<Locale, string> = { en: '🇬🇧', es: '🇪🇸' };
+
+/**
  * A two-state toggle, not a dropdown (§E 4).
  *
  * `usePathname` from next-intl returns the path *without* the locale segment,
@@ -48,6 +57,9 @@ export function LanguageSwitch({ className }: { className?: string }) {
           aria-pressed={locale === active}
           onClick={() => switchTo(locale)}
         >
+          <span className={styles.flag} aria-hidden>
+            {FLAGS[locale]}
+          </span>
           {locale.toUpperCase()}
         </button>
       ))}
