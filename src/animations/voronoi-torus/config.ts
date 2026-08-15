@@ -31,21 +31,25 @@ export const TORUS_CONFIG = {
   /**
    * Scroll range over which the shell comes apart, as a fraction of the hero.
    *
-   * It starts late and runs to the very end of the hero on purpose. Any margin
-   * left after the dissolve completes is a stretch of pinned, empty canvas: on
-   * the way down it reads as the hero dying before the cards arrive, and on the
-   * way back up from the cards it is a full screen of black before the torus
-   * reassembles. Ending at 0.98 means the shell is still coming apart as the
-   * grid takes over, so there is never a moment with nothing on screen.
+   * It starts late on purpose: dissolving over the first 60% left the torus
+   * invisible for most of the hero, and scrolling back up from the cards meant
+   * a long stretch of black before it reassembled.
    *
-   * Do NOT shorten dissolveDistance to keep the shell on screen longer. The
-   * shader scatters fragments outward with no opacity fade, so a short distance
-   * does not make the shell linger — it makes it stop, and the hero ends on a
-   * static jumble of shards that never clears. The black handoff it was meant
-   * to fix is a layout problem, and is solved by the grid section overlapping
-   * this one rather than by detuning the animation.
+   * dissolveEnd deliberately sits past 1 — past the end of the hero — so the
+   * shell never finishes dissolving while it is still on screen. Shell.tsx
+   * drives opacity as `1 - t` across this range, so ending at 0.88 left the
+   * shell fully transparent (and discarded by the fragment shader) for the last
+   * 12% of the hero. The pin is a full viewport of opaque canvas that stays
+   * stuck until its section ends, so that was a black rectangle sitting there
+   * until the grid could scroll up: the black handoff. At 1.5 the shell is
+   * still roughly 45% opaque and part-scattered as the pin slides away, so the
+   * end of the animation is visible while the cards arrive beneath it.
+   *
+   * Do NOT try to fix that by shortening dissolveDistance. The fragments carry
+   * no fade of their own, so a short distance does not make the shell linger —
+   * it makes it stop, and the hero ends on a static jumble of shards.
    */
   dissolveStart: 0.4,
-  dissolveEnd: 0.88,
+  dissolveEnd: 1.5,
   dissolveDistance: 3.4,
 } as const;

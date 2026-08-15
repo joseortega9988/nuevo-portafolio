@@ -1,6 +1,14 @@
 .section {
   position: relative;
-  padding-block: clamp(3rem, 8vh, 6rem) clamp(4rem, 12vh, 8rem);
+  /*
+   * No padding here — it belongs to .content below.
+   *
+   * The canvas is the section's first child, so section padding pushed it down
+   * and left a strip of bare background above the disk: a dark band between the
+   * dissolving torus and the grid, visible for the whole handoff. Padding the
+   * content instead lets the canvas start at the section's very top edge, so
+   * the two scenes meet with nothing between them.
+   */
   background: var(--c-void);
   /*
    * `clip`, not `hidden`. Both stop the disk spilling out of the section, but
@@ -37,5 +45,6 @@
   gap: clamp(2rem, 5vh, 3.5rem);
   max-width: 1200px;
   margin-inline: auto;
+  padding-block: clamp(3rem, 8vh, 6rem) clamp(4rem, 12vh, 8rem);
   padding-inline: clamp(1rem, 4vw, 2.5rem);
 }
