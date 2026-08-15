@@ -62,6 +62,11 @@ export function HeroSection() {
         </div>
       </div>
 
+      {/* The attractor orbits under a drag — Rig mounts OrbitControls with
+          rotation enabled — and nothing said so. Low and centred, under the
+          object rather than in the reading column. */}
+      <p className={styles.hint}>{t('playHint')}</p>
+
       <p className={styles.scroll} aria-hidden>
         {t('scrollHint')}
       </p>

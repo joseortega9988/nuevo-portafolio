@@ -87,6 +87,34 @@
   box-shadow: var(--glow-magenta);
 }
 
+/*
+ * The invitation to play with the attractor. Low and centred, under the
+ * object rather than in the reading column, and sitting directly above the
+ * scroll cue so the two read as one stack rather than competing.
+ *
+ * Unlike the Projects hero this section already subtracts the navbar from its
+ * own height, so the offset here is measured from the section's real bottom
+ * and needs no correction.
+ */
+.hint {
+  position: absolute;
+  bottom: 3.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-content);
+  max-width: calc(100% - 2rem);
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-pill, 999px);
+  background: color-mix(in srgb, var(--c-surface) 70%, transparent);
+  color: var(--c-cyan);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-wide);
+  text-align: center;
+  white-space: nowrap;
+}
+
 .scroll {
   position: absolute;
   bottom: 1.25rem;

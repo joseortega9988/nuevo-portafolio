@@ -79,6 +79,13 @@ export function ProjectsHeroSection({ onDissolved }: ProjectsHeroSectionProps) {
           />
           <p className={styles.body}>{t('body')}</p>
         </div>
+
+        {/* Low and centred, under the object it refers to rather than in the
+            reading column. Fades on the same cue as the copy — once the shell
+            has scattered there is nothing left to grab. */}
+        <p className={styles.hint} data-faded={scattered || undefined}>
+          {t('torusHint')}
+        </p>
       </div>
     </section>
   );

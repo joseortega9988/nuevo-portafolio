@@ -64,6 +64,41 @@
   pointer-events: none;
 }
 
+/*
+ * An invitation, not prose: the mono face and a cyan cue, the language the
+ * rest of the site uses for "you can act on this". Parked low and centred,
+ * under the object.
+ *
+ * The bottom offset includes the navbar. The pin is a full 100svh but starts
+ * below the navbar, so until its sticky position engages it hangs exactly that
+ * far past the bottom of the viewport — and the invitation was landing
+ * off-screen on the one frame it mattered most, before the visitor had
+ * scrolled at all.
+ */
+.hint {
+  position: absolute;
+  bottom: calc(var(--navbar-h) + clamp(0.75rem, 2.5vh, 1.75rem));
+  left: 50%;
+  translate: -50% 0;
+  z-index: var(--z-content);
+  max-width: calc(100% - 2rem);
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-pill, 999px);
+  background: color-mix(in srgb, var(--c-surface) 70%, transparent);
+  color: var(--c-cyan);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-wide);
+  text-align: center;
+  transition: opacity var(--dur-slow) var(--ease-signature);
+}
+
+.hint[data-faded] {
+  opacity: 0;
+  pointer-events: none;
+}
+
 
 @media (max-width: 1023px) {
   .pin {

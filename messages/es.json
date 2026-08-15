@@ -32,7 +32,8 @@
     "body": "Automatizo el trabajo que los equipos siguen haciendo a mano — 35% más de eficiencia en ETL, reportes que pasaron de tres días a horas — y reconstruyo lo que hay debajo en servicios modulares que escalan.",
     "ctaProjects": "Ver proyectos",
     "ctaCv": "Descargar CV",
-    "scrollHint": "Desliza"
+    "scrollHint": "Desliza",
+    "playHint": "Arrástralo para girarlo"
   },
 
   "work": {
@@ -66,6 +67,7 @@
     "body": "Todo lo que ves aquí es trabajo real, con un repositorio o un sistema en producción detrás: dos roles de ingeniería y tres proyectos, ordenados por lo que exigieron y no por cómo se ven.",
     "gridTitle": "Todo el trabajo",
     "cardsHint": "Las tarjetas siguen tu cursor",
+    "torusHint": "Arrástralo para girarlo — mueve el cursor sobre él para abrir la estructura",
     "gridHint": "Elige cualquier tarjeta para abrir el caso completo."
   },
 
