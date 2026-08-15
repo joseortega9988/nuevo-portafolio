@@ -38,11 +38,20 @@ export const TORUS_CONFIG = {
    * reassembles. Ending at 0.98 means the shell is still coming apart as the
    * grid takes over, so there is never a moment with nothing on screen.
    *
-   * The fragments also travel less far than they used to. At 3.4 they left the
-   * frame long before the dissolve numerically finished, which put the black
-   * stretch back even with the range extended.
+   * dissolveDistance is the one that actually decides whether the handoff is
+   * black, and it is bounded by the camera rather than by taste. The canvas is
+   * opaque (CanvasStage runs alpha: false) and the hero's pin is sticky for the
+   * whole section, so nothing below can show through and nothing else can be on
+   * screen until the pin scrolls off. The only way to avoid a black screen is
+   * for the shell to still be visible while it slides away.
+   *
+   * At this camera the visible half-height at the torus is about 2.3 units and
+   * the shell's outer edge sits at 2.07, so a fragment that travels much beyond
+   * ~0.9 is out of frame. 3.4 and even 2.4 emptied the canvas well before the
+   * scroll reached the end of the hero, which is what left the screen black
+   * while waiting for the grid.
    */
   dissolveStart: 0.42,
-  dissolveEnd: 0.98,
-  dissolveDistance: 2.4,
+  dissolveEnd: 1,
+  dissolveDistance: 0.9,
 } as const;
