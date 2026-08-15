@@ -1,0 +1,93 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.viewport {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-md);
+  background: var(--c-deep);
+  aspect-ratio: 16 / 10;
+  touch-action: pan-y;
+  cursor: grab;
+}
+
+.viewport:active {
+  cursor: grabbing;
+}
+
+.track {
+  display: flex;
+  height: 100%;
+  transition: transform var(--dur-slow) var(--ease-signature);
+  will-change: transform;
+}
+
+.slide {
+  position: relative;
+  flex: 0 0 100%;
+  height: 100%;
+}
+
+.image {
+  object-fit: contain;
+  /* Screenshots of very different aspect ratios sit on a common ground rather
+     than being cropped — losing the top of a UI screenshot is worse than a
+     letterbox. */
+  padding: 0.5rem;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.arrow {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--c-line);
+  border-radius: 50%;
+  color: var(--c-text-dim);
+  transition:
+    color var(--dur-fast) var(--ease-signature),
+    border-color var(--dur-fast) var(--ease-signature);
+}
+
+.arrow:hover {
+  color: var(--c-cyan);
+  border-color: var(--c-cyan);
+}
+
+.dots {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-line);
+  transition:
+    background-color var(--dur-fast) var(--ease-signature),
+    width var(--dur-base) var(--ease-signature);
+}
+
+.dot[data-active] {
+  width: 22px;
+  border-radius: 999px;
+  background-image: var(--g-cool);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    transition: none;
+  }
+}

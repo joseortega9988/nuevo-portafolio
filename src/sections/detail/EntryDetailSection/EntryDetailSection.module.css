@@ -1,0 +1,163 @@
+.article {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.75rem, 4vh, 2.75rem);
+  max-width: 900px;
+  margin-inline: auto;
+  padding: clamp(2rem, 6vh, 4rem) clamp(1rem, 4vw, 2.5rem) clamp(3rem, 9vh, 5rem);
+}
+
+/* The entrance: fade plus a 24px rise, staggered by --i, which the component
+   increments per block. No JavaScript and no library — the whole page is
+   otherwise static, and this keeps it that way. */
+.article > * {
+  animation: rise 500ms var(--ease-signature) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.back {
+  align-self: flex-start;
+  color: var(--c-text-muted);
+  font-size: var(--step--1);
+  transition: color var(--dur-fast) var(--ease-signature);
+}
+
+.back:hover {
+  color: var(--c-cyan);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.period {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-wide);
+  color: var(--c-text-muted);
+}
+
+.title {
+  font-size: var(--step-5);
+  background-image: var(--g-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.lead {
+  color: var(--c-text-dim);
+  font-size: var(--step-1);
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.blockTitle {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--c-cyan);
+}
+
+.subTitle {
+  margin-top: 0.5rem;
+  font-size: var(--step-0);
+  color: var(--c-text);
+}
+
+.body {
+  color: var(--c-text-dim);
+}
+
+.areas {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--c-text-muted);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.highlights {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.highlights li {
+  position: relative;
+  padding-inline-start: 1.35rem;
+  color: var(--c-text-dim);
+}
+
+.highlights li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-image: var(--g-warm);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.resource {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.95rem;
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-sm);
+  color: var(--c-text-dim);
+  font-size: var(--step--1);
+  transition:
+    color var(--dur-base) var(--ease-signature),
+    border-color var(--dur-base) var(--ease-signature),
+    box-shadow var(--dur-base) var(--ease-signature);
+}
+
+.resource:hover {
+  color: var(--c-cyan);
+  border-color: var(--c-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .article > * {
+    animation: none;
+  }
+}
