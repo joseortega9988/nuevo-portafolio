@@ -102,13 +102,26 @@ export function Shell({
 
     // A pure function of scroll position, so the shell reassembles on the way
     // back up without any extra state.
-    const { dissolveStart, dissolveEnd } = TORUS_CONFIG;
+    const { dissolveStart, dissolveEnd, fadeFrom } = TORUS_CONFIG;
     const t = Math.min(
       1,
       Math.max(0, (progress.current - dissolveStart) / (dissolveEnd - dissolveStart)),
     );
     if (uDissolve) uDissolve.value = t;
-    if (uOpacity) uOpacity.value = 1 - t;
+
+    /**
+     * Opacity is held at full until the scatter is nearly done, then dropped
+     * over the last stretch — it is deliberately not `1 - t`.
+     *
+     * Fading in step with the scatter kept the shell blended for the whole
+     * hero, and this mesh is double-sided with thousands of overlapping
+     * fragments and no per-triangle depth sorting. Blended, that reads as a
+     * rapid flicker; opaque, it renders cleanly. Holding full opacity also
+     * means the shell is still solid as the hero hands over to the grid, which
+     * is what keeps that transition off black.
+     */
+    const fade = Math.max(0, (t - fadeFrom) / (1 - fadeFrom));
+    if (uOpacity) uOpacity.value = 1 - Math.min(1, fade);
 
     if (!readyRef.current) {
       readyRef.current = true;

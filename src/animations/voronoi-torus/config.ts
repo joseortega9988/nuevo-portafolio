@@ -52,4 +52,10 @@ export const TORUS_CONFIG = {
   dissolveStart: 0.4,
   dissolveEnd: 1.5,
   dissolveDistance: 3.4,
+  /**
+   * Point in the scatter, 0–1, at which the shell starts to fade. Late, so the
+   * mesh spends almost all of its time fully opaque — see the note in
+   * Shell.tsx: blended, this double-sided shell flickers.
+   */
+  fadeFrom: 0.75,
 } as const;
