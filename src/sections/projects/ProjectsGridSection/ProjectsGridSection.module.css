@@ -2,7 +2,16 @@
   position: relative;
   padding-block: clamp(3rem, 8vh, 6rem) clamp(4rem, 12vh, 8rem);
   background: var(--c-void);
-  overflow: hidden;
+  /*
+   * `clip`, not `hidden`. Both stop the disk spilling out of the section, but
+   * `hidden` also makes this a scroll container, which captures the sticky
+   * canvas below: it then pins to a box that never scrolls, so it sat at its
+   * static position and slid away with the page. Past the first screen of cards
+   * that left the disk off-frame and the rest of the grid on plain black.
+   * `clip` clips without creating a scroll container, so sticky still resolves
+   * against the viewport.
+   */
+  overflow: clip;
 }
 
 /* Pinned to the viewport rather than stretched over the section, so the disk

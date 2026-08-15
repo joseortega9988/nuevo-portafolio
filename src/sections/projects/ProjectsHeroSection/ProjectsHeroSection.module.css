@@ -1,7 +1,14 @@
 .section {
   position: relative;
-  /* Two viewports of travel: one to look at the torus, one to dissolve it. */
-  min-height: 200vh;
+  /*
+   * One viewport to look at the torus, half of one to dissolve it.
+   *
+   * Was two full viewports. The torus is completely scattered by 72% of the
+   * travel, so the remaining 28% held a pinned, empty canvas — a whole screen
+   * of black between the hero and the grid, with nothing drawn in it. Shorter
+   * travel means that tail is a moment rather than a scroll.
+   */
+  min-height: 150vh;
   background: var(--c-void);
 }
 
