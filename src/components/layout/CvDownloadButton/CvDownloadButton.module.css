@@ -23,17 +23,35 @@
   transform: translateY(2px);
 }
 
-/* Ghost — the navbar treatment: reads as an outline until touched. */
+/*
+ * Ghost — the navbar treatment.
+ *
+ * Carries a full gradient rim and a chamfered top-right corner, after the
+ * button on the previous portfolio. That one drew its border as three stacked
+ * SVGs with four gradient defs; here the rim is the same two-background trick
+ * the cards already use for their hover edge — a flat fill clipped to the
+ * padding box over the gradient clipped to the border box — so the border can
+ * travel all four sides without any extra elements. clip-path then takes the
+ * corner off, cutting the rim with it.
+ *
+ * It no longer reads as a plain outline: this is the one link in the chrome
+ * that should catch the eye.
+ */
 .ghost {
-  color: var(--c-text-dim);
-  border: 1px solid var(--c-line);
-  background: transparent;
+  color: var(--c-text);
+  border: 2px solid transparent;
+  border-radius: var(--r-sm);
+  background-image:
+    linear-gradient(var(--c-deep), var(--c-deep)),
+    var(--g-primary);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  clip-path: polygon(0 0, calc(100% - 0.85rem) 0, 100% 0.85rem, 100% 100%, 0 100%);
 }
 
 .ghost:hover,
 .ghost:focus-visible {
   color: var(--c-cyan);
-  border-color: var(--c-cyan);
   box-shadow: var(--glow-cyan);
 }
 
