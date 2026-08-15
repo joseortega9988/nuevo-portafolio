@@ -53,38 +53,6 @@
   color: var(--c-text-dim);
 }
 
-/* An invitation, not prose: set apart from the body copy by the mono face and
-   a cyan cue, the same language the rest of the site uses for "you can act on
-   this". Parked low and centred, under the object it refers to. */
-.hint {
-  position: absolute;
-  /*
-   * Offset by the navbar as well as the gap.
-   *
-   * The pin is a full 100svh but starts below the navbar, so until the sticky
-   * position engages it hangs exactly that far past the bottom of the viewport
-   * — and an invitation to play with the object was landing off-screen on the
-   * one frame it mattered most, before the visitor had scrolled at all.
-   */
-  bottom: calc(var(--navbar-h) + clamp(0.75rem, 2.5vh, 1.75rem));
-  left: 50%;
-  translate: -50% 0;
-  z-index: var(--z-content);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  max-width: calc(100% - 2rem);
-  text-align: center;
-  padding: 0.4rem 0.75rem;
-  border: 1px solid var(--c-line);
-  border-radius: var(--r-pill, 999px);
-  background: color-mix(in srgb, var(--c-surface) 70%, transparent);
-  color: var(--c-cyan);
-  font-family: var(--font-mono);
-  font-size: var(--step--2);
-  letter-spacing: var(--tracking-wide);
-}
-
 /* The copy fades out with the torus so the hero empties cleanly into the
    cards, and fades back in on the way up. */
 .copy {
@@ -96,16 +64,6 @@
   pointer-events: none;
 }
 
-/* Fades on the same cue as the copy — once the shell has scattered there is
-   nothing left to invite anyone to grab. */
-.hint {
-  transition: opacity var(--dur-slow) var(--ease-signature);
-}
-
-.hint[data-faded] {
-  opacity: 0;
-  pointer-events: none;
-}
 
 @media (max-width: 1023px) {
   .pin {

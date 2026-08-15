@@ -79,15 +79,6 @@ export function ProjectsHeroSection({ onDissolved }: ProjectsHeroSectionProps) {
           />
           <p className={styles.body}>{t('body')}</p>
         </div>
-
-        {/* The torus is the most interactive thing on the site and nothing said
-            so. Centred low in the frame rather than tucked into the copy: it is
-            an invitation to play with the object, so it sits under the object
-            and away from the reading column. Fades with the copy, so it is only
-            up while there is still a shell to grab. */}
-        <p className={styles.hint} data-faded={scattered || undefined}>
-          {t('torusHint')}
-        </p>
       </div>
     </section>
   );
