@@ -33,6 +33,7 @@ export function ThrownCardsGrid({
   labels,
   active = true,
   className,
+  pointerHint,
 }: ThrownCardsGridProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
@@ -52,6 +53,13 @@ export function ThrownCardsGrid({
       data-phase={phase}
       data-settling={settling || undefined}
     >
+      {/* Only meaningful while the cards are scattered: that is the one phase
+          that answers the pointer. CSS hides it in the other two rather than
+          unmounting, so it fades with the phase change instead of blinking. */}
+      {pointerHint && !reducedMotion && (
+        <p className={styles.pointerHint}>{pointerHint}</p>
+      )}
+
       <ul data-track className={styles.track}>
         {cards.map((card, index) => {
           const slot = SCATTER_SLOTS[index % SCATTER_SLOTS.length];

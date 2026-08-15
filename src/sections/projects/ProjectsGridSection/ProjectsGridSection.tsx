@@ -56,6 +56,7 @@ export function ProjectsGridSection({ active }: ProjectsGridSectionProps) {
           cards={getCardViewModels(locale, tDetail('present'))}
           active={active}
           hrefFor={(slug) => `/${locale}/projects/${slug}`}
+          pointerHint={t('cardsHint')}
           labels={{
             experience: tEntry('experience'),
             project: tEntry('project'),

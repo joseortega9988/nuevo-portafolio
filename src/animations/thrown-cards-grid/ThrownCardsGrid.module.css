@@ -4,6 +4,33 @@
   perspective: 1200px;
 }
 
+/* Visible only while the deck is scattered — the phase that answers the
+   pointer. Opacity rather than display so it fades with the phase change. */
+.pointerHint {
+  position: absolute;
+  /* Low and centred, matching the hero's invitation — under the deck rather
+     than over it, so it never sits on top of a card in flight. */
+  bottom: clamp(1.5rem, 6vh, 4rem);
+  left: 50%;
+  translate: -50% 0;
+  z-index: var(--z-content);
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-pill, 999px);
+  background: color-mix(in srgb, var(--c-surface) 70%, transparent);
+  color: var(--c-cyan);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-wide);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-signature);
+}
+
+.stage[data-phase='scattered']:not([data-settling]) .pointerHint {
+  opacity: 1;
+}
+
 /**
  * The track holds a full viewport in every phase.
  *
