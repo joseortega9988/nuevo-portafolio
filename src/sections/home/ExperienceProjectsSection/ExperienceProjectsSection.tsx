@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useLocale, useTranslations } from 'next-intl';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { TiltedCardCarousel } from '@/animations/tilted-card-carousel';
 import { SectionHeading } from '@/components/ui/SectionHeading';
@@ -91,6 +91,42 @@ export function ExperienceProjectsSection() {
   const sunProgress = useRef(0);
 
   /**
+   * A viewport height that does not move while you scroll.
+   *
+   * Both the scroll→card mapping and its inverse divide by the viewport
+   * height. On Android `window.innerHeight` grows and shrinks as the browser's
+   * own chrome hides and shows — including during the very scroll an arrow
+   * press starts. The arrow computed a target under one height, the height
+   * changed mid-flight, and the same scroll position then mapped to a
+   * different card: the carousel advanced, snapped back, and only moved on the
+   * second press.
+   *
+   * Updated on a real resize — one where the width actually changed — and on
+   * orientation change, never on chrome sliding away.
+   */
+  const viewportHeight = useRef(0);
+  useEffect(() => {
+    const measure = () => {
+      viewportHeight.current = window.innerHeight;
+    };
+    measure();
+
+    let lastWidth = window.innerWidth;
+    const onResize = () => {
+      if (window.innerWidth === lastWidth) return;
+      lastWidth = window.innerWidth;
+      measure();
+    };
+
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', measure);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', measure);
+    };
+  }, []);
+
+  /**
    * Progress is measured from the moment the section is first touched, so the
    * sky answers the very first scroll rather than waiting a full viewport for
    * the section to reach the top.
@@ -108,7 +144,8 @@ export function ExperienceProjectsSection() {
       if (!section) return;
 
       // Fraction of the section's travel spent sliding into view.
-      const entry = Math.min(0.9, window.innerHeight / section.offsetHeight);
+      const viewport = viewportHeight.current || window.innerHeight;
+      const entry = Math.min(0.9, viewport / section.offsetHeight);
       const pinned = Math.min(1, Math.max(0, (value - entry) / (1 - entry)));
 
       sunProgress.current =
@@ -154,7 +191,7 @@ export function ExperienceProjectsSection() {
       // card, convert it back to overall progress, then to a scroll position.
       // Deriving it rather than reusing the old formula keeps the dots landing
       // on the card they name.
-      const viewport = window.innerHeight;
+      const viewport = viewportHeight.current || window.innerHeight;
       const height = section.offsetHeight;
       const entry = Math.min(0.9, viewport / height);
       const pinned = (index + 0.5) / cards.length;

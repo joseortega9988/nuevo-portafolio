@@ -27,6 +27,21 @@
    * further means taking the space from the heading, not from the fold.
    */
   height: clamp(300px, 56vh, 580px);
+}
+
+/*
+ * Phones get a shorter stage.
+ *
+ * The pinned column carries the heading, this stage and the controls inside
+ * one viewport. On a phone the heading wraps to three or four lines and takes
+ * far more of that budget than it does on a desktop, so a stage sized by the
+ * same vh ran the column past the fold — the active card was clipped along its
+ * top edge and the arrows were pushed down the screen.
+ */
+@media (max-width: 767px) {
+  .stage {
+    height: clamp(240px, 40vh, 400px);
+  }
   perspective: 1400px;
   perspective-origin: 50% 50%;
   border-radius: var(--r-lg);
