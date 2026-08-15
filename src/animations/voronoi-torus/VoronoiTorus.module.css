@@ -1,0 +1,32 @@
+.root {
+  position: absolute;
+  inset: 0;
+  background: var(--c-void);
+}
+
+/* Static fallback: a still ring with the same cyan interior and magenta rim. */
+.fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--c-void);
+}
+
+.fallback::after {
+  content: '';
+  width: min(46vmin, 380px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--c-cyan) 55%, transparent);
+  background: radial-gradient(
+    circle,
+    transparent 52%,
+    color-mix(in srgb, var(--c-elevated) 85%, transparent) 54%,
+    color-mix(in srgb, var(--c-elevated) 85%, transparent) 78%,
+    transparent 80%
+  );
+  box-shadow:
+    var(--glow-cyan),
+    inset 0 0 60px color-mix(in srgb, var(--c-magenta) 40%, transparent);
+}
