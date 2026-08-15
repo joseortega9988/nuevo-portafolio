@@ -1,0 +1,24 @@
+.root {
+  position: absolute;
+  inset: 0;
+  background: var(--c-void);
+  pointer-events: none;
+}
+
+/**
+ * Static fallback: the phase schedule frozen near dusk. Dark enough that the
+ * carousel keeps AA contrast against it without a scrim, and it still ends on
+ * void at the bottom so the handoff to the next section holds.
+ */
+.fallback {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    var(--c-void) 0%,
+    color-mix(in srgb, var(--c-violet) 26%, var(--c-void)) 34%,
+    color-mix(in srgb, var(--c-magenta) 22%, var(--c-void)) 46%,
+    color-mix(in srgb, var(--c-deep) 92%, var(--c-violet)) 62%,
+    var(--c-void) 100%
+  );
+}
