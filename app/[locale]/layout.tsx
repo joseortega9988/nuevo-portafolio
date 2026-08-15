@@ -9,6 +9,7 @@ import { PageTransition } from '@/components/layout/PageTransition';
 import { routing } from '@/i18n/routing';
 import { readLocale, resolveLocale, type LocaleParams } from '@/i18n/resolveLocale';
 import { LenisProvider } from '@/lib/motion/LenisProvider';
+import { getSiteUrl } from '@/lib/siteUrl';
 import '@/styles/globals.css';
 
 const display = Space_Grotesk({
@@ -36,9 +37,18 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: 'metadata' });
 
   return {
+    metadataBase: new URL(getSiteUrl()),
     title: { default: t('home.title'), template: `%s — ${t('siteName')}` },
     description: t('home.description'),
-    icons: { icon: '/logo/LOGOCV.png' },
+    // Icons come from app/icon.png and app/apple-icon.png, which Next wires up
+    // automatically at the right sizes — the 758 KB source logo is not served.
+    openGraph: {
+      type: 'website',
+      siteName: t('siteName'),
+      title: t('home.title'),
+      description: t('home.description'),
+      locale,
+    },
   };
 }
 
