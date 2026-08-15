@@ -10,6 +10,20 @@
    read as a single object rotating. */
 .stage {
   position: relative;
+  /*
+   * Clip the arc horizontally.
+   *
+   * The slides are absolutely positioned and Motion pushes the inactive ones
+   * far to either side, well past this element. Nothing was clipping them, so
+   * they counted toward the document's scroll width: on a 375px phone the page
+   * measured 795px, and the browser laid the whole site out at roughly half the
+   * screen with black beyond it. Every section looked broken, though only this
+   * one caused it.
+   *
+   * `clip`, not `hidden`: hidden would make this a scroll container and capture
+   * the sticky positioning further up the page.
+   */
+  overflow-x: clip;
   /* Sized against the viewport rather than a fixed floor: on a short screen a
      tall minimum would push the cards below the fold, which is exactly what
      this section must never do. */
