@@ -1,0 +1,78 @@
+/**
+ * tokens.css — THE SINGLE SOURCE OF TRUTH FOR COLOR.
+ *
+ * No hex literal may appear anywhere else in this codebase: not in a component,
+ * not in a CSS module, not in a Tailwind class, not as a shader uniform default.
+ * `npm run lint` enforces this (see eslint.config.mjs → no-restricted-syntax).
+ *
+ * Shaders read these through src/lib/palette.ts, which resolves the custom
+ * property at runtime and hands WebGL a THREE.Color. That indirection is the
+ * reason a designer can restyle every one of the eight animations by editing
+ * this file alone.
+ */
+
+:root {
+  /* — surfaces — */
+  --c-void:        #04050A;
+  --c-deep:        #080B14;
+  --c-surface:     #0E1322;
+  --c-elevated:    #151B2E;
+  --c-line:        #222B45;
+
+  /* — brand accents (the "colorful" set) — */
+  --c-magenta:     #FF3DD1;   /* primary   — attractor filaments, headings, active state */
+  --c-violet:      #A65CFF;   /* secondary — panels, gradients, mid-tones */
+  --c-cyan:        #37E5F5;   /* tertiary  — borders, links, interactive/hover */
+  --c-amber:       #FFC94A;   /* warm      — dawn phase, highlights, CTA glow */
+  --c-spring:      #5CF2A8;   /* green     — success, base-disk glow, tech accents */
+  --c-core:        #CDE8FF;   /* white-blue core / specular highlights */
+
+  /* — text — */
+  --c-text:        #EAF0FA;
+  --c-text-dim:    #A7B2C8;
+  --c-text-muted:  #6B768F;
+
+  /* — gradients — */
+  --g-primary: linear-gradient(135deg, var(--c-magenta) 0%, var(--c-violet) 45%, var(--c-cyan) 100%);
+  --g-warm:    linear-gradient(135deg, var(--c-amber) 0%, var(--c-magenta) 100%);
+  --g-cool:    linear-gradient(135deg, var(--c-cyan) 0%, var(--c-spring) 100%);
+
+  /* — glow — */
+  --glow-magenta: 0 0 24px rgba(255, 61, 209, .45);
+  --glow-cyan:    0 0 24px rgba(55, 229, 245, .40);
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Non-color design tokens (§G quality bar: ONE motion set, ONE radius scale).
+   Kept here rather than scattered so a section can never invent its own easing.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Motion — a single easing curve for the entire site. Every transition,
+     GSAP tween and CSS animation uses this or the spring below. */
+  --ease-signature: cubic-bezier(.2, .8, .2, 1);
+
+  --dur-fast:   160ms;  /* hover/focus feedback */
+  --dur-base:   320ms;  /* the default for anything interactive */
+  --dur-slow:   640ms;  /* section-level reveals, loader dismissal */
+  --dur-slower: 1200ms; /* ambient, background-scale movement */
+
+  /* Radii */
+  --r-sm: 8px;
+  --r-md: 16px;
+  --r-lg: 24px;
+
+  /* Layering. Declared centrally so no module has to guess a z-index. */
+  --z-canvas:  0;
+  --z-scrim:   1;
+  --z-content: 2;
+  --z-navbar:  100;
+  --z-overlay: 900;
+  --z-loader:  9999;
+
+  /* Translucent surfaces. Expressed against the surface token via
+     color-mix so they stay correct if the palette above ever changes. */
+  --c-surface-70: color-mix(in srgb, var(--c-surface) 70%, transparent);
+  --c-void-85:    color-mix(in srgb, var(--c-void) 85%, transparent);
+  --c-void-00:    color-mix(in srgb, var(--c-void) 0%, transparent);
+}

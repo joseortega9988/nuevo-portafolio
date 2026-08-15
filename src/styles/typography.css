@@ -1,0 +1,48 @@
+/**
+ * typography.css — one clamp()-based type ladder for the whole site (§G).
+ *
+ * Every step is fluid between a 360px and a 1440px viewport, so no component
+ * ever needs a responsive font-size override. Sections reference --step-* only.
+ */
+
+:root {
+  --step--2: clamp(0.69rem, 0.66rem + 0.14vw, 0.76rem);
+  --step--1: clamp(0.83rem, 0.78rem + 0.24vw, 0.95rem);
+  --step-0:  clamp(1.00rem, 0.93rem + 0.36vw, 1.19rem);
+  --step-1:  clamp(1.20rem, 1.09rem + 0.54vw, 1.48rem);
+  --step-2:  clamp(1.44rem, 1.28rem + 0.79vw, 1.85rem);
+  --step-3:  clamp(1.73rem, 1.50rem + 1.14vw, 2.31rem);
+  --step-4:  clamp(2.07rem, 1.75rem + 1.61vw, 2.89rem);
+  --step-5:  clamp(2.49rem, 2.04rem + 2.25vw, 3.62rem);
+  --step-6:  clamp(2.99rem, 2.37rem + 3.10vw, 4.52rem);
+  --step-7:  clamp(3.58rem, 2.74rem + 4.23vw, 5.65rem);
+
+  /* Tracking. Display text is set tight; the technical/mono voice is set wide,
+     which is what gives the HUD-style labels their instrument-panel feel. */
+  --tracking-display: -0.02em;
+  --tracking-wide:     0.18em;
+
+  --leading-tight: 1.05;
+  --leading-snug:  1.25;
+  --leading-body:  1.65;
+}
+
+h1, h2, h3, h4 {
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
+}
+
+p {
+  line-height: var(--leading-body);
+  text-wrap: pretty;
+}
+
+/* The recurring "eyebrow" label above section headings — wide, small, mono. */
+.eyebrow {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--step--1);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--c-text-muted);
+}

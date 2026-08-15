@@ -1,0 +1,113 @@
+{
+  "metadata": {
+    "siteName": "Jose Ortega",
+    "home": {
+      "title": "Jose Ortega — Full-Stack Developer",
+      "description": "Full-stack developer in Quito, Ecuador. I automate manual work, rebuild systems into modular services, and ship them with TypeScript, NestJS, Next.js and AWS."
+    },
+    "projects": {
+      "title": "Projects & Experience — Jose Ortega",
+      "description": "Two engineering roles and three builds: a NestJS notifications API, a React Native task manager, and a machine-learning breast cancer classifier."
+    }
+  },
+
+  "nav": {
+    "home": "Home",
+    "projects": "Projects",
+    "downloadCv": "Download CV",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "switchLanguage": "Switch language",
+    "logoAlt": "Jose Ortega — home"
+  },
+
+  "loader": {
+    "label": "Loading",
+    "word": "LOADING"
+  },
+
+  "hero": {
+    "eyebrow": "Full-Stack Developer · Quito, Ecuador",
+    "title": "I break what slows engineering down",
+    "body": "I automate the work teams still do by hand — 35% more efficient ETL, reporting cut from three days to hours — and rebuild what sits underneath into modular services that scale.",
+    "ctaProjects": "View projects",
+    "ctaCv": "Download CV",
+    "scrollHint": "Scroll"
+  },
+
+  "work": {
+    "eyebrow": "01 — Track record",
+    "title": "Experience & Selected Work",
+    "subtitle": "Two engineering roles and three builds, in order of weight.",
+    "openCard": "Open preview",
+    "closeCard": "Close preview",
+    "viewCase": "View full case",
+    "previous": "Previous",
+    "next": "Next",
+    "goToSlide": "Go to slide {index}",
+    "keyboardHint": "Use ← → to browse, Enter to open, Esc to close"
+  },
+
+  "technologies": {
+    "eyebrow": "02 — Toolkit",
+    "title": "Languages & Technologies",
+    "subtitle": "(I master)",
+    "categories": {
+      "frontend": "Frontend",
+      "backend": "Backend",
+      "data": "Data",
+      "tools": "Tools"
+    }
+  },
+
+  "projectsPage": {
+    "eyebrow": "Portfolio",
+    "title": "Projects & Experience",
+    "body": "Everything here is real work with a repository or a production system behind it: two engineering roles and three builds, ordered by what they demanded rather than how they look.",
+    "gridTitle": "All work",
+    "gridHint": "Select any card to open the full case."
+  },
+
+  "entryTypes": {
+    "experience": "Experience",
+    "project": "Project"
+  },
+
+  "detail": {
+    "backToProjects": "Back to projects",
+    "overview": "Overview",
+    "description": "Description",
+    "highlights": "What I did",
+    "topics": "In depth",
+    "developmentAreas": "Development areas",
+    "technologiesUsed": "Technologies used",
+    "stack": "Stack",
+    "resources": "Resources",
+    "gallery": "Gallery",
+    "viewGithub": "View on GitHub",
+    "viewDocumentation": "Documentation",
+    "downloadApk": "Download the app (APK)",
+    "viewApiDocs": "API docs (Swagger)",
+    "present": "Present",
+    "imageOf": "Image {index} of {total}",
+    "previousImage": "Previous image",
+    "nextImage": "Next image",
+    "notFound": "That entry does not exist."
+  },
+
+  "footer": {
+    "contactMe": "Contact me",
+    "contactPart1": "I'm always open to new opportunities! Feel free to reach out for any project or collaboration. You can contact me at",
+    "contactPart2": "or",
+    "contactPart3": "You can also connect with me through any of my social media profiles using the icons.",
+    "officialLinks": "My official links",
+    "rights": "All rights reserved.",
+    "logoAlt": "Jose Ortega"
+  },
+
+  "notFound": {
+    "title": "Signal lost",
+    "body": "That page is not part of this system.",
+    "cta": "Back to home"
+  }
+}

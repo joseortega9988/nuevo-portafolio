@@ -1,0 +1,113 @@
+{
+  "metadata": {
+    "siteName": "Jose Ortega",
+    "home": {
+      "title": "Jose Ortega — Desarrollador Full-Stack",
+      "description": "Desarrollador full-stack en Quito, Ecuador. Automatizo trabajo manual, reconstruyo sistemas en servicios modulares y los pongo en producción con TypeScript, NestJS, Next.js y AWS."
+    },
+    "projects": {
+      "title": "Proyectos y Experiencia — Jose Ortega",
+      "description": "Dos roles de ingeniería y tres proyectos: una API de notificaciones en NestJS, un gestor de tareas en React Native y un clasificador de cáncer de mama con machine learning."
+    }
+  },
+
+  "nav": {
+    "home": "Inicio",
+    "projects": "Proyectos",
+    "downloadCv": "Descargar CV",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "switchLanguage": "Cambiar idioma",
+    "logoAlt": "Jose Ortega — inicio"
+  },
+
+  "loader": {
+    "label": "Cargando",
+    "word": "LOADING"
+  },
+
+  "hero": {
+    "eyebrow": "Desarrollador Full-Stack · Quito, Ecuador",
+    "title": "Rompo lo que frena a la ingeniería",
+    "body": "Automatizo el trabajo que los equipos siguen haciendo a mano — 35% más de eficiencia en ETL, reportes que pasaron de tres días a horas — y reconstruyo lo que hay debajo en servicios modulares que escalan.",
+    "ctaProjects": "Ver proyectos",
+    "ctaCv": "Descargar CV",
+    "scrollHint": "Desliza"
+  },
+
+  "work": {
+    "eyebrow": "01 — Trayectoria",
+    "title": "Experiencia y Trabajo Destacado",
+    "subtitle": "Dos roles de ingeniería y tres proyectos, en orden de peso.",
+    "openCard": "Abrir vista previa",
+    "closeCard": "Cerrar vista previa",
+    "viewCase": "Ver caso completo",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "goToSlide": "Ir a la tarjeta {index}",
+    "keyboardHint": "Usa ← → para navegar, Enter para abrir, Esc para cerrar"
+  },
+
+  "technologies": {
+    "eyebrow": "02 — Herramientas",
+    "title": "Lenguajes y Tecnologías",
+    "subtitle": "(que domino)",
+    "categories": {
+      "frontend": "Frontend",
+      "backend": "Backend",
+      "data": "Datos",
+      "tools": "Herramientas"
+    }
+  },
+
+  "projectsPage": {
+    "eyebrow": "Portafolio",
+    "title": "Proyectos y Experiencia",
+    "body": "Todo lo que ves aquí es trabajo real, con un repositorio o un sistema en producción detrás: dos roles de ingeniería y tres proyectos, ordenados por lo que exigieron y no por cómo se ven.",
+    "gridTitle": "Todo el trabajo",
+    "gridHint": "Elige cualquier tarjeta para abrir el caso completo."
+  },
+
+  "entryTypes": {
+    "experience": "Experiencia",
+    "project": "Proyecto"
+  },
+
+  "detail": {
+    "backToProjects": "Volver a proyectos",
+    "overview": "Resumen",
+    "description": "Descripción",
+    "highlights": "Lo que hice",
+    "topics": "En profundidad",
+    "developmentAreas": "Áreas de desarrollo",
+    "technologiesUsed": "Tecnologías utilizadas",
+    "stack": "Stack",
+    "resources": "Recursos",
+    "gallery": "Galería",
+    "viewGithub": "Ver en GitHub",
+    "viewDocumentation": "Documentación",
+    "downloadApk": "Descargar la App (APK)",
+    "viewApiDocs": "Documentación de la API (Swagger)",
+    "present": "Actualidad",
+    "imageOf": "Imagen {index} de {total}",
+    "previousImage": "Imagen anterior",
+    "nextImage": "Imagen siguiente",
+    "notFound": "Esa entrada no existe."
+  },
+
+  "footer": {
+    "contactMe": "Contáctame",
+    "contactPart1": "¡Siempre estoy abierto a nuevas oportunidades! No dudes en contactarme para cualquier proyecto o colaboración. Puedes contactarme en",
+    "contactPart2": "o",
+    "contactPart3": "También puedes conectarte conmigo a través de cualquiera de mis perfiles en redes sociales utilizando los íconos.",
+    "officialLinks": "Mis enlaces oficiales",
+    "rights": "Todos los derechos reservados.",
+    "logoAlt": "Jose Ortega"
+  },
+
+  "notFound": {
+    "title": "Señal perdida",
+    "body": "Esa página no forma parte de este sistema.",
+    "cta": "Volver al inicio"
+  }
+}
