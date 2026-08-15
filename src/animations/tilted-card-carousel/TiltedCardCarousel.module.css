@@ -1,0 +1,191 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+/* The stage owns the perspective. Putting it here rather than on each slide
+   means every card shares one vanishing point, which is what makes the arc
+   read as a single object rotating. */
+.stage {
+  position: relative;
+  height: clamp(320px, 46vh, 460px);
+  perspective: 1400px;
+  perspective-origin: 50% 50%;
+  border-radius: var(--r-lg);
+}
+
+.track {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.slide {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(420px, 78vw);
+  margin-left: calc(min(420px, 78vw) / -2);
+  transform: translateY(-50%);
+  transform-style: preserve-3d;
+  will-change: transform, scale;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.4rem;
+  border: 1px solid var(--c-cyan);
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--c-surface) 88%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: box-shadow var(--dur-base) var(--ease-signature);
+}
+
+/* Inactive cards desaturate and lose their border glow, so the eye is never
+   in doubt about which card is being offered. */
+.slide:not([data-active]) .card {
+  border-color: var(--c-line);
+  filter: saturate(0.5);
+}
+
+.slide[data-active] .card {
+  box-shadow: var(--glow-magenta);
+}
+
+.cardHead {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.cardTitle {
+  font-size: var(--step-2);
+  color: var(--c-text);
+}
+
+.preview {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.areas {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--c-text-muted);
+}
+
+.summary {
+  font-size: var(--step--1);
+  color: var(--c-text-dim);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.caseLink {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+  padding-bottom: 2px;
+  border-bottom: 1px solid color-mix(in srgb, var(--c-cyan) 45%, transparent);
+  color: var(--c-cyan);
+  font-size: var(--step--1);
+  font-weight: 600;
+  transition:
+    border-color var(--dur-fast) var(--ease-signature),
+    text-shadow var(--dur-fast) var(--ease-signature);
+}
+
+.caseLink:hover {
+  border-color: var(--c-cyan);
+  text-shadow: var(--glow-cyan);
+}
+
+/* ── controls ── */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.arrow {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--c-line);
+  border-radius: 50%;
+  color: var(--c-text-dim);
+  font-size: 1.1rem;
+  transition:
+    color var(--dur-fast) var(--ease-signature),
+    border-color var(--dur-fast) var(--ease-signature);
+}
+
+.arrow:hover:not(:disabled) {
+  color: var(--c-cyan);
+  border-color: var(--c-cyan);
+}
+
+.arrow:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--c-line);
+  transition:
+    background-color var(--dur-fast) var(--ease-signature),
+    width var(--dur-base) var(--ease-signature);
+}
+
+.dot[data-active] {
+  width: 26px;
+  border-radius: 999px;
+  background-image: var(--g-primary);
+}
+
+.hint {
+  text-align: center;
+  font-size: var(--step--2);
+  color: var(--c-text-muted);
+}
+
+/* Touch and small screens: the arc collapses to a flat stack, because a 60°
+   rotation at this width pushes neighbours entirely off-screen anyway. */
+@media (max-width: 640px) {
+  .stage {
+    perspective: 900px;
+  }
+  .hint {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide {
+    will-change: auto;
+  }
+}

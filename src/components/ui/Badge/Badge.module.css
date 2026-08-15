@@ -1,0 +1,21 @@
+.badge {
+  display: inline-block;
+  padding: 0.25em 0.7em;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.badge[data-type='experience'] {
+  color: var(--c-amber);
+  background: color-mix(in srgb, var(--c-amber) 12%, transparent);
+}
+
+.badge[data-type='project'] {
+  color: var(--c-cyan);
+  background: color-mix(in srgb, var(--c-cyan) 12%, transparent);
+}

@@ -1,0 +1,42 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 62ch;
+}
+
+.header[data-align='center'] {
+  align-items: center;
+  text-align: center;
+  margin-inline: auto;
+}
+
+/* The scrim is what buys AA contrast over a moving background without dimming
+   the animation itself: a soft local darkening behind the words only. */
+.header[data-scrim] {
+  padding: 1rem 1.25rem;
+  border-radius: var(--r-md);
+  background: radial-gradient(
+    120% 140% at 50% 50%,
+    var(--c-void-85) 0%,
+    var(--c-void-00) 100%
+  );
+}
+
+.title {
+  font-size: var(--step-4);
+  background-image: var(--g-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  width: fit-content;
+}
+
+.header[data-align='center'] .title {
+  margin-inline: auto;
+}
+
+.subtitle {
+  color: var(--c-text-dim);
+  font-size: var(--step-0);
+}
