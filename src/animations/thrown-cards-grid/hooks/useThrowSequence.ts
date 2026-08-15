@@ -58,6 +58,24 @@ export function useThrowSequence(
     if (reducedMotion) setPhase('grid');
   }, [reducedMotion]);
 
+  /**
+   * The release latches: once the hero has handed the cards over, it never
+   * takes them back.
+   *
+   * `active` is derived from how far the hero has dissolved, so scrolling back
+   * up to the torus flips it to false again. Feeding that straight into the
+   * setup effect below meant its cleanup ran `context.revert()` mid-sequence,
+   * and scrolling down a second time rebuilt everything against a stage that
+   * was already past both trigger points — the throw and the settle fired
+   * together, Flip captured a layout that was still in flight, and the cards
+   * ended up stacked on each other and half out of frame. The reveal is a
+   * one-shot, so it is modelled as one.
+   */
+  const [released, setReleased] = useState(false);
+  useEffect(() => {
+    if (active) setReleased(true);
+  }, [active]);
+
   // ── phase 1 + 2: throw in, then float ──
   //
   // `phase` is deliberately NOT a dependency. Setting it to 'scattered' from
@@ -68,7 +86,7 @@ export function useThrowSequence(
   const setUpRef = useRef(false);
   useEffect(() => {
     const stage = stageRef.current;
-    if (!stage || !active || reducedMotion || setUpRef.current) return;
+    if (!stage || !released || reducedMotion || setUpRef.current) return;
     setUpRef.current = true;
 
     const context = gsap.context(() => {
@@ -131,7 +149,8 @@ export function useThrowSequence(
       context.revert();
       setUpRef.current = false;
     };
-  }, [stageRef, cardSelector, active, reducedMotion]);
+    // `released` never returns to false, so this cleanup only runs on unmount.
+  }, [stageRef, cardSelector, released, reducedMotion]);
 
   // ── phase 3: settle into the grid ──
   useEffect(() => {
