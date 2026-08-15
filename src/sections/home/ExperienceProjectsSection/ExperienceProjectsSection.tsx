@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useLocale, useTranslations } from 'next-intl';
-import { useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { TiltedCardCarousel } from '@/animations/tilted-card-carousel';
 import { SectionHeading } from '@/components/ui/SectionHeading';
@@ -24,11 +24,15 @@ const SunsetScrollSea = dynamic(
  * Experience and selected work — one carousel carrying both, in the canonical
  * order (§E, explicit and non-negotiable).
  *
- * The section owns the scroll math and hands the result down: it does not know
- * how the sea is rendered, and the sea does not know what a section is.
- * 'section' mode is what makes the phase reach 1 exactly as the section's
- * bottom edge meets the viewport's, which is what puts full darkness precisely
- * at the handoff.
+ * One scroll drives everything. The section's normalised progress feeds the
+ * sea's phase *and* selects the active card, so the sun descends as the cards
+ * advance and the two can never drift apart. 'section' mode is what makes the
+ * phase reach 1 exactly as the section's bottom edge meets the viewport's,
+ * which puts full darkness precisely at the handoff.
+ *
+ * The arrows, dots and arrow keys do not move the carousel directly — they
+ * scroll the page to the position that shows that card, which keeps scroll as
+ * the single source of truth.
  */
 export function ExperienceProjectsSection() {
   const t = useTranslations('work');
@@ -38,9 +42,38 @@ export function ExperienceProjectsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const visible = useInViewport(sectionRef, { rootMargin: MOUNT_MARGINS.sea });
   const paused = useRafPause(visible);
-  const progress = useScrollProgress(sectionRef, { mode: 'section' });
 
   const cards = getCardViewModels(locale);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  /**
+   * Maps progress to a card. The final card needs its own share of the scroll
+   * rather than only the last instant, so progress is divided into `length`
+   * equal bands and the result clamped.
+   */
+  const progress = useScrollProgress(sectionRef, {
+    mode: 'section',
+    onChange: (value) => {
+      const index = Math.min(
+        cards.length - 1,
+        Math.floor(value * cards.length),
+      );
+      setActiveIndex((current) => (current === index ? current : index));
+    },
+  });
+
+  // The inverse mapping: scroll to the middle of a card's band.
+  const scrollToIndex = useCallback(
+    (index: number) => {
+      const section = sectionRef.current;
+      if (!section) return;
+      const travel = section.offsetHeight - window.innerHeight;
+      const target =
+        section.offsetTop + ((index + 0.5) / cards.length) * travel;
+      window.scrollTo({ top: target, behavior: 'smooth' });
+    },
+    [cards.length],
+  );
 
   return (
     <section ref={sectionRef} className={styles.section}>
@@ -59,6 +92,8 @@ export function ExperienceProjectsSection() {
 
         <TiltedCardCarousel
           cards={cards}
+          activeIndex={activeIndex}
+          onRequestIndex={scrollToIndex}
           hrefFor={(slug) => `/${locale}/projects/${slug}`}
           labels={{
             experience: tEntry('experience'),

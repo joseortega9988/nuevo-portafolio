@@ -21,31 +21,45 @@ import type { TiltedCardCarouselProps } from './types';
  */
 export function TiltedCardCarousel({
   cards,
+  activeIndex,
+  onRequestIndex,
   hrefFor,
   labels,
   className,
 }: TiltedCardCarouselProps) {
-  const [active, setActive] = useState(0);
+  const [internalActive, setInternalActive] = useState(0);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const stageRef = useRef<HTMLDivElement>(null);
 
-  const move = useCallback(
-    (direction: -1 | 1) => {
+  // Controlled when the host drives the index from scroll; self-managed
+  // otherwise, so the component still works standalone.
+  const controlled = activeIndex !== undefined;
+  const active = controlled ? activeIndex : internalActive;
+
+  const goTo = useCallback(
+    (index: number) => {
+      // Clamped rather than wrapped: with five entries in a deliberate order,
+      // looping from the last back to the first would undercut the ranking.
+      const next = Math.min(Math.max(index, 0), cards.length - 1);
       setOpenIndex(null);
-      setActive((current) => {
-        const next = current + direction;
-        // Clamped rather than wrapped: with five entries in a deliberate order,
-        // looping from the last back to the first would undercut the ranking.
-        return Math.min(Math.max(next, 0), cards.length - 1);
-      });
+      if (controlled) onRequestIndex?.(next);
+      else setInternalActive(next);
     },
-    [cards.length],
+    [cards.length, controlled, onRequestIndex],
   );
 
-  const toggleOpen = useCallback((index: number) => {
-    setActive(index);
-    setOpenIndex((current) => (current === index ? null : index));
-  }, []);
+  const move = useCallback(
+    (direction: -1 | 1) => goTo(active + direction),
+    [goTo, active],
+  );
+
+  const toggleOpen = useCallback(
+    (index: number) => {
+      if (!controlled) setInternalActive(index);
+      setOpenIndex((current) => (current === index ? null : index));
+    },
+    [controlled],
+  );
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     switch (event.key) {
@@ -123,10 +137,7 @@ export function TiltedCardCarousel({
                 data-active={index === active || undefined}
                 aria-label={labels.goToSlide.replace('{index}', String(index + 1))}
                 aria-current={index === active ? 'true' : undefined}
-                onClick={() => {
-                  setOpenIndex(null);
-                  setActive(index);
-                }}
+                onClick={() => goTo(index)}
               />
             </li>
           ))}

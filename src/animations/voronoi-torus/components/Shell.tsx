@@ -2,7 +2,14 @@
 
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, type MutableRefObject } from 'react';
-import { BufferAttribute, BufferGeometry, DoubleSide, Group, Vector2 } from 'three';
+import {
+  BufferAttribute,
+  BufferGeometry,
+  DoubleSide,
+  Group,
+  ShaderMaterial,
+  Vector2,
+} from 'three';
 
 import { buildPalette } from '@/lib/palette';
 
@@ -25,7 +32,7 @@ export function Shell({
   const cursor = useMemo(() => new Vector2(2, 2), []); // starts far off-screen
   const pointer = useThree((state) => state.pointer);
 
-  const { geometry, uniforms, dissolve, opacity, cursorUniform } = useMemo(() => {
+  const { geometry, material } = useMemo(() => {
     const shattered = buildShatteredTorus(gridSize);
 
     const geo = new BufferGeometry();
@@ -37,37 +44,44 @@ export function Shell({
     geo.setAttribute('aSeed', new BufferAttribute(shattered.seeds, 1));
 
     const palette = buildPalette();
-    const dissolve = { value: 0 };
-    const opacity = { value: 1 };
-    const cursorUniform = { value: new Vector2(2, 2) };
-
-    return {
-      geometry: geo,
-      dissolve,
-      opacity,
-      cursorUniform,
+    const mat = new ShaderMaterial({
+      vertexShader: shellVertexShader,
+      fragmentShader: shellFragmentShader,
+      transparent: true,
+      // Fragments hinge open, so their back faces become visible.
+      side: DoubleSide,
       uniforms: {
         uSurface: { value: palette.elevated },
         uEdge: { value: palette.cyan },
         uRim: { value: palette.magenta },
-        uCursor: cursorUniform,
+        uCursor: { value: new Vector2(2, 2) },
         uCursorRadius: { value: TORUS_CONFIG.cursor.radius },
         uMaxLift: { value: TORUS_CONFIG.cursor.maxLift },
         uMaxAngle: { value: TORUS_CONFIG.cursor.maxAngle },
-        uDissolve: dissolve,
+        uDissolve: { value: 0 },
         uDissolveDistance: { value: TORUS_CONFIG.dissolveDistance },
-        uOpacity: opacity,
+        uOpacity: { value: 1 },
       },
-    };
+    });
+
+    return { geometry: geo, material: mat };
   }, [gridSize]);
 
-  useEffect(() => () => geometry.dispose(), [geometry]);
+  useEffect(
+    () => () => {
+      geometry.dispose();
+      material.dispose();
+    },
+    [geometry, material],
+  );
 
   useFrame((_, delta) => {
+    const { uCursor, uDissolve, uOpacity } = material.uniforms;
+
     // Ease the cursor rather than tracking it exactly: fragments then settle
     // behind the pointer instead of snapping with it.
     cursor.lerp(pointer, Math.min(1, delta * 6));
-    cursorUniform.value.copy(cursor);
+    if (uCursor) (uCursor.value as Vector2).copy(cursor);
 
     if (groupRef.current) {
       groupRef.current.rotation.x += delta * TORUS_CONFIG.idleRotation.x;
@@ -75,8 +89,8 @@ export function Shell({
     }
 
     const t = Math.min(1, progress.current / TORUS_CONFIG.dissolveWindow);
-    dissolve.value = t;
-    opacity.value = 1 - t;
+    if (uDissolve) uDissolve.value = t;
+    if (uOpacity) uOpacity.value = 1 - t;
 
     if (!readyRef.current) {
       readyRef.current = true;
@@ -86,16 +100,7 @@ export function Shell({
 
   return (
     <group ref={groupRef}>
-      <mesh geometry={geometry} frustumCulled={false}>
-        <shaderMaterial
-          uniforms={uniforms}
-          vertexShader={shellVertexShader}
-          fragmentShader={shellFragmentShader}
-          transparent
-          // Fragments hinge open, so their back faces become visible.
-          side={DoubleSide}
-        />
-      </mesh>
+      <mesh geometry={geometry} material={material} frustumCulled={false} />
     </group>
   );
 }

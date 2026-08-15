@@ -1,8 +1,8 @@
 'use client';
 
 import { useFrame } from '@react-three/fiber';
-import { useMemo } from 'react';
-import { AdditiveBlending, BackSide } from 'three';
+import { useEffect, useMemo } from 'react';
+import { AdditiveBlending, BackSide, ShaderMaterial } from 'three';
 
 import { buildPalette } from '@/lib/palette';
 
@@ -41,35 +41,33 @@ const coreFragmentShader = /* glsl */ `
 `;
 
 export function CoreSphere() {
-  const { uniforms, time } = useMemo(() => {
+  const material = useMemo(() => {
     const palette = buildPalette();
-    const time = { value: 0 };
-    return {
-      time,
+    return new ShaderMaterial({
+      vertexShader: coreVertexShader,
+      fragmentShader: coreFragmentShader,
+      transparent: true,
+      blending: AdditiveBlending,
+      side: BackSide,
+      depthWrite: false,
       uniforms: {
         uCore: { value: palette.core },
         uCyan: { value: palette.cyan },
-        uTime: time,
+        uTime: { value: 0 },
       },
-    };
+    });
   }, []);
 
+  useEffect(() => () => material.dispose(), [material]);
+
   useFrame((_, delta) => {
-    time.value += delta;
+    const uTime = material.uniforms.uTime;
+    if (uTime) uTime.value = (uTime.value as number) + delta;
   });
 
   return (
-    <mesh>
+    <mesh material={material}>
       <sphereGeometry args={[0.95, 48, 48]} />
-      <shaderMaterial
-        uniforms={uniforms}
-        vertexShader={coreVertexShader}
-        fragmentShader={coreFragmentShader}
-        transparent
-        blending={AdditiveBlending}
-        side={BackSide}
-        depthWrite={false}
-      />
     </mesh>
   );
 }

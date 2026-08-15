@@ -2,7 +2,12 @@
 
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
-import { AdditiveBlending, BufferAttribute, BufferGeometry } from 'three';
+import {
+  AdditiveBlending,
+  BufferAttribute,
+  BufferGeometry,
+  ShaderMaterial,
+} from 'three';
 
 import { buildPalette } from '@/lib/palette';
 
@@ -13,6 +18,11 @@ import { buildFilamentField } from '../utils/integrate';
 /**
  * The trajectories themselves: one indexed LineSegments for the whole field,
  * so hundreds of filaments cost a single draw call.
+ *
+ * The material is constructed here and passed by reference rather than
+ * declared as <shaderMaterial uniforms={…}>. With the declarative form the
+ * uniforms object this component mutates is not the one the compiled program
+ * reads, and the scene renders a frozen first frame.
  */
 export function Filaments({
   filamentCount,
@@ -23,7 +33,7 @@ export function Filaments({
 }) {
   const readyRef = useRef(false);
 
-  const { geometry, uniforms, time } = useMemo(() => {
+  const { geometry, material } = useMemo(() => {
     const field = buildFilamentField(filamentCount);
 
     const geo = new BufferGeometry();
@@ -31,35 +41,43 @@ export function Filaments({
     geo.setAttribute('aProgress', new BufferAttribute(field.progress, 1));
     geo.setIndex(new BufferAttribute(field.indices, 1));
 
-    // Held by reference rather than looked up as uniforms['uTime'] each frame:
-    // indexing would be possibly-undefined under the strict compiler settings,
-    // and this avoids the lookup entirely.
-    const time = { value: 0 };
-
     const palette = buildPalette();
-    return {
-      geometry: geo,
-      time,
+    const mat = new ShaderMaterial({
+      vertexShader: filamentVertexShader,
+      fragmentShader: filamentFragmentShader,
+      transparent: true,
+      blending: AdditiveBlending,
+      depthWrite: false,
       uniforms: {
         uSpring: { value: palette.spring },
         uAmber: { value: palette.amber },
         uViolet: { value: palette.violet },
         uMagenta: { value: palette.magenta },
         uCore: { value: palette.core },
-        uTime: time,
+        uTime: { value: 0 },
         uFlowRepeat: { value: SCENE.flow.repeat },
         uFlowSpeed: { value: SCENE.flow.speed },
         uIntensity: { value: 1 },
         uMinY: { value: field.minY },
         uRangeY: { value: Math.max(field.maxY - field.minY, 0.001) },
       },
-    };
+    });
+
+    return { geometry: geo, material: mat };
   }, [filamentCount]);
 
-  useEffect(() => () => geometry.dispose(), [geometry]);
+  useEffect(
+    () => () => {
+      geometry.dispose();
+      material.dispose();
+    },
+    [geometry, material],
+  );
 
   useFrame((_, delta) => {
-    time.value += delta;
+    const uTime = material.uniforms.uTime;
+    if (uTime) uTime.value = (uTime.value as number) + delta;
+
     // The hero reports ready on its first rendered frame, which is what
     // releases the boot loader.
     if (!readyRef.current) {
@@ -69,15 +87,6 @@ export function Filaments({
   });
 
   return (
-    <lineSegments geometry={geometry} frustumCulled={false}>
-      <shaderMaterial
-        uniforms={uniforms}
-        vertexShader={filamentVertexShader}
-        fragmentShader={filamentFragmentShader}
-        transparent
-        blending={AdditiveBlending}
-        depthWrite={false}
-      />
-    </lineSegments>
+    <lineSegments geometry={geometry} material={material} frustumCulled={false} />
   );
 }

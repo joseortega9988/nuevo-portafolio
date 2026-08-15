@@ -1,7 +1,8 @@
 'use client';
 
 import { useFrame, useThree } from '@react-three/fiber';
-import { useMemo, useRef, type MutableRefObject } from 'react';
+import { useEffect, useMemo, useRef, type MutableRefObject } from 'react';
+import { ShaderMaterial } from 'three';
 
 import { buildPalette } from '@/lib/palette';
 
@@ -23,15 +24,22 @@ export function SeaPlane({
   const size = useThree((state) => state.size);
   const readyRef = useRef(false);
 
-  const { uniforms, phase, time, aspect } = useMemo(() => {
+  /**
+   * The material is constructed here and passed by reference, rather than
+   * declared as <shaderMaterial uniforms={…}>.
+   *
+   * That is not a style preference. With the declarative form the uniforms
+   * object this component mutates each frame is not the one the compiled
+   * program reads — the scene rendered a permanent sunrise while `uPhase` in
+   * JavaScript sat at 1. Owning the instance makes the reference unambiguous.
+   */
+  const material = useMemo(() => {
     const palette = buildPalette();
-    const phase = { value: 0 };
-    const time = { value: 0 };
-    const aspect = { value: 1 };
-    return {
-      phase,
-      time,
-      aspect,
+    return new ShaderMaterial({
+      vertexShader: seaVertexShader,
+      fragmentShader: seaFragmentShader,
+      depthTest: false,
+      depthWrite: false,
       uniforms: {
         uAmber: { value: palette.amber },
         uCyan: { value: palette.cyan },
@@ -40,24 +48,27 @@ export function SeaPlane({
         uViolet: { value: palette.violet },
         uVoid: { value: palette.void },
         uDeep: { value: palette.deep },
-        uPhase: phase,
-        uTime: time,
-        uAspect: aspect,
+        uPhase: { value: 0 },
+        uTime: { value: 0 },
+        uAspect: { value: 1 },
         uOctaves: { value: octaves },
       },
-    };
+    });
   }, [octaves]);
 
-  aspect.value = size.width / Math.max(size.height, 1);
+  useEffect(() => () => material.dispose(), [material]);
 
   useAdaptiveResolution(baseDpr);
 
   useFrame((_, delta) => {
-    // The wave field animates on its own clock; the phase comes entirely from
-    // scroll, so the sea stays alive while the sun stays put.
-    time.value += delta * SEA_CONFIG.waveSpeed;
-    phase.value = progress.current;
+    const { uTime, uPhase, uAspect } = material.uniforms;
+    if (!uTime || !uPhase || !uAspect) return;
 
+    // The wave field runs on its own clock; the phase comes entirely from
+    // scroll, so the sea keeps moving while the sun stays put.
+    uTime.value = (uTime.value as number) + delta * SEA_CONFIG.waveSpeed;
+    uPhase.value = progress.current;
+    uAspect.value = size.width / Math.max(size.height, 1);
     if (!readyRef.current) {
       readyRef.current = true;
       onReady?.();
@@ -65,15 +76,8 @@ export function SeaPlane({
   });
 
   return (
-    <mesh frustumCulled={false}>
+    <mesh frustumCulled={false} material={material}>
       <planeGeometry args={[2, 2]} />
-      <shaderMaterial
-        uniforms={uniforms}
-        vertexShader={seaVertexShader}
-        fragmentShader={seaFragmentShader}
-        depthTest={false}
-        depthWrite={false}
-      />
     </mesh>
   );
 }

@@ -2,7 +2,13 @@
 
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
-import { AdditiveBlending, BufferAttribute, BufferGeometry, Group } from 'three';
+import {
+  AdditiveBlending,
+  BufferAttribute,
+  BufferGeometry,
+  Group,
+  ShaderMaterial,
+} from 'three';
 
 import { buildPalette } from '@/lib/palette';
 
@@ -14,7 +20,7 @@ export function Fibers({ onReady }: { onReady?: () => void }) {
   const groupRef = useRef<Group>(null);
   const readyRef = useRef(false);
 
-  const { geometry, uniforms, time } = useMemo(() => {
+  const { geometry, material } = useMemo(() => {
     const field = buildFiberField();
 
     const geo = new BufferGeometry();
@@ -24,27 +30,38 @@ export function Fibers({ onReady }: { onReady?: () => void }) {
     geo.setIndex(new BufferAttribute(field.indices, 1));
 
     const palette = buildPalette();
-    const time = { value: 0 };
-
-    return {
-      geometry: geo,
-      time,
+    const mat = new ShaderMaterial({
+      vertexShader: fiberVertexShader,
+      fragmentShader: fiberFragmentShader,
+      transparent: true,
+      blending: AdditiveBlending,
+      depthWrite: false,
       uniforms: {
         uMagenta: { value: palette.magenta },
         uCyan: { value: palette.cyan },
         uViolet: { value: palette.violet },
         uCore: { value: palette.core },
-        uTime: time,
+        uTime: { value: 0 },
         uPulse: { value: HOPF_CONFIG.pulse },
         uPulseSpeed: { value: HOPF_CONFIG.pulseSpeed },
       },
-    };
+    });
+
+    return { geometry: geo, material: mat };
   }, []);
 
-  useEffect(() => () => geometry.dispose(), [geometry]);
+  useEffect(
+    () => () => {
+      geometry.dispose();
+      material.dispose();
+    },
+    [geometry, material],
+  );
 
   useFrame((_, delta) => {
-    time.value += delta;
+    const uTime = material.uniforms.uTime;
+    if (uTime) uTime.value = (uTime.value as number) + delta;
+
     if (groupRef.current) {
       groupRef.current.rotation.x += delta * HOPF_CONFIG.rotationSpeed.x;
       groupRef.current.rotation.y += delta * HOPF_CONFIG.rotationSpeed.y;
@@ -57,16 +74,7 @@ export function Fibers({ onReady }: { onReady?: () => void }) {
 
   return (
     <group ref={groupRef}>
-      <lineSegments geometry={geometry} frustumCulled={false}>
-        <shaderMaterial
-          uniforms={uniforms}
-          vertexShader={fiberVertexShader}
-          fragmentShader={fiberFragmentShader}
-          transparent
-          blending={AdditiveBlending}
-          depthWrite={false}
-        />
-      </lineSegments>
+      <lineSegments geometry={geometry} material={material} frustumCulled={false} />
     </group>
   );
 }

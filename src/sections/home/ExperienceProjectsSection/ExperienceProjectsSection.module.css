@@ -7,10 +7,20 @@
   background: var(--c-void);
 }
 
+/**
+ * The sea is pinned to the viewport, not stretched over the whole section.
+ *
+ * Stretched, the canvas would be 260vh tall and simply scroll past — the sky
+ * visible at the start, the water at the end, like a long static image. The
+ * point of this section is the opposite: the frame stays put and its *phase*
+ * changes. So the canvas takes one viewport of the section's flow and sticks
+ * there, and the content is pulled back over it by the same amount.
+ */
 .canvas,
 .poster {
-  position: absolute;
-  inset: 0;
+  position: sticky;
+  top: 0;
+  height: 100svh;
   z-index: var(--z-canvas);
 }
 
@@ -19,6 +29,7 @@
 }
 
 .content {
+  margin-top: -100svh;
   position: sticky;
   /* Sticks below the navbar so the carousel stays in view for the whole
      descent — the phase change is the reward for scrolling, and the cards are

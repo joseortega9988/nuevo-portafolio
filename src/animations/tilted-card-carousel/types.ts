@@ -3,6 +3,13 @@ import type { CardViewModel } from '@/data/types';
 export interface TiltedCardCarouselProps {
   /** Ordered cards. The animation never sources its own content (§B). */
   cards: readonly CardViewModel[];
+  /**
+   * Controlled active card. When supplied, scroll is the source of truth and
+   * the carousel stops owning the index — the arrows and dots then ask the
+   * host to move instead, via onRequestIndex.
+   */
+  activeIndex?: number;
+  onRequestIndex?: (index: number) => void;
   /** Builds the detail route for a card — injected so the animation stays
    *  ignorant of routing and of the active locale. */
   hrefFor: (slug: CardViewModel['slug']) => string;
