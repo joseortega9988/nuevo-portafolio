@@ -68,6 +68,21 @@
   gap: 0.6rem;
 }
 
+/* Badge and dates share a row, as on the grid card and the detail header. */
+.cardMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.cardPeriod {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-wide);
+  color: var(--c-text-muted);
+}
+
 .cardTitle {
   font-size: var(--step-2);
   color: var(--c-text);

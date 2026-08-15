@@ -147,6 +147,22 @@
   box-shadow: var(--glow-magenta);
 }
 
+/* Badge and dates share a row. Matches the detail page's header treatment so a
+   role reads the same way wherever it appears. */
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.period {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-wide);
+  color: var(--c-text-muted);
+}
+
 .title {
   font-size: var(--step-1);
   color: var(--c-text);

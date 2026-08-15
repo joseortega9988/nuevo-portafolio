@@ -71,13 +71,16 @@ const SUN_ENTRY_SHARE = 0.18;
 export function ExperienceProjectsSection() {
   const t = useTranslations('work');
   const tEntry = useTranslations('entryTypes');
+  // 'present' lives in the detail namespace. Reused rather than duplicated into
+  // this one so the two places that render a role's dates can never disagree.
+  const tDetail = useTranslations('detail');
   const locale = useLocale() as Locale;
 
   const sectionRef = useRef<HTMLElement>(null);
   const visible = useInViewport(sectionRef, { rootMargin: MOUNT_MARGINS.sea });
   const paused = useRafPause(visible);
 
-  const cards = getCardViewModels(locale);
+  const cards = getCardViewModels(locale, tDetail('present'));
   const [activeIndex, setActiveIndex] = useState(0);
 
   /**

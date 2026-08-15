@@ -79,9 +79,14 @@ export function ThrownCardsGrid({
                   <Link href={hrefFor(card.slug)} className={styles.link}>
                     <article className={styles.inner}>
                       <CardMedia card={card} ratio="wide" priority={index < 2} />
-                      <Badge type={card.type}>
-                        {card.type === 'experience' ? labels.experience : labels.project}
-                      </Badge>
+                      <div className={styles.meta}>
+                        <Badge type={card.type}>
+                          {card.type === 'experience' ? labels.experience : labels.project}
+                        </Badge>
+                        {card.period && (
+                          <span className={styles.period}>{card.period}</span>
+                        )}
+                      </div>
                       <h3 className={styles.title}>{card.title}</h3>
                       <p className={styles.summary}>{card.shortDescription}</p>
                       <ul className={styles.chips}>

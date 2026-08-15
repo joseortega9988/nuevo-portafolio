@@ -69,9 +69,12 @@ export function CarouselCard({
         <CardMedia card={card} ratio="banner" priority={isActive} />
 
         <div className={styles.cardHead}>
-          <Badge type={card.type}>
-            {card.type === 'experience' ? labels.experience : labels.project}
-          </Badge>
+          <div className={styles.cardMeta}>
+            <Badge type={card.type}>
+              {card.type === 'experience' ? labels.experience : labels.project}
+            </Badge>
+            {card.period && <span className={styles.cardPeriod}>{card.period}</span>}
+          </div>
           <h3 className={styles.cardTitle}>{card.title}</h3>
         </div>
 

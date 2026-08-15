@@ -31,12 +31,18 @@ export const TORUS_CONFIG = {
   /**
    * Scroll range over which the shell comes apart, as a fraction of the hero.
    *
-   * It starts late and finishes late on purpose. Dissolving over the first 60%
-   * left the torus invisible for most of the hero — and, scrolling back up from
-   * the cards, meant a long stretch of black before it reassembled. Holding it
-   * intact through the first 40% keeps the hero populated in both directions.
+   * It starts late and runs to the very end of the hero on purpose. Any margin
+   * left after the dissolve completes is a stretch of pinned, empty canvas: on
+   * the way down it reads as the hero dying before the cards arrive, and on the
+   * way back up from the cards it is a full screen of black before the torus
+   * reassembles. Ending at 0.98 means the shell is still coming apart as the
+   * grid takes over, so there is never a moment with nothing on screen.
+   *
+   * The fragments also travel less far than they used to. At 3.4 they left the
+   * frame long before the dissolve numerically finished, which put the black
+   * stretch back even with the range extended.
    */
-  dissolveStart: 0.4,
-  dissolveEnd: 0.88,
-  dissolveDistance: 3.4,
+  dissolveStart: 0.42,
+  dissolveEnd: 0.98,
+  dissolveDistance: 2.4,
 } as const;

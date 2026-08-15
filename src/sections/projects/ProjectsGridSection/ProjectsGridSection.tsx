@@ -27,6 +27,8 @@ export function ProjectsGridSection({ active }: ProjectsGridSectionProps) {
   const t = useTranslations('projectsPage');
   const tWork = useTranslations('work');
   const tEntry = useTranslations('entryTypes');
+  // See ExperienceProjectsSection: 'present' is shared with the detail page.
+  const tDetail = useTranslations('detail');
   const locale = useLocale() as Locale;
 
   const sectionRef = useRef<HTMLElement>(null);
@@ -51,7 +53,7 @@ export function ProjectsGridSection({ active }: ProjectsGridSectionProps) {
         />
 
         <ThrownCardsGrid
-          cards={getCardViewModels(locale)}
+          cards={getCardViewModels(locale, tDetail('present'))}
           active={active}
           hrefFor={(slug) => `/${locale}/projects/${slug}`}
           labels={{

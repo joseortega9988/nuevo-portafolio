@@ -36,11 +36,10 @@
 
   /* — third-party brand marks —
      Only ever used to tint that platform's own icon on hover. They live here
-     rather than in the component so tokens.css stays the one file with colour;
-     GitHub's mark is its dark-theme foreground, since its true black would be
-     invisible on these surfaces. */
+     rather than in the component so tokens.css stays the one file with colour.
+     Only LinkedIn keeps its own blue; GitHub's mark is a near-white that barely
+     registered as a hover on these surfaces, so it uses --c-violet instead. */
   --c-brand-linkedin: #0A66C2;
-  --c-brand-github:   #F0F6FC;
 
   /* — text — */
   --c-text:        #EAF0FA;

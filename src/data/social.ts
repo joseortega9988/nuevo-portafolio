@@ -27,7 +27,9 @@ export const SOCIAL_LINKS: readonly SocialLink[] = [
     href: 'https://github.com/joseortega9988',
     label: 'GitHub',
     Icon: FaGithub,
-    brandVar: '--c-brand-github',
+    /* Violet rather than GitHub's own mark: its dark-theme foreground is a
+       near-white that read as "no hover at all" against these surfaces. */
+    brandVar: '--c-violet',
   },
 ];
 

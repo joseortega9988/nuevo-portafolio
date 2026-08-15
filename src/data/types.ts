@@ -91,6 +91,12 @@ export interface CardViewModel {
   title: string;
   shortDescription: string;
   developmentAreas: string;
+  /**
+   * Formatted, localized date range — "Jun 2021 — Nov 2024", or the start and
+   * a "Present" for a current role. Only the two experience entries have one;
+   * projects carry no period, so cards must treat this as optional.
+   */
+  period?: string;
   technologies: readonly Technology[];
   /**
    * The entry's lead image, when it has one. Absent for the two roles and for
