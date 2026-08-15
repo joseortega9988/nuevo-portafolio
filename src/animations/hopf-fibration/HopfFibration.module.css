@@ -1,0 +1,35 @@
+.root {
+  position: absolute;
+  inset: 0;
+  background: var(--c-void);
+  /* Background only (§D A6): the honeycomb in front must receive every
+     pointer and keyboard event. */
+  pointer-events: none;
+}
+
+/**
+ * Static fallback: the core's glow at centre frame with the magenta and cyan
+ * arc colours washing out toward the corners, so the section keeps its
+ * composition when WebGL is unavailable.
+ */
+.fallback {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      22% 30% at 50% 45%,
+      color-mix(in srgb, var(--c-core) 55%, transparent) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      70% 60% at 18% 30%,
+      color-mix(in srgb, var(--c-magenta) 20%, transparent) 0%,
+      transparent 72%
+    ),
+    radial-gradient(
+      70% 60% at 84% 70%,
+      color-mix(in srgb, var(--c-cyan) 18%, transparent) 0%,
+      transparent 72%
+    ),
+    var(--c-void);
+}
