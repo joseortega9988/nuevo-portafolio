@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRef } from 'react';
+import { useRef, type CSSProperties } from 'react';
 
 import { Badge } from '@/components/ui/Badge';
 import { CardMedia } from '@/components/ui/CardMedia';
@@ -61,14 +61,17 @@ export function ThrownCardsGrid({
               data-card
               data-depth={slot?.depth ?? 0.5}
               className={styles.card}
+              /* The tilt is deliberately NOT set here. React would drop it the
+                 instant the grid class lands, snapping the cards square while
+                 Flip was still gliding them into place. It lives in --tilt,
+                 which GSAP owns and Flip animates with the rest of the move. */
               style={
                 phase === 'grid'
                   ? undefined
-                  : {
+                  : ({
                       top: `${slot?.top ?? 0}%`,
-                      left: `${slot?.left ?? 0}%`,
-                      rotate: `${slot?.rotate ?? 0}deg`,
-                    }
+                      '--slot-x': slot?.x ?? 0,
+                    } as CSSProperties)
               }
             >
               <div data-float className={styles.float}>

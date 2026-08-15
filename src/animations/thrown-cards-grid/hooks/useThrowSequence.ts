@@ -7,7 +7,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 're
 
 import { useGsapLenisSync } from '@/lib/motion/useGsapLenisSync';
 
-import { THROWN_CONFIG } from '../config';
+import { SCATTER_SLOTS, THROWN_CONFIG } from '../config';
 
 gsap.registerPlugin(Flip, ScrollTrigger);
 
@@ -75,6 +75,13 @@ export function useThrowSequence(
       const cards = gsap.utils.toArray<HTMLElement>(cardSelector);
       const { throw: thrown, float } = THROWN_CONFIG;
 
+      // The resting tilt of each scattered card. Applied here rather than in
+      // React so that nothing but the settle can take it away.
+      cards.forEach((card, index) => {
+        const slot = SCATTER_SLOTS[index % SCATTER_SLOTS.length];
+        gsap.set(card, { '--tilt': slot?.rotate ?? 0 });
+      });
+
       const timeline = gsap.timeline({
         paused: true,
         onComplete: () => setThrown(true),
@@ -137,9 +144,12 @@ export function useThrowSequence(
       once: true,
       onEnter: () => {
         // Capture before React re-renders: this is the layout we animate from.
+        // --tilt travels with the Flip state, so the cards straighten over the
+        // same tween that carries them into their cells instead of snapping
+        // square the moment the grid layout lands.
         flipStateRef.current = Flip.getState(
           gsap.utils.toArray<HTMLElement>(cardSelector),
-          { props: 'rotation' },
+          { props: '--tilt' },
         );
         setSettling(true);
         setPhase('grid');
@@ -165,6 +175,12 @@ export function useThrowSequence(
     // into the middle of the animation. React has already committed the grid
     // layout at this point, so this measurement is the final height.
     if (track) track.style.minHeight = `${track.getBoundingClientRect().height}px`;
+
+    // Square the cards *before* Flip reads the new layout. GSAP set --tilt
+    // inline during the throw and React does not manage it, so it survives the
+    // re-render — leaving it in place would have Flip animate the tilt from its
+    // scatter value to the same value, which is no animation at all.
+    gsap.set(gsap.utils.toArray<HTMLElement>(cardSelector), { '--tilt': 0 });
 
     Flip.from(state, {
       duration: THROWN_CONFIG.settle.duration,

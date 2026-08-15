@@ -33,7 +33,15 @@
 .stage[data-phase='waiting'] .card,
 .stage[data-phase='scattered'] .card {
   position: absolute;
-  width: min(228px, 58vw);
+  --card-w: min(228px, 58vw);
+  /* A rotated card paints wider than its layout box, so the slot has to leave
+     room for the corners as well as the width. */
+  --card-bleed: 2rem;
+  width: var(--card-w);
+  /* --slot-x (0–100) addresses the free space rather than the whole track, so
+     the rightmost card lands inside the edge at every width instead of being
+     clipped by the section. */
+  left: calc(var(--slot-x) * (100% - var(--card-w) - var(--card-bleed)) / 100);
 }
 
 /* `data-settling` is present for the length of the Flip tween. The cards must
@@ -85,10 +93,14 @@
 .stage[data-phase='grid'] .card {
   position: relative;
   width: auto;
-  rotate: none;
 }
 
 .card {
+  /* Scatter tilt. Held in a custom property rather than a plain `rotate` so the
+     settle can tween it: GSAP owns --tilt, and Flip carries it to 0 over the
+     same tween that moves and resizes the card. Unset — once the settle clears
+     it — this falls back to square. */
+  rotate: calc(var(--tilt, 0) * 1deg);
   transform-style: preserve-3d;
   will-change: transform;
 }

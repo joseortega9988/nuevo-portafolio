@@ -45,17 +45,25 @@ export const THROWN_CONFIG = {
 } as const;
 
 /**
- * Deterministic scatter positions, as percentages of the stage.
+ * Deterministic scatter positions.
  *
  * Authored rather than randomised: a random layout occasionally stacks two
  * cards or pushes one off the visible area, and this phase is on screen for
  * only a couple of seconds — it has to look composed every time.
+ *
+ * `x` runs 0–100 across the *free* space — the track minus the width a card
+ * occupies — so 0 sits flush left, 100 flush right, and no value can push a
+ * card past an edge. It is deliberately not a plain `left` percentage: that
+ * ignores the card's own width, so the rightmost slot only fitted on a track
+ * wider than about 960px and hung off the edge on anything narrower. `top` is
+ * still a straight percentage; the track reserves a full viewport of height, so
+ * a card can't run out of room vertically the way it can horizontally.
  */
 export const SCATTER_SLOTS = [
-  { top: 8, left: 3, depth: 0.9, rotate: -8 },
-  { top: 46, left: 24, depth: 0.4, rotate: 6 },
-  { top: 5, left: 38, depth: 0.7, rotate: 4 },
-  { top: 44, left: 60, depth: 0.3, rotate: -5 },
-  { top: 10, left: 73, depth: 0.8, rotate: 9 },
-  { top: 48, left: 42, depth: 0.55, rotate: -3 },
+  { top: 8, x: 4, depth: 0.9, rotate: -8 },
+  { top: 46, x: 31, depth: 0.4, rotate: 6 },
+  { top: 5, x: 49, depth: 0.7, rotate: 4 },
+  { top: 44, x: 78, depth: 0.3, rotate: -5 },
+  { top: 10, x: 95, depth: 0.8, rotate: 9 },
+  { top: 48, x: 55, depth: 0.55, rotate: -3 },
 ] as const;
