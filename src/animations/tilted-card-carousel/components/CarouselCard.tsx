@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
 
 import { Badge } from '@/components/ui/Badge';
+import { CardMedia } from '@/components/ui/CardMedia';
 import { TechChip } from '@/components/ui/TechChip';
 import type { CardViewModel } from '@/data/types';
 
@@ -65,6 +66,8 @@ export function CarouselCard({
         animate={{ filter: isActive ? 'blur(0px)' : `blur(${inactiveBlurPx}px)` }}
         transition={spring}
       >
+        <CardMedia card={card} ratio="banner" priority={isActive} />
+
         <div className={styles.cardHead}>
           <Badge type={card.type}>
             {card.type === 'experience' ? labels.experience : labels.project}

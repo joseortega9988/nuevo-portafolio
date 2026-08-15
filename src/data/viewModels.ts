@@ -16,6 +16,8 @@ export function toCardViewModel(
   entry: PortfolioEntry,
   locale: Locale,
 ): CardViewModel {
+  const lead = entry.images?.[0];
+
   return {
     slug: entry.slug,
     type: entry.type,
@@ -23,6 +25,7 @@ export function toCardViewModel(
     shortDescription: entry.shortDescription[locale],
     developmentAreas: entry.developmentAreas[locale],
     technologies: resolveTechnologies(entry.technologies),
+    ...(lead ? { thumbnail: { src: lead.src, alt: lead.alt[locale] } } : {}),
   };
 }
 

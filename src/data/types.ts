@@ -92,4 +92,10 @@ export interface CardViewModel {
   shortDescription: string;
   developmentAreas: string;
   technologies: readonly Technology[];
+  /**
+   * The entry's lead image, when it has one. Absent for the two roles and for
+   * the take-home, which have no screenshots — cards fall back to a tokened
+   * panel rather than to a stand-in photo.
+   */
+  thumbnail?: { src: string; alt: string };
 }

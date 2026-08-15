@@ -13,7 +13,7 @@
   /* Sized against the viewport rather than a fixed floor: on a short screen a
      tall minimum would push the cards below the fold, which is exactly what
      this section must never do. */
-  height: clamp(190px, 38vh, 430px);
+  height: clamp(250px, 46vh, 500px);
   perspective: 1400px;
   perspective-origin: 50% 50%;
   border-radius: var(--r-lg);

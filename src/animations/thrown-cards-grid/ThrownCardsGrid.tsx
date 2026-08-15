@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRef } from 'react';
 
 import { Badge } from '@/components/ui/Badge';
+import { CardMedia } from '@/components/ui/CardMedia';
 import { TechChip } from '@/components/ui/TechChip';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 
@@ -68,6 +69,7 @@ export function ThrownCardsGrid({
                 <div data-parallax className={styles.parallax}>
                   <Link href={hrefFor(card.slug)} className={styles.link}>
                     <article className={styles.inner}>
+                      <CardMedia card={card} ratio="wide" priority={index < 2} />
                       <Badge type={card.type}>
                         {card.type === 'experience' ? labels.experience : labels.project}
                       </Badge>

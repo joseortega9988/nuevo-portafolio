@@ -115,8 +115,16 @@ export function useThrowSequence(
       stagger: THROWN_CONFIG.settle.stagger,
       ease: THROWN_CONFIG.settle.ease,
       absolute: true,
+      onComplete: () => {
+        // Flip finishes by leaving the transform it animated to as an inline
+        // style. Left in place, the cards keep the rotation they were thrown
+        // with and never sit square in the grid — so hand layout back to CSS.
+        gsap.set(gsap.utils.toArray<HTMLElement>(cardSelector), {
+          clearProps: 'all',
+        });
+      },
     });
-  }, [phase]);
+  }, [phase, cardSelector]);
 
   return phase;
 }
