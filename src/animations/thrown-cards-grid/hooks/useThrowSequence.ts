@@ -35,6 +35,9 @@ export function useThrowSequence(
   reducedMotion: boolean,
 ): ThrowPhase {
   const [phase, setPhase] = useState<ThrowPhase>('waiting');
+  /** True once the throw-in has finished playing. The settle waits on it, so
+   *  scrolling quickly can never skip straight past the flight. */
+  const [thrown, setThrown] = useState(false);
   const flipStateRef = useRef<Flip.FlipState | null>(null);
 
   // Without this, the triggers below fire late (or never) under smooth scroll.
@@ -46,15 +49,26 @@ export function useThrowSequence(
   }, [reducedMotion]);
 
   // ── phase 1 + 2: throw in, then float ──
+  //
+  // `phase` is deliberately NOT a dependency. Setting it to 'scattered' from
+  // inside the trigger below would re-run this effect, and its cleanup calls
+  // context.revert() — which killed the throw timeline mid-flight, so its
+  // onComplete never fired and the settle could never start. A ref guards
+  // against a second setup instead.
+  const setUpRef = useRef(false);
   useEffect(() => {
     const stage = stageRef.current;
-    if (!stage || !active || reducedMotion || phase !== 'waiting') return;
+    if (!stage || !active || reducedMotion || setUpRef.current) return;
+    setUpRef.current = true;
 
     const context = gsap.context(() => {
       const cards = gsap.utils.toArray<HTMLElement>(cardSelector);
       const { throw: thrown, float } = THROWN_CONFIG;
 
-      const timeline = gsap.timeline({ paused: true });
+      const timeline = gsap.timeline({
+        paused: true,
+        onComplete: () => setThrown(true),
+      });
 
       timeline.from(cards, {
         // Thrown in from alternating sides, so they cross rather than arrive
@@ -96,13 +110,16 @@ export function useThrowSequence(
       });
     }, stage);
 
-    return () => context.revert();
-  }, [stageRef, cardSelector, active, reducedMotion, phase]);
+    return () => {
+      context.revert();
+      setUpRef.current = false;
+    };
+  }, [stageRef, cardSelector, active, reducedMotion]);
 
   // ── phase 3: settle into the grid ──
   useEffect(() => {
     const stage = stageRef.current;
-    if (!stage || reducedMotion || phase !== 'scattered') return;
+    if (!stage || reducedMotion || phase !== 'scattered' || !thrown) return;
 
     const trigger = ScrollTrigger.create({
       trigger: stage,
@@ -119,7 +136,7 @@ export function useThrowSequence(
     });
 
     return () => trigger.kill();
-  }, [stageRef, cardSelector, reducedMotion, phase]);
+  }, [stageRef, cardSelector, reducedMotion, phase, thrown]);
 
   // Runs after React has committed the grid class but before paint, so the
   // scattered layout is never visibly skipped.

@@ -76,6 +76,13 @@
   gap: 0.85rem;
 }
 
+/* The opening gallery runs a little wider than the prose column so it reads as
+   the lead image rather than as one more block in the article. */
+.gallery {
+  width: min(100%, 1040px);
+  margin-inline: auto;
+}
+
 .blockTitle {
   font-family: var(--font-mono);
   font-size: var(--step--1);

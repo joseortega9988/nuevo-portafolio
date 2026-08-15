@@ -46,6 +46,15 @@ function shapeSunProgress(raw: number, bands: number): number {
 }
 
 /**
+ * How much of the sun's arc is spent while the section is still sliding in,
+ * before the first card is settled.
+ *
+ * Small on purpose: the sky should visibly answer the very first scroll, but
+ * the substantial part of the journey still belongs to the card hand-offs.
+ */
+const SUN_ENTRY_SHARE = 0.18;
+
+/**
  * Experience and selected work — one carousel carrying both, in the canonical
  * order (§E, explicit and non-negotiable).
  *
@@ -79,16 +88,35 @@ export function ExperienceProjectsSection() {
   const sunProgress = useRef(0);
 
   /**
-   * Each card gets an equal band of the scroll — including the last, which
-   * would otherwise only be active for the final instant.
+   * Progress is measured from the moment the section is first touched, so the
+   * sky answers the very first scroll rather than waiting a full viewport for
+   * the section to reach the top.
+   *
+   * The two things it drives are split along that boundary. The sun spends a
+   * small share of its arc during the entry, then does the rest in steps tied
+   * to the card hand-offs. The cards themselves only begin once the section is
+   * pinned — advancing them while it is still sliding in would burn two of the
+   * five before the visitor could read any of them.
    */
   useScrollProgress(sectionRef, {
-    mode: 'section',
+    mode: 'from-entry',
     onChange: (value) => {
-      sunProgress.current = shapeSunProgress(value, cards.length);
+      const section = sectionRef.current;
+      if (!section) return;
+
+      // Fraction of the section's travel spent sliding into view.
+      const entry = Math.min(0.9, window.innerHeight / section.offsetHeight);
+      const pinned = Math.min(1, Math.max(0, (value - entry) / (1 - entry)));
+
+      sunProgress.current =
+        value < entry
+          ? (value / entry) * SUN_ENTRY_SHARE
+          : SUN_ENTRY_SHARE +
+            (1 - SUN_ENTRY_SHARE) * shapeSunProgress(pinned, cards.length);
+
       const index = Math.min(
         cards.length - 1,
-        Math.floor(value * cards.length),
+        Math.floor(pinned * cards.length),
       );
       setActiveIndex((current) => (current === index ? current : index));
     },
@@ -102,8 +130,18 @@ export function ExperienceProjectsSection() {
     (index: number) => {
       const section = sectionRef.current;
       if (!section) return;
-      const travel = section.offsetHeight - window.innerHeight;
-      scrollTo(section.offsetTop + ((index + 0.5) / cards.length) * travel);
+
+      // Invert the mapping above: find the pinned fraction that centres this
+      // card, convert it back to overall progress, then to a scroll position.
+      // Deriving it rather than reusing the old formula keeps the dots landing
+      // on the card they name.
+      const viewport = window.innerHeight;
+      const height = section.offsetHeight;
+      const entry = Math.min(0.9, viewport / height);
+      const pinned = (index + 0.5) / cards.length;
+      const progress = entry + pinned * (1 - entry);
+
+      scrollTo(progress * height - viewport + section.offsetTop);
     },
     [cards.length, scrollTo],
   );

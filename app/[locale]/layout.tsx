@@ -3,9 +3,11 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import { Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 
+import { BootLoaderHost } from '@/components/layout/BootLoaderHost';
 import { Footer } from '@/components/layout/Footer';
 import { Navbar } from '@/components/layout/Navbar';
 import { PageTransition } from '@/components/layout/PageTransition';
+import { SceneReadyProvider } from '@/lib/motion/SceneReady';
 import { routing } from '@/i18n/routing';
 import { readLocale, resolveLocale, type LocaleParams } from '@/i18n/resolveLocale';
 import { LenisProvider } from '@/lib/motion/LenisProvider';
@@ -71,9 +73,15 @@ export default async function LocaleLayout({
       <body>
         <NextIntlClientProvider>
           <LenisProvider>
-            <Navbar />
-            <PageTransition>{children}</PageTransition>
-            <Footer />
+            <SceneReadyProvider>
+              {/* Above the page transition on purpose: the transition's fade
+                  creates a stacking context, and the overlay nested inside it
+                  painted beneath the navbar however high its z-index. */}
+              <BootLoaderHost />
+              <Navbar />
+              <PageTransition>{children}</PageTransition>
+              <Footer />
+            </SceneReadyProvider>
           </LenisProvider>
         </NextIntlClientProvider>
       </body>

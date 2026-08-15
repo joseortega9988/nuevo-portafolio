@@ -22,10 +22,38 @@
   position: relative;
 }
 
+/**
+ * In flight the cards are a compact deck, not full articles.
+ *
+ * At full size five of them overlap badly and spill past the bottom of the
+ * stage — they cannot read as "scattered" if each one is most of a screen. The
+ * summary, chips and call to action are dropped for the duration and return
+ * when the cards settle; Flip animates the size change along with the move.
+ */
 .stage[data-phase='waiting'] .card,
 .stage[data-phase='scattered'] .card {
   position: absolute;
-  width: min(300px, 74vw);
+  width: min(228px, 58vw);
+}
+
+.stage[data-phase='waiting'] .summary,
+.stage[data-phase='scattered'] .summary,
+.stage[data-phase='waiting'] .chips,
+.stage[data-phase='scattered'] .chips,
+.stage[data-phase='waiting'] .cta,
+.stage[data-phase='scattered'] .cta {
+  display: none;
+}
+
+.stage[data-phase='waiting'] .inner,
+.stage[data-phase='scattered'] .inner {
+  padding: 0.85rem;
+  gap: 0.5rem;
+}
+
+.stage[data-phase='waiting'] .title,
+.stage[data-phase='scattered'] .title {
+  font-size: var(--step-0);
 }
 
 /* ── phase 3: the grid ──

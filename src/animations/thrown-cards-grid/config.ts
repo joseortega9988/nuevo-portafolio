@@ -38,8 +38,10 @@ export const THROWN_CONFIG = {
    * The settle then waits until the stage has reached the top of the viewport,
    * which leaves a full screen of scrolling to watch the cards float first.
    */
-  throwAt: 'top 78%',
-  settleAt: 'top 12%',
+  throwAt: 'top 85%',
+  /** Early enough that the deck arranges itself while still well in view,
+   *  rather than making the visitor scroll the stage almost off-screen first. */
+  settleAt: 'top 45%',
 } as const;
 
 /**
@@ -50,10 +52,10 @@ export const THROWN_CONFIG = {
  * only a couple of seconds — it has to look composed every time.
  */
 export const SCATTER_SLOTS = [
-  { top: 6, left: 4, depth: 0.9, rotate: -7 },
-  { top: 30, left: 58, depth: 0.45, rotate: 5 },
-  { top: 2, left: 34, depth: 0.65, rotate: 3 },
-  { top: 52, left: 12, depth: 0.3, rotate: -4 },
-  { top: 46, left: 74, depth: 0.75, rotate: 8 },
-  { top: 20, left: 22, depth: 0.55, rotate: -2 },
+  { top: 8, left: 3, depth: 0.9, rotate: -8 },
+  { top: 46, left: 24, depth: 0.4, rotate: 6 },
+  { top: 5, left: 38, depth: 0.7, rotate: 4 },
+  { top: 44, left: 60, depth: 0.3, rotate: -5 },
+  { top: 10, left: 73, depth: 0.8, rotate: 9 },
+  { top: 48, left: 42, depth: 0.55, rotate: -3 },
 ] as const;

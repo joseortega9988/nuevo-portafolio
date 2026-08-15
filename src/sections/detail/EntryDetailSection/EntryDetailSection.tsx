@@ -69,6 +69,25 @@ export async function EntryDetailSection({
         <span aria-hidden>←</span> {t('backToProjects')}
       </Link>
 
+      {/* The gallery opens the page: for a project the screenshots are the
+          fastest way to understand what it is, so they lead rather than sitting
+          below the stack. Experience entries have none and start at the header. */}
+      {!isExperience && images.length > 0 && (
+        <section className={styles.gallery} style={rise()}>
+          <Carousel
+            images={images.map((image) => ({
+              src: image.src,
+              alt: image.alt[locale],
+            }))}
+            labels={{
+              previous: t('previousImage'),
+              next: t('nextImage'),
+              imageOf: t('imageOf', { index: '{index}', total: '{total}' }),
+            }}
+          />
+        </section>
+      )}
+
       <header className={styles.header} style={rise()}>
         <div className={styles.meta}>
           <Badge type={entry.type}>
@@ -98,34 +117,15 @@ export async function EntryDetailSection({
         </ul>
       </section>
 
-      {isExperience ? (
-        entry.highlights && (
-          <section className={styles.block} style={rise()}>
-            <h2 className={styles.blockTitle}>{t('highlights')}</h2>
-            <ul className={styles.highlights}>
-              {entry.highlights.map((highlight) => (
-                <li key={highlight.en}>{highlight[locale]}</li>
-              ))}
-            </ul>
-          </section>
-        )
-      ) : (
-        images.length > 0 && (
-          <section className={styles.block} style={rise()}>
-            <h2 className={styles.blockTitle}>{t('gallery')}</h2>
-            <Carousel
-              images={images.map((image) => ({
-                src: image.src,
-                alt: image.alt[locale],
-              }))}
-              labels={{
-                previous: t('previousImage'),
-                next: t('nextImage'),
-                imageOf: t('imageOf', { index: '{index}', total: '{total}' }),
-              }}
-            />
-          </section>
-        )
+      {isExperience && entry.highlights && (
+        <section className={styles.block} style={rise()}>
+          <h2 className={styles.blockTitle}>{t('highlights')}</h2>
+          <ul className={styles.highlights}>
+            {entry.highlights.map((highlight) => (
+              <li key={highlight.en}>{highlight[locale]}</li>
+            ))}
+          </ul>
+        </section>
       )}
 
       <section className={styles.block} style={rise()}>

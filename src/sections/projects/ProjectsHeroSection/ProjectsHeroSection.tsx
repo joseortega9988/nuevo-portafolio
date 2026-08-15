@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 
 import { SectionHeading } from '@/components/ui/SectionHeading';
+import { useSceneRegistration } from '@/lib/motion/SceneReady';
 import { useScrollProgress } from '@/lib/motion/useScrollProgress';
 import { useInViewport } from '@/lib/motion/useInViewport';
 import { useRafPause } from '@/lib/webgl/useRafPause';
@@ -34,6 +35,9 @@ export function ProjectsHeroSection({ onDissolved }: ProjectsHeroSectionProps) {
 
   const visible = useInViewport(sectionRef, { rootMargin: '100% 0px 100% 0px' });
   const paused = useRafPause(visible);
+  // The torus is expensive to build — 2500 Voronoi cells — so the boot loader
+  // waits for it here just as it does for the Home attractor.
+  const { reportReady } = useSceneRegistration();
 
   /**
    * The torus reads this every frame to drive its scatter. Because the scatter
@@ -63,7 +67,7 @@ export function ProjectsHeroSection({ onDissolved }: ProjectsHeroSectionProps) {
           into the rest of the page (§D A7). */}
       <div className={styles.pin}>
         <div className={styles.canvas} aria-hidden>
-          <VoronoiTorus progress={progress} paused={paused} />
+          <VoronoiTorus progress={progress} paused={paused} onReady={reportReady} />
         </div>
 
         <div className={styles.copy} data-faded={scattered || undefined}>

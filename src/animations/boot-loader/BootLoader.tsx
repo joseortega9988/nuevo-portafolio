@@ -39,13 +39,18 @@ export function BootLoader({
   const reducedMotion = useReducedMotion();
   const t = useTranslations('loader');
   /**
-   * Once per page load: shown on a fresh visit or a refresh, skipped when the
-   * visitor merely navigates back to Home from another route.
+   * Decided during the first render, not in an effect.
    *
-   * Null on the first render so the server markup and the first client paint
-   * agree; the effect below resolves it immediately after mount.
+   * Resolving this after mount meant the page painted first and the overlay
+   * dropped over it a moment later — the visitor saw the navbar and an empty
+   * hero before the loader they were supposed to see. Because the flag is only
+   * ever written in an effect, it stays false on the server, so the markup
+   * always includes the overlay and the first paint is already covered.
+   *
+   * On a client-side return to Home the flag is true by then, so the initialiser
+   * yields false and nothing flashes.
    */
-  const [active, setActive] = useState<boolean | null>(null);
+  const [active, setActive] = useState<boolean>(() => !hasRunThisPageLoad);
   const onDismissedRef = useRef(onDismissed);
   onDismissedRef.current = onDismissed;
 
@@ -56,7 +61,6 @@ export function BootLoader({
       return;
     }
     hasRunThisPageLoad = true;
-    setActive(true);
   }, []);
 
   const { lit, phase } = useBootSequence(
@@ -66,7 +70,7 @@ export function BootLoader({
     onDismissed,
   );
 
-  if (active !== true || phase === 'gone') return null;
+  if (!active || phase === 'gone') return null;
 
   return (
     <div

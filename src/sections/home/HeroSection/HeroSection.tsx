@@ -2,11 +2,11 @@
 
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
-import { BootLoader } from '@/animations/boot-loader';
 import { CvDownloadButton } from '@/components/layout/CvDownloadButton';
 import { Link } from '@/i18n/navigation';
+import { useSceneRegistration } from '@/lib/motion/SceneReady';
 import { useInViewport } from '@/lib/motion/useInViewport';
 import { MOUNT_MARGINS } from '@/lib/webgl/contextBudget';
 import { useRafPause } from '@/lib/webgl/useRafPause';
@@ -36,17 +36,17 @@ export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const visible = useInViewport(sectionRef, { rootMargin: MOUNT_MARGINS.hero });
   const paused = useRafPause(visible);
-  const [sceneReady, setSceneReady] = useState(false);
+  // The loader lives in the layout; the hero only announces itself and reports
+  // when it has drawn.
+  const { reportReady } = useSceneRegistration();
 
   return (
     <section ref={sectionRef} className={styles.section}>
-      <BootLoader sceneReady={sceneReady} />
-
       {/* Mounted for the life of the page and merely paused when off-screen —
           see contextBudget.ts. Unmounting made the scene rebuild itself the
           moment the visitor scrolled back to it. */}
       <div className={styles.canvas} aria-hidden>
-        <AizawaAttractor paused={paused} onReady={() => setSceneReady(true)} />
+        <AizawaAttractor paused={paused} onReady={reportReady} />
       </div>
 
       <div className={styles.copy}>
