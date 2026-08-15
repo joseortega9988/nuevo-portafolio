@@ -5,17 +5,35 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useRef } from 'react';
 import { FiX } from 'react-icons/fi';
 
-import { Link, usePathname } from '@/i18n/navigation';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 
 import { CvDownloadButton } from '../CvDownloadButton';
 import { LanguageSwitch } from '../LanguageSwitch';
 import { NAV_ITEMS } from './navItems';
 import styles from './MobileMenu.module.css';
 
+/**
+ * pointerEvents is animated alongside opacity, deliberately.
+ *
+ * AnimatePresence does not always take this node back out of the DOM — after a
+ * route change it was observed still mounted at opacity 0, full-screen, with
+ * pointer-events auto. Invisible but hit-testable, it swallowed the first tap
+ * anywhere on the new page, which read as the site being slow to respond.
+ * Tying pointer-events to the same variants means a node left behind like that
+ * is inert whatever AnimatePresence does with it.
+ */
 const PANEL = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.32, staggerChildren: 0.07 } },
-  exit: { opacity: 0, transition: { duration: 0.24 } },
+  hidden: { opacity: 0, pointerEvents: 'none' as const },
+  visible: {
+    opacity: 1,
+    pointerEvents: 'auto' as const,
+    transition: { duration: 0.32, staggerChildren: 0.07 },
+  },
+  exit: {
+    opacity: 0,
+    pointerEvents: 'none' as const,
+    transition: { duration: 0.24 },
+  },
 };
 
 const ITEM = {
@@ -32,6 +50,7 @@ export function MobileMenu({
 }) {
   const t = useTranslations('nav');
   const pathname = usePathname();
+  const router = useRouter();
 
   // Held in a ref so the effects below can depend on `pathname` and `open`
   // alone. Depending on the callback itself is what made this menu open and
@@ -88,13 +107,40 @@ export function MobileMenu({
           <ul className={styles.list}>
             {NAV_ITEMS.map((item) => (
               <motion.li key={item.href} variants={ITEM}>
-                {/* No onClick={onClose} here on purpose. Closing on the click
-                    flipped `open` synchronously, which tore this overlay — and
-                    the Link inside it — down while Next was still handling the
-                    navigation, so the menu shut and the page never changed.
-                    The route-change effect above closes it instead, once the
-                    navigation has actually happened. */}
-                <Link href={item.href} className={styles.link}>
+                {/*
+                  Navigate first, then close — both explicitly.
+
+                  Leaving it to the Link's own click meant closing the menu
+                  tore this overlay, and the Link inside it, down before Next
+                  had finished handling that click: the menu shut and the page
+                  never changed. Not closing at all fixed the navigation but
+                  left the menu covering the new page. Pushing the route
+                  ourselves puts the navigation beyond anything unmounting can
+                  cancel, so the close is then safe to do immediately and the
+                  tap feels instant.
+
+                  The href stays on the Link so it remains a real link —
+                  middle-click, long-press and "open in new tab" all still work,
+                  and it is still crawlable.
+                */}
+                <Link
+                  href={item.href}
+                  className={styles.link}
+                  onClick={(event) => {
+                    // Let modified clicks (new tab, download) behave normally.
+                    if (
+                      event.metaKey ||
+                      event.ctrlKey ||
+                      event.shiftKey ||
+                      event.altKey
+                    ) {
+                      return;
+                    }
+                    event.preventDefault();
+                    router.push(item.href);
+                    onClose();
+                  }}
+                >
                   {t(item.labelKey)}
                 </Link>
               </motion.li>

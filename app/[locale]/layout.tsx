@@ -68,8 +68,21 @@ export default async function LocaleLayout({
 }) {
   const locale = await resolveLocale(params);
 
+  /*
+   * suppressHydrationWarning below is for browser extensions, not for our own
+   * markup. Dark Reader and similar stamp attributes onto <html> —
+   * data-darkreader-mode, data-darkreader-scheme, data-darkreader-proxy-injected
+   * — before React hydrates, and React then reports a mismatch that nothing in
+   * this codebase can prevent. The flag is shallow: it covers this element's
+   * own attributes only, so a genuine mismatch anywhere inside the tree is
+   * still reported.
+   */
   return (
-    <html lang={locale} className={`${display.variable} ${mono.variable}`}>
+    <html
+      lang={locale}
+      className={`${display.variable} ${mono.variable}`}
+      suppressHydrationWarning
+    >
       <body>
         <NextIntlClientProvider>
           <LenisProvider>
