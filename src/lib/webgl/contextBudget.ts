@@ -18,8 +18,11 @@
  * so a scene is already running before it is seen rather than starting on the
  * first visible frame.
  *
- * The one place unmounting still happens is the Projects hero: the torus is
- * disposed after it dissolves, because it is genuinely finished.
+ * There are no exceptions left. This used to record the Projects hero as one —
+ * the torus disposed after dissolving, on the grounds that it was finished —
+ * but that was reversed and the note outlived it. The torus stays mounted like
+ * everything else, precisely so it can reassemble on the way back up; see the
+ * comment on its scroll progress in ProjectsHeroSection.
  */
 export const MOUNT_MARGINS = {
   hero: '200% 0px 200% 0px',

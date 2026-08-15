@@ -1,7 +1,7 @@
 # Jose Ortega — Portfolio
 
 Bilingual (EN/ES), dark-mode-only portfolio built with Next.js 15, React 19 and
-TypeScript in strict mode. Eight self-contained animations — three of them
+TypeScript in strict mode. Nine self-contained animations — four of them
 WebGL — carry the narrative across three route types.
 
 ```bash
@@ -114,14 +114,18 @@ its animation loads, so removing one degrades the section rather than the site.
 ### If it uses WebGL
 
 Mount it through `CanvasStage` (dpr clamping, context-loss recovery, a
-frameloop that genuinely stops when paused), take its budget from
-`useQuality()`, and gate its mounting with `useInViewport` — at most **two**
-WebGL contexts may be alive at once. The windows are declared and justified in
-`src/lib/webgl/contextBudget.ts`.
+frameloop that genuinely stops when paused) and take its budget from
+`useQuality()`.
+
+Use `useInViewport` to drive **`paused`, not mounting**. Every scene on a page
+mounts once at load and is only ever paused off-screen — mount-on-approach was
+tried and reversed, because each scene then rebuilt itself mid-scroll and
+sections visibly assembled as you reached them. The windows, and the reasoning
+for holding several contexts at once, are in `src/lib/webgl/contextBudget.ts`.
 
 ---
 
-## The eight animations
+## The nine animations
 
 | | Module | Where | Technique |
 | --- | --- | --- | --- |
@@ -133,6 +137,7 @@ WebGL contexts may be alive at once. The windows are declared and justified in
 | A6 | `hopf-fibration` | Home | Stereographic S³ projection |
 | A7 | `voronoi-torus` | Projects hero | Sutherland–Hodgman Voronoi shatter |
 | A8 | `thrown-cards-grid` | Projects | GSAP throw → float → Flip into the grid |
+| A9 | `accretion-disk` | Projects grid | Keplerian shear in one draw call; streak length is orbital speed |
 
 Every one honours `prefers-reduced-motion` with a documented static fallback.
 
