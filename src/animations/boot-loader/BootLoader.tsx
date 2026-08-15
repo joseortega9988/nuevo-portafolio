@@ -12,6 +12,16 @@ import type { BootLoaderProps } from './types';
 import { SEGMENT_NAMES, segmentsFor } from './utils/segments';
 
 /**
+ * Set for the lifetime of one page load.
+ *
+ * Module scope, not storage: it survives React remounts — so returning to Home
+ * from Projects does not replay the loader — but resets on a real reload, so a
+ * refresh still shows it. That is the behaviour asked for, and it needs no
+ * sessionStorage, which the old flag used and which made refreshes skip it.
+ */
+let hasRunThisPageLoad = false;
+
+/**
  * A1 — the full-screen preloader.
  *
  * No numbers: the display spells LOADING one letter at a time on a 14-segment
@@ -29,21 +39,23 @@ export function BootLoader({
   const reducedMotion = useReducedMotion();
   const t = useTranslations('loader');
   /**
-   * The loader runs on every page load, not once per session.
-   *
-   * It was originally gated behind a sessionStorage flag, which meant a
-   * refresh in the same tab skipped it — so the heaviest scenes rebuilt with
-   * nothing covering them. Showing it every time gives the WebGL work a
-   * consistent window to start in, and it is the first impression of the site.
+   * Once per page load: shown on a fresh visit or a refresh, skipped when the
+   * visitor merely navigates back to Home from another route.
    *
    * Null on the first render so the server markup and the first client paint
-   * agree; the effect below switches it on immediately after mount.
+   * agree; the effect below resolves it immediately after mount.
    */
   const [active, setActive] = useState<boolean | null>(null);
   const onDismissedRef = useRef(onDismissed);
   onDismissedRef.current = onDismissed;
 
   useEffect(() => {
+    if (hasRunThisPageLoad) {
+      setActive(false);
+      onDismissedRef.current?.();
+      return;
+    }
+    hasRunThisPageLoad = true;
     setActive(true);
   }, []);
 

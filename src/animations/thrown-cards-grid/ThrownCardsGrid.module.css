@@ -4,13 +4,22 @@
   perspective: 1200px;
 }
 
-/* ── phase 1 + 2: scattered ──
-   Cards are absolutely placed; the stage keeps a viewport-ish height so the
-   float has somewhere to happen. */
+/**
+ * The track holds a full viewport in every phase.
+ *
+ * Two reasons. During the scatter the cards are absolutely placed and need
+ * somewhere to fly; and keeping the same reserved height once they settle
+ * means the document does not change length at the moment of the transition,
+ * so nothing below — the footer in particular — jumps up the page.
+ */
+.track {
+  min-height: 100svh;
+}
+
+/* ── phase 1 + 2: scattered ── */
 .stage[data-phase='waiting'] .track,
 .stage[data-phase='scattered'] .track {
   position: relative;
-  min-height: clamp(520px, 78vh, 760px);
 }
 
 .stage[data-phase='waiting'] .card,

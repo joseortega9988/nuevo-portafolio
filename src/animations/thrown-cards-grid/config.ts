@@ -28,8 +28,18 @@ export const THROWN_CONFIG = {
     stagger: 0.05,
     ease: 'power3.inOut',
   },
-  /** Fraction of the section scrolled before the cards settle into the grid. */
-  settleAt: 0.42,
+  /**
+   * ScrollTrigger start positions, as "trigger viewport" pairs.
+   *
+   * The throw waits until the stage is properly on screen. Firing it the
+   * instant the hero torus scattered meant it played most of a viewport below
+   * the fold, so the cards had already landed by the time they were visible.
+   *
+   * The settle then waits until the stage has reached the top of the viewport,
+   * which leaves a full screen of scrolling to watch the cards float first.
+   */
+  throwAt: 'top 78%',
+  settleAt: 'top 12%',
 } as const;
 
 /**

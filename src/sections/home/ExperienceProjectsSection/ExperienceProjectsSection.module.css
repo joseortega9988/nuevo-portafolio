@@ -48,7 +48,7 @@
   max-width: 1200px;
   margin-inline: auto;
   /* Clears the sticky navbar without pushing the carousel off the bottom. */
-  padding: 72px clamp(1rem, 4vw, 2.5rem) clamp(1rem, 3vh, 2rem);
+  padding: var(--navbar-h) clamp(1rem, 4vw, 2.5rem) clamp(1rem, 3vh, 2rem);
 }
 
 /**
@@ -62,7 +62,7 @@
   .content {
     --step-4: var(--step-2);
     --step-0: var(--step--1);
-    padding-top: 64px;
+    padding-top: var(--navbar-h);
     gap: clamp(0.5rem, 1.5vh, 1rem);
   }
 }

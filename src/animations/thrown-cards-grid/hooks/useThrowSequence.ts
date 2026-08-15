@@ -16,10 +16,17 @@ export type ThrowPhase = 'waiting' | 'scattered' | 'grid';
 /**
  * The throw → float → settle sequence.
  *
- * The critical constraint is that phase three animates *the same DOM nodes* as
- * phases one and two — no cross-fade between two sets of cards. That is what
- * Flip is for: capture the scattered layout, let React switch the container to
- * its grid class, then animate the difference.
+ * Two things are load-bearing here.
+ *
+ * First, phase three animates *the same DOM nodes* as phases one and two — no
+ * cross-fade between two sets of cards. That is what Flip is for: capture the
+ * scattered layout, let React switch the container to its grid class, then
+ * animate the difference.
+ *
+ * Second, both the throw and the settle are driven by where the stage is on
+ * screen, not by a state flag alone. The throw used to fire the moment the
+ * hero torus scattered, while the stage was still most of a viewport below the
+ * fold — so the cards had already landed by the time anyone could see them.
  */
 export function useThrowSequence(
   stageRef: RefObject<HTMLElement | null>,
@@ -30,7 +37,7 @@ export function useThrowSequence(
   const [phase, setPhase] = useState<ThrowPhase>('waiting');
   const flipStateRef = useRef<Flip.FlipState | null>(null);
 
-  // Without this, the settle trigger fires late (or never) under smooth scroll.
+  // Without this, the triggers below fire late (or never) under smooth scroll.
   useGsapLenisSync();
 
   // Reduced motion skips the choreography entirely and lands in the grid.
@@ -43,13 +50,13 @@ export function useThrowSequence(
     const stage = stageRef.current;
     if (!stage || !active || reducedMotion || phase !== 'waiting') return;
 
-    setPhase('scattered');
-
     const context = gsap.context(() => {
       const cards = gsap.utils.toArray<HTMLElement>(cardSelector);
       const { throw: thrown, float } = THROWN_CONFIG;
 
-      gsap.from(cards, {
+      const timeline = gsap.timeline({ paused: true });
+
+      timeline.from(cards, {
         // Thrown in from alternating sides, so they cross rather than arrive
         // as one column.
         x: (index: number) =>
@@ -62,8 +69,8 @@ export function useThrowSequence(
         ease: thrown.ease,
       });
 
-      // Drift lives on the inner element so it never fights Flip, which
-      // animates the outer one.
+      // Drift lives on its own element so it never fights Flip, which animates
+      // the outer one.
       cards.forEach((card) => {
         const inner = card.querySelector<HTMLElement>('[data-float]');
         if (!inner) return;
@@ -75,6 +82,17 @@ export function useThrowSequence(
           ease: 'sine.inOut',
           delay: gsap.utils.random(0, 1.5),
         });
+      });
+
+      // Wait until the stage is genuinely on screen before throwing.
+      ScrollTrigger.create({
+        trigger: stage,
+        start: THROWN_CONFIG.throwAt,
+        once: true,
+        onEnter: () => {
+          setPhase('scattered');
+          timeline.play();
+        },
       });
     }, stage);
 
@@ -88,7 +106,7 @@ export function useThrowSequence(
 
     const trigger = ScrollTrigger.create({
       trigger: stage,
-      start: `top+=${THROWN_CONFIG.settleAt * 100}% center`,
+      start: THROWN_CONFIG.settleAt,
       once: true,
       onEnter: () => {
         // Capture before React re-renders: this is the layout we animate from.
@@ -107,8 +125,18 @@ export function useThrowSequence(
   // scattered layout is never visibly skipped.
   useLayoutEffect(() => {
     const state = flipStateRef.current;
-    if (phase !== 'grid' || !state) return;
+    const stage = stageRef.current;
+    if (phase !== 'grid' || !state || !stage) return;
     flipStateRef.current = null;
+
+    const track = stage.querySelector<HTMLElement>('[data-track]');
+
+    // Flip's `absolute` lifts every card out of flow for the duration of the
+    // tween. Without pinning the height first, the track collapses to zero,
+    // the document shortens by most of a viewport, and the footer is yanked up
+    // into the middle of the animation. React has already committed the grid
+    // layout at this point, so this measurement is the final height.
+    if (track) track.style.minHeight = `${track.getBoundingClientRect().height}px`;
 
     Flip.from(state, {
       duration: THROWN_CONFIG.settle.duration,
@@ -122,9 +150,11 @@ export function useThrowSequence(
         gsap.set(gsap.utils.toArray<HTMLElement>(cardSelector), {
           clearProps: 'all',
         });
+        if (track) track.style.minHeight = '';
+        ScrollTrigger.refresh();
       },
     });
-  }, [phase, cardSelector]);
+  }, [phase, cardSelector, stageRef]);
 
   return phase;
 }

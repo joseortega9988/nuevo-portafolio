@@ -2,8 +2,9 @@
   position: relative;
   display: grid;
   align-items: center;
-  /* Fills the viewport below the sticky navbar without overflowing it. */
-  min-height: calc(100svh - 64px);
+  /* Fills the viewport below the sticky navbar without overflowing it. The
+     height comes from the token so the two can never disagree. */
+  min-height: calc(100svh - var(--navbar-h));
   overflow: hidden;
   background: var(--c-void);
 }

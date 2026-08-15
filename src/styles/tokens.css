@@ -62,6 +62,10 @@
   --r-md: 16px;
   --r-lg: 24px;
 
+  /* Chrome. Declared here so the hero and the pinned sections can reserve
+     exactly the navbar's height instead of each hardcoding a guess. */
+  --navbar-h: 78px;
+
   /* Layering. Declared centrally so no module has to guess a z-index. */
   --z-canvas:  0;
   --z-scrim:   1;

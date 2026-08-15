@@ -46,7 +46,7 @@ export function ThrownCardsGrid({
       className={[styles.stage, className].filter(Boolean).join(' ')}
       data-phase={phase}
     >
-      <ul className={styles.track}>
+      <ul data-track className={styles.track}>
         {cards.map((card, index) => {
           const slot = SCATTER_SLOTS[index % SCATTER_SLOTS.length];
           return (

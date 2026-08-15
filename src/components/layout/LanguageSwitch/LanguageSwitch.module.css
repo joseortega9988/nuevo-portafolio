@@ -15,7 +15,7 @@
 }
 
 .option {
-  padding: 0.35rem 0.6rem;
+  padding: 0.45rem 0.75rem;
   border-radius: calc(var(--r-sm) - 3px);
   color: var(--c-text-muted);
   transition:
