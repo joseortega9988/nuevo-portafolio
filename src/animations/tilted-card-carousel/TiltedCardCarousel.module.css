@@ -17,7 +17,16 @@
      a screen's worth of unused height above the arc doing nothing. Still
      clamped against the viewport, so a short screen cannot push the cards
      below the fold — which is the one thing this section must never do. */
-  height: clamp(300px, 54vh, 560px);
+  /*
+   * The ceiling here is not taste, it is what the column has left.
+   *
+   * The section is one pinned viewport carrying the heading, this stage and
+   * the controls. On a 900px screen the heading and chrome take roughly 440 of
+   * it, so a stage past ~50vh pushes the active card's lower border off the
+   * bottom — measured at 60vh the card ran 153px past the fold. Raising this
+   * further means taking the space from the heading, not from the fold.
+   */
+  height: clamp(260px, 42vh, 440px);
   perspective: 1400px;
   perspective-origin: 50% 50%;
   border-radius: var(--r-lg);
@@ -39,6 +48,13 @@
   --slide-w: min(480px, 84vw);
   width: var(--slide-w);
   margin-left: calc(var(--slide-w) / -2);
+  /* Bound to the stage rather than sized by content. The card's own height was
+     the media's aspect ratio plus however much copy an entry happened to have,
+     which on a laptop ran past the bottom of the viewport and cut the card's
+     lower border off. Tying it to the stage means the stage height is the only
+     thing that decides how tall a card is — so it can be made taller without
+     any risk of it overflowing the fold. */
+  height: 100%;
   transform: translateY(-50%);
   transform-style: preserve-3d;
   will-change: transform, scale;
@@ -49,6 +65,11 @@
   flex-direction: column;
   gap: 0.9rem;
   padding: 1.4rem;
+  /* Fills the slide, which is itself bound to the stage. The head keeps its
+     natural height and the media takes whatever is left, so the card's lower
+     border is always inside the frame no matter how tall the stage is set. */
+  height: 100%;
+  overflow: hidden;
   border: 1px solid var(--c-cyan);
   border-radius: var(--r-md);
   background: color-mix(in srgb, var(--c-surface) 88%, transparent);
@@ -69,11 +90,22 @@
   box-shadow: var(--glow-magenta);
 }
 
+/* The media absorbs the slack: it is the one part of the card that can be any
+   height without losing meaning, so it flexes and the copy never gets
+   squeezed. min-height 0 is what actually lets a flex child shrink below its
+   own aspect-ratio height. */
+.card > :first-child {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .cardHead {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.6rem;
+  flex: 0 0 auto;
 }
 
 /* Badge and dates share a row, as on the grid card and the detail header. */
