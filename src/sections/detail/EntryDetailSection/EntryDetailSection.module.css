@@ -17,10 +17,10 @@
    */
   position: relative;
   z-index: var(--z-content);
-  background: color-mix(in srgb, var(--c-void) 78%, transparent);
-  backdrop-filter: blur(7px);
-  -webkit-backdrop-filter: blur(7px);
-  border: 1px solid var(--c-line);
+  background: color-mix(in srgb, var(--c-void) 10%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, var(--c-line) 55%, transparent);
   border-radius: var(--r-lg);
 }
 
