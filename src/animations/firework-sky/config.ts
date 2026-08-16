@@ -41,11 +41,26 @@ export const FIREWORK_CONFIG = {
   maxBursts: 1,
   maxRockets: 1,
 
-  /** Spawn box, in world units. */
-  spawnX: 90,
-  spawnY: [-60, -30] as const,
-  targetY: [10, 55] as const,
-  spawnZ: 60,
+  /**
+   * Spawn box, as a fraction of the visible frame rather than in world units.
+   *
+   * Fixed units could not know how wide the frame actually is: at a narrow
+   * viewport the visible half-width at z=0 is around 60 units, so the old
+   * spawnX of 90 put shells past the edge and half the burst never appeared.
+   * Read against the live frustum, these hold every burst's centre well inside
+   * the frame at any aspect ratio.
+   */
+  spawnXFactor: 0.5,
+  /** Where the rocket starts, as a fraction of half-height below centre. */
+  spawnYFactor: [-1.15, -0.9] as const,
+  /** Where it bursts, as a fraction of half-height. Kept off the top edge. */
+  targetYFactor: [-0.1, 0.4] as const,
+  /**
+   * Depth spread. Small on purpose: at +/-60 some shells burst far enough back
+   * to read as a different, smaller firework altogether. A shallow band keeps
+   * every burst at much the same apparent size.
+   */
+  spawnZ: 12,
 
   camera: { fov: 60, position: [0, 0, 150] as const },
   bloom: { strength: 1.495, radius: 0.5, threshold: 0 },

@@ -63,7 +63,11 @@ class Shell {
     return this.exploded;
   }
 
-  constructor(private count: number) {
+  constructor(
+    private count: number,
+    /** Half-extents of the visible frame at z=0, in world units. */
+    frame: { halfWidth: number; halfHeight: number },
+  ) {
     const geo = new BufferGeometry();
     geo.setAttribute('position', new BufferAttribute(new Float32Array(count * 3), 3));
     geo.setAttribute('color', new BufferAttribute(new Float32Array(count * 3), 3));
@@ -91,10 +95,16 @@ class Shell {
     this.lifetimes = new Float32Array(count);
     this.base = new Float32Array(count * 3);
 
-    this.x = (Math.random() - 0.5) * C.spawnX * 2;
-    this.z = (Math.random() - 0.5) * C.spawnZ * 2;
-    this.rocketY = MathUtils.lerp(C.spawnY[0], C.spawnY[1], Math.random());
-    this.targetY = MathUtils.lerp(C.targetY[0], C.targetY[1], Math.random());
+    // Everything is placed against the frame, so a burst lands in view at any
+    // aspect ratio rather than off the side of a narrow one.
+    this.x = (Math.random() * 2 - 1) * frame.halfWidth * C.spawnXFactor;
+    this.z = (Math.random() * 2 - 1) * C.spawnZ;
+    this.rocketY =
+      frame.halfHeight *
+      MathUtils.lerp(C.spawnYFactor[0], C.spawnYFactor[1], Math.random());
+    this.targetY =
+      frame.halfHeight *
+      MathUtils.lerp(C.targetYFactor[0], C.targetYFactor[1], Math.random());
     this.rocketVelY = C.rocketSpeed * (1.6 + Math.random() * 0.8);
 
     // The rocket itself, drawn warm so the climb reads before the burst.
@@ -239,6 +249,9 @@ function Sky({ count, onReady }: { count: number; onReady?: () => void }) {
   const nextLaunch = useRef(0);
   const ready = useRef(false);
   const scene = useThree((state) => state.scene);
+  // World-space size of the frame at z=0. Recomputed by R3F on resize, so the
+  // spawn box follows the viewport instead of assuming a desktop one.
+  const viewport = useThree((state) => state.viewport);
 
   // The pen keeps the previous frame and paints a translucent black quad over
   // it, which is what draws the trails. autoClear does the same job here
@@ -288,7 +301,10 @@ function Sky({ count, onReady }: { count: number; onReady?: () => void }) {
       bursts < C.maxBursts &&
       rockets < C.maxRockets
     ) {
-      const shell = new Shell(count);
+      const shell = new Shell(count, {
+        halfWidth: viewport.width / 2,
+        halfHeight: viewport.height / 2,
+      });
       shells.current.push(shell);
       group.add(shell.points);
       nextLaunch.current = MathUtils.lerp(
