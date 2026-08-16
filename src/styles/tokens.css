@@ -40,6 +40,7 @@
      Only LinkedIn keeps its own blue; GitHub's mark is a near-white that barely
      registered as a hover on these surfaces, so it uses --c-violet instead. */
   --c-brand-linkedin: #0A66C2;
+  --c-brand-whatsapp: #25D366;
 
   /* — text — */
   --c-text:        #EAF0FA;

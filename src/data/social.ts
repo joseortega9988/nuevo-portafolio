@@ -1,4 +1,4 @@
-import { FaGithub, FaLinkedin } from 'react-icons/fa6';
+import { FaGithub, FaLinkedin, FaWhatsapp } from 'react-icons/fa6';
 import type { IconType } from 'react-icons';
 
 export interface SocialLink {
@@ -30,6 +30,15 @@ export const SOCIAL_LINKS: readonly SocialLink[] = [
     /* Violet rather than GitHub's own mark: its dark-theme foreground is a
        near-white that read as "no hover at all" against these surfaces. */
     brandVar: '--c-violet',
+  },
+  {
+    id: 'whatsapp',
+    /* wa.me wants the number in international form with no symbols; the label
+       carries the readable one, and is what a screen reader announces. */
+    href: 'https://wa.me/593992236174',
+    label: 'WhatsApp +593 99 223 6174',
+    Icon: FaWhatsapp,
+    brandVar: '--c-brand-whatsapp',
   },
 ];
 
