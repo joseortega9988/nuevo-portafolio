@@ -38,6 +38,24 @@
     0 0 14px var(--c-void);
 }
 
+/*
+ * The title carries no shadow of any kind, and must not.
+ *
+ * It is gradient text — background-clip: text over a transparent fill — so a
+ * text-shadow renders straight through the glyphs rather than behind them and
+ * greys the purple out. A drop-shadow filter avoids that but darkens the
+ * gradient itself. Neither is worth it: the title is large and heavy enough to
+ * hold its own against a burst without help, so it keeps its colour exactly as
+ * it was before the backdrop existed.
+ *
+ * Scoped under .article deliberately: the shadow rule above is `.article
+ * :is(h1, ...)`, so a bare `.title` loses on specificity and the override
+ * silently did nothing.
+ */
+.article .title {
+  text-shadow: none;
+}
+
 /* The entrance: fade plus a 24px rise, staggered by --i, which the component
    increments per block. No JavaScript and no library — the whole page is
    otherwise static, and this keeps it that way. */
