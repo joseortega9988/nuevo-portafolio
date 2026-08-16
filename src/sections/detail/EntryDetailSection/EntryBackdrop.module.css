@@ -1,0 +1,16 @@
+/*
+ * Fixed, not absolute: the article scrolls and the sky should not go with it.
+ * Behind everything, and never interactive — this is scenery, and the page's
+ * links have to stay reachable through it.
+ */
+.backdrop,
+.poster {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-canvas);
+  pointer-events: none;
+}
+
+.poster {
+  background: var(--c-void);
+}

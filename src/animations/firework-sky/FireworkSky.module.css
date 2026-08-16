@@ -1,0 +1,18 @@
+.root,
+.fallback {
+  position: absolute;
+  inset: 0;
+}
+
+/**
+ * Reduced-motion fallback: a still night sky. No shells, no motion — the same
+ * dark field the scene resolves to between launches.
+ */
+.fallback {
+  background:
+    radial-gradient(1px 1px at 20% 30%, var(--c-text-dim), transparent),
+    radial-gradient(1px 1px at 70% 60%, var(--c-text-muted), transparent),
+    radial-gradient(1px 1px at 45% 80%, var(--c-text-dim), transparent),
+    var(--c-void);
+  opacity: 0.9;
+}

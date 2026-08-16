@@ -4,7 +4,10 @@ import { notFound } from 'next/navigation';
 import { ENTRIES, getEntry } from '@/data/entries';
 import { routing } from '@/i18n/routing';
 import { readLocale, resolveLocale } from '@/i18n/resolveLocale';
-import { EntryDetailSection } from '@/sections/detail/EntryDetailSection';
+import {
+  EntryBackdrop,
+  EntryDetailSection,
+} from '@/sections/detail/EntryDetailSection';
 
 type EntryParams = Promise<{ locale: string; slug: string }>;
 
@@ -58,6 +61,9 @@ export default async function EntryPage({ params }: { params: EntryParams }) {
 
   return (
     <main>
+      {/* Scenery behind the article. Client-only and fixed, so the page itself
+          stays a server component and the sky does not scroll with the copy. */}
+      <EntryBackdrop />
       <EntryDetailSection entry={entry} locale={locale} />
     </main>
   );
