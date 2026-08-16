@@ -19,8 +19,18 @@ export const FIREWORK_CONFIG = {
   gravity: 0.0053,
   friction: 0.955,
 
-  /** Rocket rise. It explodes on reaching its target or stalling. */
-  rocketSpeed: 1,
+  /**
+   * Rocket rise. It bursts on reaching its target, or on stalling as a
+   * backstop.
+   *
+   * The launch speed is not a constant: it is solved per shell from the
+   * distance to that shell's target, because a fixed speed made the stall the
+   * thing that actually decided the burst height. At the old value a rocket
+   * ran out of climb after roughly 11 world units while starting some 90 below
+   * centre, so every firework went off low and targetY was never reached.
+   */
+  rocketRiseScale: 0.35,
+  rocketDecay: 12,
   rocketStallSpeed: 0.2,
 
   /**
@@ -53,8 +63,11 @@ export const FIREWORK_CONFIG = {
   spawnXFactor: 0.5,
   /** Where the rocket starts, as a fraction of half-height below centre. */
   spawnYFactor: [-1.15, -0.9] as const,
-  /** Where it bursts, as a fraction of half-height. Kept off the top edge. */
-  targetYFactor: [-0.1, 0.4] as const,
+  /**
+   * Where it bursts, as a fraction of half-height. Spread across most of the
+   * frame so the sky fills top to bottom rather than repeatedly at one height.
+   */
+  targetYFactor: [-0.45, 0.55] as const,
   /**
    * Depth spread. Small on purpose: at +/-60 some shells burst far enough back
    * to read as a different, smaller firework altogether. A shallow band keeps

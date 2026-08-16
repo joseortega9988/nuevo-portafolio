@@ -105,7 +105,21 @@ class Shell {
     this.targetY =
       frame.halfHeight *
       MathUtils.lerp(C.targetYFactor[0], C.targetYFactor[1], Math.random());
-    this.rocketVelY = C.rocketSpeed * (1.6 + Math.random() * 0.8);
+    /*
+     * Launch speed solved from the climb this shell actually has to make.
+     *
+     * Rise integrates as y += v * riseScale with v decaying by `decay` each
+     * frame, so the distance covered before stalling is
+     *   riseScale * (v0^2 - vStall^2) / (2 * decay)
+     * Inverting that gives the v0 which arrives at targetY with just about
+     * nothing left, so the shell bursts at its target rather than wherever it
+     * happened to run out of speed.
+     */
+    const climb = Math.max(1, this.targetY - this.rocketY);
+    const decay = C.gravity * C.rocketDecay;
+    this.rocketVelY = Math.sqrt(
+      (2 * decay * climb) / C.rocketRiseScale + C.rocketStallSpeed ** 2,
+    );
 
     // The rocket itself, drawn warm so the climb reads before the burst.
     const pos = this.pos;
@@ -189,8 +203,8 @@ class Shell {
     const pos = this.pos;
 
     if (!this.exploded) {
-      this.rocketVelY -= C.gravity * 12 * dt * 60;
-      this.rocketY += this.rocketVelY * dt * 60 * 0.35;
+      this.rocketVelY -= C.gravity * C.rocketDecay * dt * 60;
+      this.rocketY += this.rocketVelY * dt * 60 * C.rocketRiseScale;
       pos[1] = this.rocketY;
       geo.getAttribute('position').needsUpdate = true;
       if (this.rocketVelY < C.rocketStallSpeed || this.rocketY >= this.targetY) {
