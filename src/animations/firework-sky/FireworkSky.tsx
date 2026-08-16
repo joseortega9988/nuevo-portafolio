@@ -57,6 +57,12 @@ class Shell {
   private exploded = false;
   dead = false;
 
+  /** True once the shell has burst — the launcher counts these separately
+   *  from rockets still climbing. */
+  get bursting(): boolean {
+    return this.exploded;
+  }
+
   constructor(private count: number) {
     const geo = new BufferGeometry();
     geo.setAttribute('position', new BufferAttribute(new Float32Array(count * 3), 3));
@@ -261,8 +267,27 @@ function Sky({ count, onReady }: { count: number; onReady?: () => void }) {
     if (!group) return;
     const dt = Math.min(delta, 1 / 30);
 
+    /*
+     * One burst at a time, one rocket climbing behind it.
+     *
+     * Counting the two phases separately is what lets the sky stay occupied
+     * without becoming a wall of sparks: the next rocket may rise while the
+     * current burst is still fading, but it cannot explode until that one has
+     * finished.
+     */
+    let bursts = 0;
+    let rockets = 0;
+    for (const shell of shells.current) {
+      if (shell.bursting) bursts += 1;
+      else rockets += 1;
+    }
+
     nextLaunch.current -= dt * 1000;
-    if (nextLaunch.current <= 0 && shells.current.length < C.maxConcurrent) {
+    if (
+      nextLaunch.current <= 0 &&
+      bursts < C.maxBursts &&
+      rockets < C.maxRockets
+    ) {
       const shell = new Shell(count);
       shells.current.push(shell);
       group.add(shell.points);

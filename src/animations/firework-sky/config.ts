@@ -30,8 +30,16 @@ export const FIREWORK_CONFIG = {
    * single 3.8s interval, which left visible gaps.
    */
   launchIntervalMs: [900, 1700] as const,
-  /** Shells alive at once. Bounds the particle budget however fast we launch. */
-  maxConcurrent: 4,
+  /**
+   * One burst on screen at a time.
+   *
+   * Four at once was a wall of sparks with no single event to look at. A
+   * rocket may still be climbing while the last burst fades — that is the
+   * overlap the brief asked for, and it keeps the sky from ever emptying —
+   * but only one shell is ever exploding.
+   */
+  maxBursts: 1,
+  maxRockets: 1,
 
   /** Spawn box, in world units. */
   spawnX: 90,

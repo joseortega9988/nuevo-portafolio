@@ -5,6 +5,23 @@
   max-width: 900px;
   margin-inline: auto;
   padding: clamp(2rem, 6vh, 4rem) clamp(1rem, 4vw, 2.5rem) clamp(3rem, 9vh, 5rem);
+  /*
+   * A scrim between the copy and the fireworks behind it.
+   *
+   * Body text was being read against moving sparks, which is the one thing
+   * this page cannot afford. The chips and badges already survived because
+   * they carry their own surface; this gives the prose the same. Deliberately
+   * not opaque — the sky still shows through, it just stops competing with the
+   * words. The blur is what does most of the work: it keeps a spark passing
+   * behind a line from breaking up the letterforms.
+   */
+  position: relative;
+  z-index: var(--z-content);
+  background: color-mix(in srgb, var(--c-void) 78%, transparent);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-lg);
 }
 
 /* The entrance: fade plus a 24px rise, staggered by --i, which the component
