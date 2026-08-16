@@ -6,22 +6,29 @@
   margin-inline: auto;
   padding: clamp(2rem, 6vh, 4rem) clamp(1rem, 4vw, 2.5rem) clamp(3rem, 9vh, 5rem);
   /*
-   * A scrim between the copy and the fireworks behind it.
+   * Essentially no panel at all — the sky is the point of this page.
    *
-   * Body text was being read against moving sparks, which is the one thing
-   * this page cannot afford. The chips and badges already survived because
-   * they carry their own surface; this gives the prose the same. Deliberately
-   * not opaque — the sky still shows through, it just stops competing with the
-   * words. The blur is what does most of the work: it keeps a spark passing
-   * behind a line from breaking up the letterforms.
+   * This started at 78% void with a 12px blur and read as a solid box; worse,
+   * the blur turned crisp sparks into mush and the animation stopped being
+   * legible as fireworks. Both were the wrong tool. A 1% tint keeps the
+   * faintest sense of a surface under the copy and nothing more.
+   *
+   * Legibility moves to the glyphs themselves. A shadow tight around the
+   * letterforms holds them against a bright burst without covering a single
+   * pixel of what is behind — the same trick the technology names use over the
+   * hex grid, and the only one here that does not cost the backdrop anything.
    */
   position: relative;
   z-index: var(--z-content);
-  background: color-mix(in srgb, var(--c-void) 10%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid color-mix(in srgb, var(--c-line) 55%, transparent);
+  background: color-mix(in srgb, var(--c-void) 1%, transparent);
   border-radius: var(--r-lg);
+}
+
+.article :is(h1, h2, h3, p, li, span, a) {
+  text-shadow:
+    0 1px 2px var(--c-void),
+    0 0 6px var(--c-void),
+    0 0 14px var(--c-void);
 }
 
 /* The entrance: fade plus a 24px rise, staggered by --i, which the component
