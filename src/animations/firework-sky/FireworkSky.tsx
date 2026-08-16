@@ -136,9 +136,21 @@ class Shell {
       pos[i3 + 1] = this.rocketY;
       pos[i3 + 2] = this.z;
 
-      // Squared random biases speed inward, so the burst has a dense core
-      // and a sparse outer shell rather than reading as a hollow ring.
-      sphere(this.velocities, i3, speed * (0.25 + Math.random() ** 2 * 0.75) * 0.1);
+      /*
+       * Speed is the force itself — no damping factor.
+       *
+       * This used to be scaled by 0.1, which is why the bursts read as small
+       * balls instead of filling the frame. Friction is 0.955 per frame, so a
+       * spark's total travel is roughly v0 / (1 - friction) — about 22x its
+       * starting speed. At 0.1 that came to ~6 world units against a frame
+       * some 173 units tall; at full force it reaches 30-110, which is the
+       * whole canvas.
+       *
+       * The squared random still biases speed inward, so the burst keeps a
+       * dense core and a sparse outer shell rather than reading as a hollow
+       * ring.
+       */
+      sphere(this.velocities, i3, speed * (0.25 + Math.random() ** 2 * 0.75));
 
       const c = colours[i % colours.length] ?? new Color();
       this.base[i3] = c.r;
