@@ -21,6 +21,13 @@
   position: relative;
   z-index: var(--z-content);
   background: color-mix(in srgb, var(--c-void) 1%, transparent);
+  /* A 1px blur — the smallest that does anything at all. Enough to take the
+     hard edge off a spark sitting directly behind a letterform, not enough to
+     stop the sparks reading as distinct points, which is what a heavier blur
+     destroyed. Revert to no filter at all if it still costs too much on a
+     phone: the text shadow below is what actually carries legibility. */
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
   border-radius: var(--r-lg);
 }
 
