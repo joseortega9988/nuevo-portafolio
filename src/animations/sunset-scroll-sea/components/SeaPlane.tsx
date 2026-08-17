@@ -7,8 +7,8 @@ import { ShaderMaterial } from 'three';
 import { buildPalette } from '@/lib/palette';
 
 import { SEA_CONFIG } from '../config';
-import { useAdaptiveResolution } from '../hooks/useAdaptiveResolution';
 import { seaFragmentShader, seaVertexShader } from '../shaders/sea.glsl';
+import { AdaptiveResolution } from './AdaptiveResolution';
 
 export function SeaPlane({
   progress,
@@ -58,8 +58,6 @@ export function SeaPlane({
 
   useEffect(() => () => material.dispose(), [material]);
 
-  useAdaptiveResolution(baseDpr);
-
   useFrame((_, delta) => {
     const { uTime, uPhase, uAspect } = material.uniforms;
     if (!uTime || !uPhase || !uAspect) return;
@@ -76,8 +74,11 @@ export function SeaPlane({
   });
 
   return (
-    <mesh frustumCulled={false} material={material}>
-      <planeGeometry args={[2, 2]} />
-    </mesh>
+    <>
+      <AdaptiveResolution baseDpr={baseDpr} />
+      <mesh frustumCulled={false} material={material}>
+        <planeGeometry args={[2, 2]} />
+      </mesh>
+    </>
   );
 }
