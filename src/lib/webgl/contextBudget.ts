@@ -35,11 +35,25 @@
  * pause-timing change only — no scene's particle count, resolution or bloom
  * strength moved.
  *
- * There are no exceptions left. This used to record the Projects hero as one —
- * the torus disposed after dissolving, on the grounds that it was finished —
- * but that was reversed and the note outlived it. The torus stays mounted like
- * everything else, precisely so it can reassemble on the way back up; see the
- * comment on its scroll progress in ProjectsHeroSection.
+ * The Projects hero used to be recorded here as an exception — the torus
+ * disposed after dissolving, on the grounds that it was finished — but that was
+ * reversed and the note outlived it. The torus stays mounted like everything
+ * else, precisely so it can reassemble on the way back up; see the comment on
+ * its scroll progress in ProjectsHeroSection.
+ *
+ * THE ONE REAL EXCEPTION: the footer tunnel (see FooterTunnel.tsx).
+ *
+ * The argument above turns on rebuild cost, and the footer tunnel does not have
+ * one worth protecting: it is a single BoxGeometry with 2,304 instances and it
+ * builds in about 2ms, against the attractor's 144k integrated points and the
+ * torus's 2,500 clipped cells. What it does have is an unusually high cost to
+ * keep. Footer is rendered from the locale layout, so this scene held a WebGL
+ * context and a bloom composer on *every route on the site*, including the
+ * detail pages, where it sat behind a firework sky already spending the budget.
+ * It therefore unmounts after five continuous seconds off-screen and remounts a
+ * full viewport before it is seen again, which is early enough that the rebuild
+ * is never visible. Nothing else on the site should copy this: for every other
+ * scene the trade runs the other way, and that is what the policy above is.
  */
 export const MOUNT_MARGINS = {
   hero: '100% 0px 100% 0px',
