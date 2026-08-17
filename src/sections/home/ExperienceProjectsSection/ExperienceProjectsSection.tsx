@@ -105,9 +105,16 @@ export function ExperienceProjectsSection() {
    * orientation change, never on chrome sliding away.
    */
   const viewportHeight = useRef(0);
+  /** The section's own height, on the same handler and for the same reason.
+   *  `offsetHeight` is a layout read, and it was happening inside the scroll
+   *  callback on top of the rect useScrollProgress had just measured — two
+   *  forced reflows per tick. CSS drives this height, so it only moves when
+   *  the viewport does. Both keep a live read as a first-tick fallback. */
+  const sectionHeight = useRef(0);
   useEffect(() => {
     const measure = () => {
       viewportHeight.current = window.innerHeight;
+      sectionHeight.current = sectionRef.current?.offsetHeight ?? 0;
     };
     measure();
 
@@ -145,7 +152,8 @@ export function ExperienceProjectsSection() {
 
       // Fraction of the section's travel spent sliding into view.
       const viewport = viewportHeight.current || window.innerHeight;
-      const entry = Math.min(0.9, viewport / section.offsetHeight);
+      const height = sectionHeight.current || section.offsetHeight;
+      const entry = Math.min(0.9, viewport / height);
       const pinned = Math.min(1, Math.max(0, (value - entry) / (1 - entry)));
 
       sunProgress.current =
@@ -192,7 +200,7 @@ export function ExperienceProjectsSection() {
       // Deriving it rather than reusing the old formula keeps the dots landing
       // on the card they name.
       const viewport = viewportHeight.current || window.innerHeight;
-      const height = section.offsetHeight;
+      const height = sectionHeight.current || section.offsetHeight;
       const entry = Math.min(0.9, viewport / height);
       const pinned = (index + 0.5) / cards.length;
       const progress = entry + pinned * (1 - entry);
