@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 
@@ -116,20 +116,17 @@ export function samplesForTier(tier: QualityTier, maxSamples: number): number {
 /**
  * Device-appropriate render settings.
  *
- * Starts disabled and resolves after mount: detection needs `window`, and
- * guessing on the server would either block first paint or flash a canvas the
- * device cannot afford (restriction 14).
+ * Resolved on the first client render, not in a mount effect. This used to
+ * start disabled and correct afterwards, justified on the grounds that
+ * detection needs `window` and the server cannot guess — but every caller is a
+ * scene behind a `dynamic(…, { ssr: false })` import, so there is no server
+ * render to disagree with and `window` is there on the very first pass. The
+ * effect only ever bought an extra render of every scene, one in which the
+ * canvas was disabled, before the real one.
  */
 export function useQuality(override?: QualityTier): QualitySettings {
   const reducedMotion = useReducedMotion();
-  const [settings, setSettings] = useState<QualitySettings>(() => ({
-    ...TIERS.medium,
-    enabled: false,
-  }));
-
-  useEffect(() => {
-    setSettings(detectQuality());
-  }, []);
+  const [settings] = useState<QualitySettings>(detectQuality);
 
   if (reducedMotion) return { ...settings, enabled: false };
   if (override && settings.enabled) return settingsForTier(override);
