@@ -10,6 +10,7 @@ import {
 } from 'three';
 
 import { buildPalette } from '@/lib/palette';
+import { useWorkerBuild } from '@/lib/webgl/useWorkerBuild';
 
 import { SCENE } from '../config';
 import { filamentFragmentShader, filamentVertexShader } from '../shaders/filament.glsl';
@@ -33,8 +34,22 @@ export function Filaments({
 }) {
   const readyRef = useRef(false);
 
-  const { geometry, material } = useMemo(() => {
-    const field = buildFilamentField(filamentCount);
+  /*
+   * The 1.2M-evaluation RK4 integration now happens in a worker, so the boot
+   * loader can animate while the field builds instead of sitting on a blocked
+   * main thread. `field` is null until it arrives and this component renders
+   * nothing; the hook falls back to building inline if the worker cannot be
+   * created, because a scene that never renders never calls onReady and the
+   * loader waits on that.
+   */
+  const field = useWorkerBuild(
+    () => new Worker(new URL('../utils/integrate.worker.ts', import.meta.url)),
+    filamentCount,
+    buildFilamentField,
+  );
+
+  const built = useMemo(() => {
+    if (!field) return null;
 
     const geo = new BufferGeometry();
     geo.setAttribute('position', new BufferAttribute(field.positions, 3));
@@ -64,18 +79,19 @@ export function Filaments({
     });
 
     return { geometry: geo, material: mat };
-  }, [filamentCount]);
+  }, [field]);
 
-  useEffect(
-    () => () => {
-      geometry.dispose();
-      material.dispose();
-    },
-    [geometry, material],
-  );
+  useEffect(() => {
+    if (!built) return;
+    return () => {
+      built.geometry.dispose();
+      built.material.dispose();
+    };
+  }, [built]);
 
   useFrame((_, delta) => {
-    const uTime = material.uniforms.uTime;
+    if (!built) return;
+    const uTime = built.material.uniforms.uTime;
     if (uTime) uTime.value = (uTime.value as number) + delta;
 
     // The hero reports ready on its first rendered frame, which is what
@@ -86,7 +102,13 @@ export function Filaments({
     }
   });
 
+  if (!built) return null;
+
   return (
-    <lineSegments geometry={geometry} material={material} frustumCulled={false} />
+    <lineSegments
+      geometry={built.geometry}
+      material={built.material}
+      frustumCulled={false}
+    />
   );
 }
