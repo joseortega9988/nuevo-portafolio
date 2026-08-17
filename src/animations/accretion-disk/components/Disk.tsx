@@ -10,6 +10,7 @@ import {
 } from 'three';
 
 import { buildPalette } from '@/lib/palette';
+import { useWorkerBuild } from '@/lib/webgl/useWorkerBuild';
 
 import { DISK_CONFIG } from '../config';
 import { diskFragmentShader, diskVertexShader } from '../shaders/disk.glsl';
@@ -27,8 +28,17 @@ export function Disk({
 }) {
   const readyRef = useRef(false);
 
-  const { geometry, material } = useMemo(() => {
-    const field = buildDisk(count);
+  /* 34,000 streaks at the high tier, previously laid out inside this useMemo
+   * during render — on the route that also mounts the hero torus. Inline
+   * fallback as elsewhere, so onReady is always reached. */
+  const field = useWorkerBuild(
+    () => new Worker(new URL('../utils/buildDisk.worker.ts', import.meta.url)),
+    count,
+    buildDisk,
+  );
+
+  const built = useMemo(() => {
+    if (!field) return null;
 
     const geo = new BufferGeometry();
     // The shader derives position from the orbital parameters, so the only
@@ -71,18 +81,19 @@ export function Disk({
     });
 
     return { geometry: geo, material: mat };
-  }, [count]);
+  }, [field, count]);
 
-  useEffect(
-    () => () => {
-      geometry.dispose();
-      material.dispose();
-    },
-    [geometry, material],
-  );
+  useEffect(() => {
+    if (!built) return;
+    return () => {
+      built.geometry.dispose();
+      built.material.dispose();
+    };
+  }, [built]);
 
   useFrame((_, delta) => {
-    const { uTime, uOpacity } = material.uniforms;
+    if (!built) return;
+    const { uTime, uOpacity } = built.material.uniforms;
     if (uTime) uTime.value = (uTime.value as number) + delta;
     if (uOpacity) uOpacity.value = fade.current;
 
@@ -92,5 +103,13 @@ export function Disk({
     }
   });
 
-  return <lineSegments geometry={geometry} material={material} frustumCulled={false} />;
+  if (!built) return null;
+
+  return (
+    <lineSegments
+      geometry={built.geometry}
+      material={built.material}
+      frustumCulled={false}
+    />
+  );
 }
