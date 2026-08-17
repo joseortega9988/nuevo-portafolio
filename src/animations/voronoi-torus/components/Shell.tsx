@@ -12,6 +12,7 @@ import {
 } from 'three';
 
 import { buildPalette } from '@/lib/palette';
+import { useWorkerBuild } from '@/lib/webgl/useWorkerBuild';
 
 import { TORUS_CONFIG } from '../config';
 import { useDragSpin } from '../hooks/useDragSpin';
@@ -37,8 +38,19 @@ export function Shell({
    *  fighting it, and the object never snaps back when released. */
   const drift = useRef({ x: 0, y: 0 });
 
-  const { geometry, material } = useMemo(() => {
-    const shattered = buildShatteredTorus(gridSize);
+  /* ~60,000 polygon clips at the high tier, previously inside this useMemo and
+   * therefore inside React's render. Off-thread it lets the boot loader keep
+   * animating; the hook falls back to building inline if the worker cannot be
+   * created, so onReady is always reached and the loader always dismisses. */
+  const shattered = useWorkerBuild(
+    () =>
+      new Worker(new URL('../utils/buildShatteredTorus.worker.ts', import.meta.url)),
+    gridSize,
+    buildShatteredTorus,
+  );
+
+  const built = useMemo(() => {
+    if (!shattered) return null;
 
     const geo = new BufferGeometry();
     geo.setAttribute('position', new BufferAttribute(shattered.positions, 3));
@@ -70,18 +82,19 @@ export function Shell({
     });
 
     return { geometry: geo, material: mat };
-  }, [gridSize]);
+  }, [shattered]);
 
-  useEffect(
-    () => () => {
-      geometry.dispose();
-      material.dispose();
-    },
-    [geometry, material],
-  );
+  useEffect(() => {
+    if (!built) return;
+    return () => {
+      built.geometry.dispose();
+      built.material.dispose();
+    };
+  }, [built]);
 
   useFrame((_, delta) => {
-    const { uCursor, uDissolve, uOpacity } = material.uniforms;
+    if (!built) return;
+    const { uCursor, uDissolve, uOpacity } = built.material.uniforms;
 
     // Ease the cursor rather than tracking it exactly: fragments then settle
     // behind the pointer instead of snapping with it.
@@ -129,9 +142,11 @@ export function Shell({
     }
   });
 
+  if (!built) return null;
+
   return (
     <group ref={groupRef}>
-      <mesh geometry={geometry} material={material} frustumCulled={false} />
+      <mesh geometry={built.geometry} material={built.material} frustumCulled={false} />
     </group>
   );
 }
