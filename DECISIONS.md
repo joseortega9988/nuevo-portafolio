@@ -79,6 +79,99 @@ push it straight back up.
 Restriction 2 permits exactly this. No other state is persisted anywhere, and
 `localStorage` is not used at all.
 
+### Adaptive resolution now recovers, because the sampler gained hysteresis
+
+*Supersedes the second paragraph of "Adaptive quality lowers resolution, never
+features" (2026-08-17).*
+
+That entry's first half still holds and is not in question: the sea drops
+internal render scale and leaves its octaves alone, because a softer sea is the
+same scene and a sea with fewer octaves is a different one. `SEA_CONFIG.octaves`
+is untouched and the floor is still `SEA_CONFIG.adaptive.minScale`.
+
+The second half — that the scale may only ratchet down, because recovering it
+would oscillate — was a correct diagnosis of the sampler that existed rather
+than of the idea. That sampler averaged 45 frames against one fixed 48fps
+threshold and had no memory, so yes, it would have hunted. What it actually did
+instead was worse than hunting: it measured once, dropped, and never looked
+again. One stutter during a route transition pinned the sea at reduced
+resolution for the rest of the session, and a phone that could afford full
+resolution once the boot loader's work was done could never earn it back.
+
+The missing piece was hysteresis, not the direction. drei's `PerformanceMonitor`
+averages against a band derived from the device's own refresh rate — 48fps is a
+pass on a 60Hz panel and a bad frame on a 120Hz one — and counts reversals,
+settling at the floor after three. The oscillation the old note predicted is
+bounded by construction. Resolution still degrades before features.
+
+### `antialias` is off on every canvas except the wormhole tunnel
+
+MSAA on the default framebuffer does nothing for a scene that runs an
+`EffectComposer`. The scene is rasterised into the composer's own render target
+and the default framebuffer only ever receives a fullscreen triangle from the
+final pass, which has no interior edges to sample — so the multisampled
+backbuffer was allocated per canvas and never read.
+
+The exception is real and worth not "fixing": the wormhole tunnel has no
+composer, because it drops bloom deliberately (see the comment in
+`WormholeTunnel.tsx`), and unlike the sea it is not a fullscreen quad — it is
+2,304 instanced boxes with hard silhouettes drawing straight to the screen. It
+keeps `antialias` at `tier === 'high'`, which is exactly what every canvas
+received before. The audit that prompted this change recommended turning it off
+everywhere; it had miscounted the composers and missed the tunnel.
+
+### `multisampling` is clamped to the GPU, not left at the library default
+
+`EffectComposer` defaults to `multisampling={8}` on a `HalfFloatType` target.
+Nobody here chose 8, and most GPUs report `MAX_SAMPLES = 4` and clamp it
+silently — so on that hardware the request bought an allocation for
+antialiasing the driver was never going to deliver. `samplesForTier` asks for
+`min(4, maxSamples)` on high, `min(2, …)` on medium and none on low, read from
+`gl.capabilities` inside the canvas because it is only knowable once a context
+exists.
+
+Two things a reader should know before touching this. The high-tier value is
+byte-identical on any GPU reporting `MAX_SAMPLES ≤ 4`; the development machine
+here reports **8** (AMD Radeon via ANGLE/D3D11), so on hardware like it this is
+a genuine reduction from 8 samples to 4 and wants an eye on it. And the medium
+and low steps are *not* free for `aizawa-attractor` and `accretion-disk`, whose
+composers run on every tier by design — precisely so phones get dimmed bloom
+instead of a hard cliff at 768px. For those two this gives up MSAA samples on
+mobile. It is isolated in one commit for that reason.
+
+### The footer tunnel is the one scene that unmounts
+
+`contextBudget.ts` sets the opposite policy for everything else, and it is
+right: unmounting made scenes visibly rebuild themselves mid-scroll. That
+argument turns entirely on rebuild cost, and the footer tunnel has almost none
+— one `BoxGeometry`, 2,304 instances, about 2ms — against the attractor's 144k
+integrated points and the torus's 2,500 clipped Voronoi cells.
+
+What it does have is an unusually high cost to keep. `Footer` is rendered from
+the locale layout, so this scene held a WebGL context and a bloom composer on
+every route on the site, including the detail pages, where it sat behind a
+firework sky already spending the budget. It unmounts after five continuous
+seconds off-screen and remounts a full viewport before it is seen again. The
+two margins are deliberate: the tight `0px` one still drives `paused`, the wide
+one drives mount and unmount, so the frame loop still stops the instant the
+footer leaves while the scene itself comes back early enough that the rebuild
+is never visible.
+
+### `gsap` is in the root bundle on purpose
+
+`useGsapLenisSync` used to carry a note that gsap must never be imported from
+`LenisProvider`, because that would pull the whole library into the root
+bundle. The observation was correct, and the trade was taken anyway: Lenis is
+now driven by `gsap.ticker` with `autoRaf: false`, so one ticker owns the frame
+and Lenis writes the scroll position before anything reads it. Before that,
+Lenis ran a hand-rolled rAF loop while GSAP ran its own on the routes with a
+timeline, and nothing ordered them within a frame.
+
+Only gsap *core* moved. `ScrollTrigger` and `Flip` are the expensive half and
+they stay in `useGsapLenisSync` and `useThrowSequence`, on the one route that
+uses them. If the bundle cost is ever judged too dear, the commit tagged
+`[P1-10]` that moves the ticker is revertible on its own.
+
 ### Verification was done against the DOM, not screenshots
 
 The Browser pane in this environment does not composite frames unless it is
