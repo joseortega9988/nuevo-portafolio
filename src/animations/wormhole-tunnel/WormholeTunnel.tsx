@@ -35,6 +35,13 @@ export function WormholeTunnel({
       <CanvasStage
         quality={quality}
         paused={paused}
+        // The one scene that asks for it, because it is the one scene drawing
+        // real geometry — 2,304 instanced boxes with hard silhouettes — with
+        // no composer in front of it. Everywhere else the backbuffer only
+        // receives a fullscreen triangle and MSAA on it is pure allocation.
+        // Kept at `tier === 'high'`, which is exactly what CanvasStage applied
+        // globally before, so nothing about this scene's look changes.
+        antialias={quality.tier === 'high'}
         camera={{
           fov: TUNNEL_CONFIG.camera.fov,
           position: [

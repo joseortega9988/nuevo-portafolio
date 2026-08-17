@@ -14,6 +14,17 @@ export interface CanvasStageProps {
   /** Rendered instead of the canvas if the GPU drops the context and cannot
    *  recover — every scene ships one so a failure degrades to a still image. */
   fallback?: ReactNode;
+  /**
+   * MSAA on the *default* framebuffer. Off by default and worth leaving off.
+   *
+   * A scene with an EffectComposer rasterises into the composer's own render
+   * target; the default framebuffer then only ever receives a fullscreen
+   * triangle from the final pass, which has no interior edges to sample. Asking
+   * for antialias there allocates a multisampled backbuffer that nothing reads.
+   * Turn it on only for a scene that draws real geometry straight to the
+   * screen with no composer — on this site that is the wormhole tunnel alone.
+   */
+  antialias?: boolean;
   onCreated?: () => void;
 }
 
@@ -34,6 +45,7 @@ export function CanvasStage({
   className,
   camera,
   fallback = null,
+  antialias = false,
   onCreated,
 }: CanvasStageProps) {
   const [contextLost, setContextLost] = useState(false);
@@ -76,7 +88,7 @@ export function CanvasStage({
       frameloop={paused ? 'never' : 'always'}
       camera={camera}
       gl={{
-        antialias: quality.tier === 'high',
+        antialias,
         powerPreference: 'high-performance',
         // The scenes paint their own void-coloured background; an alpha buffer
         // would only add a compositing pass.
