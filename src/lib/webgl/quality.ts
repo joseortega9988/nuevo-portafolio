@@ -26,15 +26,31 @@ const TIERS: Record<QualityTier, Omit<QualitySettings, 'enabled'>> = {
   low: { tier: 'low', dpr: [1, 1.25], bloom: 0.6, density: 0.4 },
 };
 
+/**
+ * Answered once per page load, because asking costs a real WebGL context.
+ *
+ * `useQuality()` has seven callers and each ran this on its own mount, so the
+ * probe created seven contexts and dropped them on the floor — the browser
+ * counts each as live until GC collects the canvas, and the caps are low
+ * (sixteen in Chrome, stricter and noisier in Safari). On Home that roughly
+ * doubled the page's context count on top of the four real canvases, which is
+ * the most likely cause of the losses seen on iOS. Memoizing asks once;
+ * `loseContext()` hands even that one straight back.
+ */
+let webglSupport: boolean | null = null;
+
 function supportsWebGL(): boolean {
+  if (webglSupport !== null) return webglSupport;
   try {
     const canvas = document.createElement('canvas');
-    return Boolean(
-      canvas.getContext('webgl2') ?? canvas.getContext('webgl'),
-    );
+    const gl: WebGLRenderingContext | WebGL2RenderingContext | null =
+      canvas.getContext('webgl2') ?? canvas.getContext('webgl');
+    gl?.getExtension('WEBGL_lose_context')?.loseContext();
+    webglSupport = Boolean(gl);
   } catch {
-    return false;
+    webglSupport = false;
   }
+  return webglSupport;
 }
 
 interface DeviceHints {
@@ -53,14 +69,22 @@ function detectTier(): QualityTier {
   return 'high';
 }
 
+/** Resolved once, alongside the probe above: the inputs (support, cores,
+ *  memory, width) are read once per load today anyway, since nothing re-runs
+ *  detection on resize. Caching also stops two scenes that mounted at
+ *  different moments from landing on different tiers. */
+let resolved: QualitySettings | null = null;
+
 export function detectQuality(): QualitySettings {
   if (typeof window === 'undefined') {
     return { ...TIERS.medium, enabled: false };
   }
-  if (!supportsWebGL()) {
-    return { ...TIERS.low, enabled: false };
+  if (!resolved) {
+    resolved = supportsWebGL()
+      ? { ...TIERS[detectTier()], enabled: true }
+      : { ...TIERS.low, enabled: false };
   }
-  return { ...TIERS[detectTier()], enabled: true };
+  return { ...resolved };
 }
 
 export function settingsForTier(tier: QualityTier): QualitySettings {
