@@ -52,7 +52,6 @@ export function useScrollProgress(
     let frame: number | null = null;
 
     const measure = () => {
-      frame = null;
       const rect = element.getBoundingClientRect();
       const viewport = window.innerHeight;
 
@@ -78,20 +77,38 @@ export function useScrollProgress(
 
     // Coalesce: several scroll sources can fire within one frame.
     const schedule = () => {
-      if (frame === null) frame = requestAnimationFrame(measure);
+      if (frame === null) {
+        frame = requestAnimationFrame(() => {
+          frame = null;
+          measure();
+        });
+      }
     };
 
     measure();
 
-    // Lenis drives scrolling when it is active; the native listener covers the
-    // reduced-motion path where Lenis is deliberately not instantiated.
-    lenis?.on('scroll', schedule);
+    /*
+     * Lenis is measured synchronously; the native listener is not.
+     *
+     * Lenis emits `scroll` from inside the ticker, immediately after writing
+     * the scroll position, so reading the rect there is valid and lands in the
+     * same frame. It used to go through `schedule`, which deferred the read to
+     * the *next* rAF — so the sea's uPhase, the torus's uDissolve and the
+     * carousel's active index were all a frame behind the page, which is what
+     * read as the background lagging the content.
+     *
+     * The native path keeps the rAF coalescing: it covers the reduced-motion
+     * case where Lenis is deliberately not instantiated, and resize, where
+     * several events can arrive in one frame and none of them is worth a
+     * synchronous layout read each.
+     */
+    lenis?.on('scroll', measure);
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', schedule);
 
     return () => {
       if (frame !== null) cancelAnimationFrame(frame);
-      lenis?.off('scroll', schedule);
+      lenis?.off('scroll', measure);
       window.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', schedule);
     };
