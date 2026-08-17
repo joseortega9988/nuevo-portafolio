@@ -76,7 +76,18 @@ export const FIREWORK_CONFIG = {
   spawnZ: 12,
 
   camera: { fov: 60, position: [0, 0, 150] as const },
-  bloom: { strength: 1.495, radius: 0.5, threshold: 0 },
+  /**
+   * A dense burst is thousands of differently-hued points additively blended
+   * onto nearly the same pixels in its first frames — that's real colour
+   * mixing, and it clips straight to white before bloom ever runs. A
+   * threshold of 0 handed bloom every one of those pixels and a radius of
+   * 0.5 spread the resulting flash wide, so a burst going off behind the
+   * article column read as a white blowout over the text rather than a
+   * colourful firework. Raising the threshold keeps bloom off anything but
+   * the genuinely brightest points, and the lower strength/radius keep its
+   * halo tight instead of bleeding across the reading column.
+   */
+  bloom: { strength: 0.9, radius: 0.35, threshold: 0.25 },
   /** Opacity of the black quad that eats the previous frame — the trails. */
   trailOpacity: 0.397,
 } as const;

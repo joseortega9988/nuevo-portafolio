@@ -45,11 +45,15 @@ export function ProjectsGridSection({ active }: ProjectsGridSectionProps) {
       </div>
 
       <div className={styles.content}>
+        {/* scrim: this heading sits directly over the accretion disk, which
+            is the brightest background on the site — without it the title and
+            hint wash out against the streaks. */}
         <SectionHeading
           eyebrow={t('gridTitle')}
           title={t('title')}
           subtitle={t('gridHint')}
           align="center"
+          scrim
         />
 
         <ThrownCardsGrid

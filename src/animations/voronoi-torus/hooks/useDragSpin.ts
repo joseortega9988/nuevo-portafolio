@@ -21,8 +21,11 @@ export interface DragSpin {
  * the camera, which is what "flip it over" means here and leaves the framing —
  * and the scroll-driven dissolve — untouched.
  *
- * Mouse only. Claiming touch drags would steal vertical scrolling on exactly
- * the pinned section a phone visitor most needs to scroll past.
+ * The drag itself is mouse only. Claiming touch drags would steal vertical
+ * scrolling on exactly the pinned section a phone visitor most needs to
+ * scroll past. A touch tap is handled separately below: it never captures the
+ * pointer or blocks scrolling, so it costs nothing if the visitor actually
+ * meant to scroll.
  */
 export function useDragSpin(): DragSpin {
   const gl = useThree((state) => state.gl);
@@ -35,13 +38,22 @@ export function useDragSpin(): DragSpin {
   useEffect(() => {
     const element = gl.domElement;
     const { sensitivity, maxVelocity } = TORUS_CONFIG.drag;
+    const { maxMovement, maxDurationMs, velocity: tapVelocity } = TORUS_CONFIG.tap;
     let lastX = 0;
     let lastY = 0;
     let pointerId: number | null = null;
+    // A touch's own start point/time, tracked separately from the mouse-drag
+    // state above so a tap can be told apart from a scroll that happened to
+    // start on the canvas — never captured, so it never fights the scroll.
+    let touchStart: { x: number; y: number; time: number; id: number } | null = null;
 
     const clamp = (v: number) => Math.max(-maxVelocity, Math.min(maxVelocity, v));
 
     const onDown = (event: PointerEvent) => {
+      if (event.pointerType === 'touch') {
+        touchStart = { x: event.clientX, y: event.clientY, time: performance.now(), id: event.pointerId };
+        return;
+      }
       if (event.pointerType !== 'mouse' || event.button !== 0) return;
       pointerId = event.pointerId;
       state.current.dragging = true;
@@ -70,7 +82,27 @@ export function useDragSpin(): DragSpin {
       state.current.velocity.x = clamp(dy * sensitivity * 60);
     };
 
+    // Only fires for a touch that ended as a genuine tap — a scroll instead
+    // ends in pointercancel once the browser claims the gesture, which skips
+    // this entirely.
+    const onTouchEnd = (event: PointerEvent) => {
+      if (!touchStart || event.pointerId !== touchStart.id) return;
+      const moved = Math.hypot(event.clientX - touchStart.x, event.clientY - touchStart.y);
+      const held = performance.now() - touchStart.time;
+      touchStart = null;
+      if (moved > maxMovement || held > maxDurationMs) return;
+
+      // A small randomised flick — enough to visibly react to the tap
+      // without being as forceful as an intentional mouse throw.
+      state.current.velocity.y = clamp(tapVelocity * (Math.random() < 0.5 ? -1 : 1));
+      state.current.velocity.x = clamp(tapVelocity * (Math.random() * 0.6 - 0.3));
+    };
+
     const onUp = (event: PointerEvent) => {
+      if (event.pointerType === 'touch') {
+        onTouchEnd(event);
+        return;
+      }
       if (event.pointerId !== pointerId) return;
       state.current.dragging = false;
       pointerId = null;
@@ -80,17 +112,26 @@ export function useDragSpin(): DragSpin {
       element.style.cursor = 'grab';
     };
 
+    const onCancel = (event: PointerEvent) => {
+      if (event.pointerType === 'touch') {
+        // The browser claimed this for scrolling — not a tap, no nudge.
+        touchStart = null;
+        return;
+      }
+      onUp(event);
+    };
+
     element.style.cursor = 'grab';
     element.addEventListener('pointerdown', onDown);
     element.addEventListener('pointermove', onMove);
     element.addEventListener('pointerup', onUp);
-    element.addEventListener('pointercancel', onUp);
+    element.addEventListener('pointercancel', onCancel);
 
     return () => {
       element.removeEventListener('pointerdown', onDown);
       element.removeEventListener('pointermove', onMove);
       element.removeEventListener('pointerup', onUp);
-      element.removeEventListener('pointercancel', onUp);
+      element.removeEventListener('pointercancel', onCancel);
       element.style.cursor = '';
     };
   }, [gl]);

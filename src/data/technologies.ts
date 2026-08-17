@@ -1,3 +1,4 @@
+import { DiHeroku } from 'react-icons/di';
 import { FaAws, FaArrowsRotate, FaDatabase } from 'react-icons/fa6';
 import { TbApi, TbBrowserCheck } from 'react-icons/tb';
 import {
@@ -35,27 +36,27 @@ export const TECH_CATEGORIES: readonly TechCategory[] = [
  */
 export const TECHNOLOGIES: readonly Technology[] = [
   // ── FRONTEND ──
-  { id: 'react', name: 'React', category: 'frontend', Icon: SiReact },
-  { id: 'nextjs', name: 'Next.js', category: 'frontend', Icon: SiNextdotjs },
   { id: 'typescript', name: 'TypeScript', category: 'frontend', Icon: SiTypescript },
+  { id: 'react', name: 'React', category: 'frontend', Icon: SiReact },
   { id: 'javascript', name: 'JavaScript', category: 'frontend', Icon: SiJavascript },
-  { id: 'tailwind', name: 'Tailwind CSS', category: 'frontend', Icon: SiTailwindcss },
-  { id: 'redux', name: 'Redux', category: 'frontend', Icon: SiRedux },
-  { id: 'react-native', name: 'React Native', category: 'frontend', Icon: SiReact },
+  { id: 'vite', name: 'Vite', category: 'frontend', Icon: SiVite },
+  { id: 'nextjs', name: 'Next.js', category: 'frontend', Icon: SiNextdotjs },
+  { id: 'threejs', name: 'Three.js', category: 'frontend', Icon: SiThreedotjs },
   { id: 'expo', name: 'Expo', category: 'frontend', Icon: SiExpo },
   { id: 'html5', name: 'HTML5', category: 'frontend', Icon: SiHtml5 },
   { id: 'css3', name: 'CSS3', category: 'frontend', Icon: SiCss },
+  { id: 'redux', name: 'Redux', category: 'frontend', Icon: SiRedux },
   { id: 'scss', name: 'SCSS', category: 'frontend', Icon: SiSass },
   { id: 'framer-motion', name: 'Framer Motion', category: 'frontend', Icon: SiFramer },
-  { id: 'threejs', name: 'Three.js', category: 'frontend', Icon: SiThreedotjs },
+  { id: 'tailwind', name: 'Tailwind CSS', category: 'frontend', Icon: SiTailwindcss },
   { id: 'gsap', name: 'GSAP', category: 'frontend', Icon: SiGreensock },
-  { id: 'vite', name: 'Vite', category: 'frontend', Icon: SiVite },
+  { id: 'react-native', name: 'React Native', category: 'frontend', Icon: SiReact },
 
   // ── BACKEND ──
   { id: 'nodejs', name: 'Node.js', category: 'backend', Icon: SiNodedotjs },
-  { id: 'nestjs', name: 'NestJS', category: 'backend', Icon: SiNestjs },
-  { id: 'express', name: 'Express', category: 'backend', Icon: SiExpress },
   { id: 'graphql', name: 'GraphQL', category: 'backend', Icon: SiGraphql },
+  { id: 'express', name: 'Express', category: 'backend', Icon: SiExpress },
+  { id: 'nestjs', name: 'NestJS', category: 'backend', Icon: SiNestjs },
   { id: 'prisma', name: 'Prisma ORM', category: 'backend', Icon: SiPrisma },
   { id: 'rest', name: 'REST APIs', category: 'backend', Icon: TbApi },
   { id: 'jwt', name: 'JWT / Passport', category: 'backend', Icon: SiJsonwebtokens },
@@ -65,13 +66,13 @@ export const TECHNOLOGIES: readonly Technology[] = [
   // ── DATA ──
   { id: 'postgresql', name: 'PostgreSQL', category: 'data', Icon: SiPostgresql },
   { id: 'sql', name: 'SQL', category: 'data', Icon: FaDatabase },
-  { id: 'mysql', name: 'MySQL', category: 'data', Icon: SiMysql },
   { id: 'mongodb', name: 'MongoDB', category: 'data', Icon: SiMongodb },
+  { id: 'mysql', name: 'MySQL', category: 'data', Icon: SiMysql },
   { id: 'appwrite', name: 'Appwrite', category: 'data', Icon: SiAppwrite },
-  { id: 'pandas', name: 'Pandas', category: 'data', Icon: SiPandas },
-  { id: 'numpy', name: 'NumPy', category: 'data', Icon: SiNumpy },
   { id: 'tensorflow', name: 'TensorFlow', category: 'data', Icon: SiTensorflow },
   { id: 'keras', name: 'Keras', category: 'data', Icon: SiKeras },
+  { id: 'pandas', name: 'Pandas', category: 'data', Icon: SiPandas },
+  { id: 'numpy', name: 'NumPy', category: 'data', Icon: SiNumpy },
   { id: 'scikit-learn', name: 'scikit-learn', category: 'data', Icon: SiScikitlearn },
   { id: 'jupyter', name: 'Jupyter Notebooks', category: 'data', Icon: SiJupyter },
 
@@ -79,16 +80,17 @@ export const TECHNOLOGIES: readonly Technology[] = [
   { id: 'docker', name: 'Docker', category: 'tools', Icon: SiDocker },
   { id: 'aws', name: 'AWS', category: 'tools', Icon: FaAws },
   { id: 'cicd', name: 'CI/CD', category: 'tools', Icon: FaArrowsRotate },
-  { id: 'circleci', name: 'CircleCI', category: 'tools', Icon: SiCircleci },
-  { id: 'git', name: 'Git', category: 'tools', Icon: SiGit },
-  { id: 'github', name: 'GitHub', category: 'tools', Icon: SiGithub },
   { id: 'jest', name: 'Jest', category: 'tools', Icon: SiJest },
   { id: 'playwright', name: 'Playwright', category: 'tools', Icon: TbBrowserCheck },
+  { id: 'github', name: 'GitHub', category: 'tools', Icon: SiGithub },
+  { id: 'circleci', name: 'CircleCI', category: 'tools', Icon: SiCircleci },
+  { id: 'git', name: 'Git', category: 'tools', Icon: SiGit },
   { id: 'bash', name: 'Bash', category: 'tools', Icon: SiGnubash },
   { id: 'vercel', name: 'Vercel', category: 'tools', Icon: SiVercel },
+  { id: 'heroku', name: 'Heroku', category: 'tools', Icon: DiHeroku },
   { id: 'figma', name: 'Figma', category: 'tools', Icon: SiFigma },
-  { id: 'jira', name: 'Jira', category: 'tools', Icon: SiJira },
   { id: 'postman', name: 'Postman', category: 'tools', Icon: SiPostman },
+  { id: 'jira', name: 'Jira', category: 'tools', Icon: SiJira },
   { id: 'claude', name: 'Claude / AI tooling', category: 'tools', Icon: SiClaude },
 ];
 

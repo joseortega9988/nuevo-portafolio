@@ -118,10 +118,19 @@
 .j { top: var(--inset); }
 .k,
 .m { bottom: var(--inset); }
-.h { transform: rotate(32deg); }
-.j { left: 75%; transform: rotate(-32deg); }
-.k { transform: rotate(-32deg); }
-.m { left: 75%; transform: rotate(32deg); }
+/*
+ * Signs matter, and they are the opposite of what reads as intuitive: CSS
+ * rotates clockwise with +y pointing down, so a POSITIVE angle swings a
+ * vertical bar's top to the right and its bottom to the left — drawing "╱",
+ * not "╲". These were all inverted, which only ever showed up on N (the sole
+ * glyph here using diagonals): its h and m are meant to join into one
+ * unbroken "╲" from the top-left corner to the bottom-right, and instead
+ * rendered as two disconnected "╱" strokes.
+ */
+.h { transform: rotate(-32deg); }
+.j { left: 75%; transform: rotate(32deg); }
+.k { transform: rotate(32deg); }
+.m { left: 75%; transform: rotate(-32deg); }
 
 /* ── illuminated state ──
    Cyan is the loader's text colour per §C; the glow sells the emissive panel. */

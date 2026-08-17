@@ -68,7 +68,15 @@ export function AizawaAttractor({
         <BaseDisk y={-0.02} />
         <ParticleField count={particleCount} />
 
-        <EffectComposer enabled={quality.tier !== 'low'}>
+        {/* Always on, unlike some other scenes that skip this pass entirely
+            below the 'high' tier. Doing that here made low tier (which is
+            every phone-width viewport, capable or not — see detectTier)
+            render with no glow at all: a hard on/off cliff right at 768px
+            instead of the graceful dimming quality.bloom already exists to
+            provide. Bloom itself is cheap relative to the RK4 integration
+            that dominates this scene's cost, so keeping it on is not the
+            expensive part of a low-tier frame. */}
+        <EffectComposer>
           <Bloom
             intensity={SCENE.bloom.intensity * quality.bloom}
             luminanceThreshold={SCENE.bloom.threshold}

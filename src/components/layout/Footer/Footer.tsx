@@ -5,6 +5,7 @@ import { CONTACT_EMAILS, OWNER, SOCIAL_LINKS } from '@/data/social';
 import { Link } from '@/i18n/navigation';
 
 import styles from './Footer.module.css';
+import { FooterTunnel } from './FooterTunnel';
 
 export interface FooterProps {
   variant?: 'default' | 'transparent';
@@ -23,6 +24,8 @@ export async function Footer({ variant = 'default' }: FooterProps) {
 
   return (
     <footer className={styles.footer} data-variant={variant}>
+      <FooterTunnel />
+
       <div className={styles.inner}>
         <div className={styles.brand}>
           <Link href="/" className={styles.logo}>

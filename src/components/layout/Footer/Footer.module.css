@@ -1,18 +1,28 @@
 .footer {
   position: relative;
+  /* Clips the tunnel canvas to the footer's box without breaking a sticky
+     descendant the way overflow: hidden would (none live here today, but
+     clip costs nothing and keeps this file consistent with the rest of the
+     codebase). */
+  overflow: clip;
   border-top: 1px solid var(--c-line);
   background: var(--c-deep);
-  padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 2.5rem) 1.5rem;
+  /* Tight at the top: the scrim panel below carries its own generous inner
+     padding, so a large gap here only pushed the whole sign-off down and left
+     a band of bare tunnel above it. */
+  padding: clamp(1rem, 2vw, 1.5rem) clamp(1rem, 4vw, 2.5rem) 1.25rem;
 }
 
 /* A thin gradient hairline along the top edge ties the footer to the palette
-   without adding another surface colour. */
+   without adding another surface colour. Raised above the tunnel canvas so
+   the WebGL layer never paints over it. */
 .footer::before {
   content: '';
   position: absolute;
   inset-inline: 0;
   top: -1px;
   height: 1px;
+  z-index: var(--z-content);
   background-image: var(--g-primary);
   opacity: 0.5;
 }
@@ -29,6 +39,8 @@
  * than one sign-off.
  */
 .inner {
+  position: relative;
+  z-index: var(--z-content);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -36,6 +48,15 @@
   gap: clamp(1.5rem, 3vw, 2.25rem);
   max-width: 720px;
   margin-inline: auto;
+  padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.25rem, 4vw, 2rem);
+  border-radius: var(--r-lg);
+  /* The scrim the tunnel behind it needs (§G): text must hold AA contrast
+     over a background that is, by design, bright and moving. */
+  background: radial-gradient(
+    130% 130% at 50% 45%,
+    color-mix(in srgb, var(--c-deep) 88%, transparent) 0%,
+    var(--c-void-00) 100%
+  );
 }
 
 .brand {
@@ -146,13 +167,27 @@
 }
 
 .copyright {
+  position: relative;
+  z-index: var(--z-content);
   max-width: 1440px;
-  margin: 2.5rem auto 0;
-  padding-top: 1.25rem;
+  margin: 1rem auto 0;
+  padding-top: 0.85rem;
   border-top: 1px solid var(--c-line);
   font-size: var(--step--2);
   text-align: center;
-  color: var(--c-text-muted);
+  /*
+   * One step up from --c-text-muted, plus a shadow tight around the glyphs.
+   *
+   * This line sits outside the scrim panel above it, directly on the tunnel —
+   * and the tunnel is at its brightest and busiest down here, so muted grey on
+   * moving magenta left it effectively unreadable. The shadow is what carries
+   * it when a lit box passes underneath; the colour alone is not enough.
+   */
+  color: var(--c-text-dim);
+  text-shadow:
+    0 1px 3px var(--c-void),
+    0 0 10px var(--c-void),
+    0 0 20px var(--c-void);
 }
 
 @media (prefers-reduced-motion: reduce) {

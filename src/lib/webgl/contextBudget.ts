@@ -18,6 +18,23 @@
  * so a scene is already running before it is seen rather than starting on the
  * first visible frame.
  *
+ * hero and fibration were originally 200% — two full viewport-heights, which
+ * on a three-section page like Home meant both were unpaused for nearly the
+ * entire scroll range, not just near their own section. Both run an
+ * EffectComposer Bloom pass on top of real per-frame cost (the attractor
+ * integrates 180 filaments * 800 points = 144k points via RK4; the fibration
+ * tumbles its fibre field, starfield and cages), so having them both active
+ * at once was genuine GPU contention, not just a paused scene sitting idle.
+ * It showed up as stutter specifically when scrolling from Technologies back
+ * to the hero, because that is the one path where both heavy scenes overlap
+ * — the sea in between self-throttles via useAdaptiveResolution and never
+ * causes the same contention. 100% keeps the "already running before you
+ * arrive" warm-up this policy wants while cutting that overlap roughly in
+ * half; it also matches the margin every other section on the site already
+ * uses (ProjectsHeroSection, ProjectsGridSection, EntryBackdrop). This is a
+ * pause-timing change only — no scene's particle count, resolution or bloom
+ * strength moved.
+ *
  * There are no exceptions left. This used to record the Projects hero as one —
  * the torus disposed after dissolving, on the grounds that it was finished —
  * but that was reversed and the note outlived it. The torus stays mounted like
@@ -25,7 +42,7 @@
  * comment on its scroll progress in ProjectsHeroSection.
  */
 export const MOUNT_MARGINS = {
-  hero: '200% 0px 200% 0px',
-  sea: '200% 0px 200% 0px',
-  fibration: '200% 0px 200% 0px',
+  hero: '100% 0px 100% 0px',
+  sea: '100% 0px 100% 0px',
+  fibration: '100% 0px 100% 0px',
 } as const;

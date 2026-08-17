@@ -50,8 +50,10 @@
   justify-content: center;
   gap: 0;
   /* Just enough to clear the names; a tight honeycomb would overlap rows by a
-     quarter of the hex height and leave the labels nowhere to sit. */
-  row-gap: 0.4rem;
+     quarter of the hex height and leave the labels nowhere to sit. Slightly
+     taller than the geometry strictly needs so a two-line name (see .name)
+     still clears the row below it. */
+  row-gap: 0.55rem;
   max-width: calc(var(--hex-width) * var(--cols));
   margin-inline: auto;
 }
@@ -123,8 +125,21 @@
   font-size: var(--step--1);
   line-height: 1.25;
   text-align: center;
+  /* Shaves a couple of px off the widest names (TypeScript, JavaScript) —
+     just enough that two of them sitting in adjacent cells clear each other
+     instead of grazing at the boundary. Small enough not to affect
+     legibility. */
+  letter-spacing: -0.2px;
   /*
-   * Names may spill past their hexagon rather than break inside a word.
+   * Names may spill past their hexagon rather than break inside a word — but
+   * only a little. At 1.5x, several adjacent long names (TypeScript,
+   * JavaScript, Tailwind CSS) each spilled far enough into their neighbour's
+   * column that they overlapped each other outright, which a single long
+   * name next to short ones never showed. 1.35x cuts that overflow by a
+   * third — enough to stop the collision — while still leaving room for a
+   * ten-letter single word like "TypeScript" or "JavaScript" to clear on one
+   * line; a tighter cap forced exactly those two into an ugly mid-word break
+   * instead, which is worse than the overlap it was meant to fix.
    *
    * break-word split "TypeScript" into "TypeScrip / t" and "Playwright" into
    * "Playwrigh / t" on a phone, where the hexagon is only ~70px wide. A name
@@ -133,7 +148,7 @@
    * longer than the cell.
    */
   width: max-content;
-  max-width: calc(var(--hex-width) * 1.5);
+  max-width: calc(var(--hex-width) * 1.35);
   overflow-wrap: break-word;
   color: var(--c-text-dim);
   text-shadow: 0 1px 3px var(--c-void), 0 0 8px var(--c-void);

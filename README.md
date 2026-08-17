@@ -1,7 +1,7 @@
 # Jose Ortega — Portfolio
 
 Bilingual (EN/ES), dark-mode-only portfolio built with Next.js 15, React 19 and
-TypeScript in strict mode. Nine self-contained animations — four of them
+TypeScript in strict mode. Ten self-contained animations — five of them
 WebGL — carry the narrative across three route types.
 
 ```bash
@@ -125,7 +125,7 @@ for holding several contexts at once, are in `src/lib/webgl/contextBudget.ts`.
 
 ---
 
-## The nine animations
+## The ten animations
 
 | | Module | Where | Technique |
 | --- | --- | --- | --- |
@@ -138,6 +138,7 @@ for holding several contexts at once, are in `src/lib/webgl/contextBudget.ts`.
 | A7 | `voronoi-torus` | Projects hero | Sutherland–Hodgman Voronoi shatter |
 | A8 | `thrown-cards-grid` | Projects | GSAP throw → float → Flip into the grid |
 | A9 | `accretion-disk` | Projects grid | Keplerian shear in one draw call; streak length is orbital speed |
+| A11 | `wormhole-tunnel` | Footer | Instanced box spiral warped in the vertex shader; one draw call |
 
 Every one honours `prefers-reduced-motion` with a documented static fallback.
 

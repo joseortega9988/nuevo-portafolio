@@ -1,0 +1,11 @@
+.backdrop,
+.poster {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-canvas);
+  pointer-events: none;
+}
+
+.poster {
+  background: var(--c-deep);
+}

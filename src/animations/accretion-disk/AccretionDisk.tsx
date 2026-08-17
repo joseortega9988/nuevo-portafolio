@@ -83,7 +83,12 @@ export function AccretionDisk({
             the camera rather than turning with the disk. */}
         <EventHorizon fade={fade} />
 
-        <EffectComposer enabled={quality.tier !== 'low'}>
+        {/* Always on. This was gated on `quality.tier !== 'low'`, and low is
+            every phone-width viewport (see detectTier) — so the disk lost its
+            glow entirely on mobile rather than being dimmed, a hard on/off
+            cliff at 768px instead of the taper quality.bloom already
+            provides. Same reasoning as the Home attractor's composer. */}
+        <EffectComposer>
           <Bloom
             intensity={DISK_CONFIG.bloom.intensity * quality.bloom}
             luminanceThreshold={DISK_CONFIG.bloom.threshold}

@@ -35,6 +35,14 @@ export const TORUS_CONFIG = {
    * turning for a moment, low enough that it always comes to rest.
    */
   drag: { sensitivity: 0.006, friction: 2.6, maxVelocity: 6 },
+  /**
+   * A touch tap can't drive the drag above — that would claim the gesture a
+   * phone visitor needs to scroll past this pinned section (see
+   * useDragSpin's file comment) — so a genuine tap (short, little movement)
+   * gives the shell a small randomised flick instead, through the same
+   * velocity/decay the drag throw already uses.
+   */
+  tap: { maxMovement: 12, maxDurationMs: 300, velocity: 2.4 },
   bloom: { intensity: 0.9, threshold: 0.2 },
 
   /**

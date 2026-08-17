@@ -105,13 +105,13 @@ export const DISK_CONFIG = {
      * covers any aspect ratio, and far more of the orbital motion is visible
      * because nothing is foreshortened.
      */
-    position: [0, 0, 2.6] as const,
+    position: [0, 0, 3.5] as const,
     /**
      * Further back on a phone. At the reference distance a narrow frustum
      * shows only the disk's hot inner region, so the ramp that carries all the
      * colour sits outside the frame and the section reads as a grey core.
      */
-    positionNarrow: [0, 0, 4.1] as const,
+    positionNarrow: [0, 0, 5.5] as const,
   },
 
   bloom: { intensity: 1.15, threshold: 0.1 },

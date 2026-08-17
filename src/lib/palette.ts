@@ -21,6 +21,8 @@ export const COLOR_TOKENS = [
   'line',
   'magenta',
   'violet',
+  'violet-deep',
+  'violet-night',
   'cyan',
   'amber',
   'spring',

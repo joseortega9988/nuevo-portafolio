@@ -6,7 +6,11 @@
 
 .root canvas {
   /* The hero copy sits in a column beside the attractor and must stay
-     clickable; the canvas takes pointer events only where it is uncovered. */
+     clickable; the canvas takes pointer events only where it is uncovered.
+     pan-y deliberately leaves vertical swipes to the page: a phone visitor
+     has to be able to scroll past a full-viewport hero, and taking the
+     gesture for rotation would trap them here. Rotation by touch is a
+     nice-to-have; scrolling is not. */
   touch-action: pan-y;
 }
 

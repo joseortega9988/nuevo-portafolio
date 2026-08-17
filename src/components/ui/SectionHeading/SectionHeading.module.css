@@ -12,15 +12,35 @@
 }
 
 /* The scrim is what buys AA contrast over a moving background without dimming
-   the animation itself: a soft local darkening behind the words only. */
+   the animation itself: a soft local darkening behind the words only.
+   The opaque centre is held out to 45% before it starts falling away — the
+   gradient previously began fading from the very centre, which left the outer
+   half of a long title sitting on almost nothing over a bright backdrop. */
 .header[data-scrim] {
-  padding: 1rem 1.25rem;
+  padding: 1.25rem 1.75rem;
   border-radius: var(--r-md);
   background: radial-gradient(
     120% 140% at 50% 50%,
     var(--c-void-85) 0%,
+    var(--c-void-85) 45%,
     var(--c-void-00) 100%
   );
+}
+
+/*
+ * Shadows on the plain-text parts only, tight around the glyphs so they hold
+ * up where the scrim has faded out.
+ *
+ * Deliberately NOT on .title: it is gradient text (background-clip: text over
+ * a transparent fill), so a text-shadow renders straight through the glyphs
+ * rather than behind them and greys the gradient out — the same trap
+ * documented on the detail page's title.
+ */
+.header[data-scrim] .subtitle,
+.header[data-scrim] :global(.eyebrow) {
+  text-shadow:
+    0 1px 3px var(--c-void),
+    0 0 10px var(--c-void);
 }
 
 .title {

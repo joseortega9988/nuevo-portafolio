@@ -1,0 +1,29 @@
+.root {
+  position: absolute;
+  inset: 0;
+  background: var(--c-deep);
+  /* Background only: the footer's links and buttons must receive every
+     pointer and keyboard event. */
+  pointer-events: none;
+}
+
+/**
+ * Static fallback: a ringed glow standing in for the tunnel's vanishing
+ * point, carrying the same violet-to-night sweep as the live shader.
+ */
+.fallback {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      26% 34% at 50% 58%,
+      color-mix(in srgb, var(--c-violet-night) 40%, transparent) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      65% 55% at 50% 58%,
+      color-mix(in srgb, var(--c-violet-deep) 22%, transparent) 0%,
+      transparent 74%
+    ),
+    var(--c-deep);
+}
