@@ -1,5 +1,6 @@
 'use client';
 
+import gsap from 'gsap';
 import Lenis from 'lenis';
 import {
   createContext,
@@ -35,7 +36,6 @@ export function useLenis(): Lenis | null {
 
 export function LenisProvider({ children }: { children: ReactNode }) {
   const [lenis, setLenis] = useState<Lenis | null>(null);
-  const rafRef = useRef<number | null>(null);
   const reducedMotion = useReducedMotion();
   const pathname = usePathname();
   const previousPath = useRef(pathname);
@@ -55,17 +55,33 @@ export function LenisProvider({ children }: { children: ReactNode }) {
       smoothWheel: true,
       // Touch devices already have momentum scrolling; doubling it feels laggy.
       syncTouch: false,
+      // gsap.ticker drives it instead — see below.
+      autoRaf: false,
     });
 
-    const raf = (time: number) => {
-      instance.raf(time);
-      rafRef.current = requestAnimationFrame(raf);
-    };
-    rafRef.current = requestAnimationFrame(raf);
+    /**
+     * One ticker for the whole page, in a defined order.
+     *
+     * Lenis used to run its own hand-rolled rAF here while GSAP ran a second
+     * one on the routes that use a timeline, and nothing guaranteed which went
+     * first within a frame. Driving Lenis from gsap.ticker makes the order
+     * explicit: Lenis writes the scroll position, then everything subscribed to
+     * its `scroll` event (ScrollTrigger.update, useScrollProgress) reads a
+     * value written this frame rather than last one.
+     *
+     * lagSmoothing(0) because GSAP otherwise clamps a long frame's delta and
+     * would hand Lenis a time that disagrees with the clock it interpolates
+     * against — the scroll would stall after any main-thread stall.
+     *
+     * gsap.ticker's time is in seconds; Lenis.raf expects milliseconds.
+     */
+    const tick = (time: number) => instance.raf(time * 1000);
+    gsap.ticker.add(tick);
+    gsap.ticker.lagSmoothing(0);
     setLenis(instance);
 
     return () => {
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+      gsap.ticker.remove(tick);
       instance.destroy();
       setLenis(null);
     };

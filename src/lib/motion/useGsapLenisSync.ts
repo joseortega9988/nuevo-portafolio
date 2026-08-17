@@ -12,9 +12,15 @@ import { useLenis } from './LenisProvider';
  * that ScrollTrigger would see, so without this bridge a ScrollTrigger fires
  * late, or not at all, exactly when smooth scrolling is enabled.
  *
- * Lives in lib/motion rather than inside an animation so gsap is only ever
- * pulled into the chunk that actually needs a timeline — importing it from the
- * LenisProvider would put the whole library in the root bundle.
+ * Lives in lib/motion rather than inside an animation so ScrollTrigger is only
+ * ever pulled into the chunk that actually needs a timeline.
+ *
+ * This used to add that gsap must not be imported from LenisProvider, because
+ * that would put the whole library in the root bundle. That is no longer true
+ * as written: P1-10 moved Lenis onto gsap.ticker, so gsap core is in the root
+ * bundle deliberately, bought for one deterministic ticker. The point the note
+ * was making still stands for the plugins — ScrollTrigger and Flip are the
+ * expensive part and they stay here, on the one route that uses them.
  */
 export function useGsapLenisSync(): void {
   const lenis = useLenis();
