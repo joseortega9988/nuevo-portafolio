@@ -11,6 +11,7 @@ import {
 } from 'three';
 
 import { buildPalette } from '@/lib/palette';
+import { useWorkerBuild } from '@/lib/webgl/useWorkerBuild';
 
 import { HOPF_CONFIG } from '../config';
 import { fiberFragmentShader, fiberVertexShader } from '../shaders/fiber.glsl';
@@ -20,8 +21,18 @@ export function Fibers({ onReady }: { onReady?: () => void }) {
   const groupRef = useRef<Group>(null);
   const readyRef = useRef(false);
 
-  const { geometry, material } = useMemo(() => {
-    const field = buildFiberField();
+  /* 112 fibres x 168 segments of stereographic projection, previously built
+   * inside this useMemo during render. buildFiberField reads its dimensions
+   * from HOPF_CONFIG rather than taking an argument, so `density` is passed
+   * only as the cache key — it is a constant, so this runs exactly once. */
+  const field = useWorkerBuild(
+    () => new Worker(new URL('../utils/hopf.worker.ts', import.meta.url)),
+    HOPF_CONFIG.density,
+    () => buildFiberField(),
+  );
+
+  const built = useMemo(() => {
+    if (!field) return null;
 
     const geo = new BufferGeometry();
     geo.setAttribute('position', new BufferAttribute(field.positions, 3));
@@ -48,18 +59,19 @@ export function Fibers({ onReady }: { onReady?: () => void }) {
     });
 
     return { geometry: geo, material: mat };
-  }, []);
+  }, [field]);
 
-  useEffect(
-    () => () => {
-      geometry.dispose();
-      material.dispose();
-    },
-    [geometry, material],
-  );
+  useEffect(() => {
+    if (!built) return;
+    return () => {
+      built.geometry.dispose();
+      built.material.dispose();
+    };
+  }, [built]);
 
   useFrame((_, delta) => {
-    const uTime = material.uniforms.uTime;
+    if (!built) return;
+    const uTime = built.material.uniforms.uTime;
     if (uTime) uTime.value = (uTime.value as number) + delta;
 
     if (groupRef.current) {
@@ -72,9 +84,15 @@ export function Fibers({ onReady }: { onReady?: () => void }) {
     }
   });
 
+  if (!built) return null;
+
   return (
     <group ref={groupRef}>
-      <lineSegments geometry={geometry} material={material} frustumCulled={false} />
+      <lineSegments
+        geometry={built.geometry}
+        material={built.material}
+        frustumCulled={false}
+      />
     </group>
   );
 }
