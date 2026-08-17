@@ -77,7 +77,7 @@ export function AizawaAttractor({
             provide. Bloom itself is cheap relative to the RK4 integration
             that dominates this scene's cost, so keeping it on is not the
             expensive part of a low-tier frame. */}
-        <TieredComposer tier={quality.tier}>
+        <TieredComposer>
           <Bloom
             intensity={SCENE.bloom.intensity * quality.bloom}
             luminanceThreshold={SCENE.bloom.threshold}

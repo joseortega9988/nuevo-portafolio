@@ -58,7 +58,7 @@ export function HopfFibration({
             only silences the pass, it does not stop the composer and its
             render targets being allocated on the tier that never uses them. */}
         {quality.tier !== 'low' && (
-          <TieredComposer tier={quality.tier}>
+          <TieredComposer>
             <Bloom
               intensity={HOPF_CONFIG.bloom * quality.bloom}
               luminanceThreshold={0.12}

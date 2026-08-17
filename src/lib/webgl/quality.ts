@@ -92,25 +92,34 @@ export function settingsForTier(tier: QualityTier): QualitySettings {
 }
 
 /**
- * Samples for an EffectComposer's render target, clamped to what the GPU
- * actually offers.
+ * Samples for an EffectComposer's render target: a clamp, and only a clamp.
  *
  * The library default is 8 and nobody here chose it. Most GPUs report
- * MAX_SAMPLES = 4 and clamp silently, so on that hardware the old value was an
- * allocation request for antialiasing the driver was never going to deliver —
- * and 4 is therefore byte-identical there, not a reduction. Where the GPU
- * genuinely does 8 (desktop NVIDIA/AMD) the high tier gives up four samples on
- * additively-blended line geometry that a mipmap bloom is about to soften
- * anyway; that is the one step in this change that is a judgement call rather
- * than an identity, and it is the reason this lives in its own commit.
+ * MAX_SAMPLES = 4 and clamp it silently, so on that hardware asking for 8 was
+ * an allocation request for antialiasing the driver was never going to
+ * deliver. Asking for min(8, maxSamples) removes that waste and is identical
+ * on every GPU, because it requests exactly what was being delivered before.
+ *
+ * This deliberately does NOT step down by tier, and that is a reversal worth
+ * recording. It used to return 4 / 2 / 0 for high / medium / low. On a GPU
+ * that genuinely offers 8 — this project's own development machine does — that
+ * halved the coverage carried by the thinnest geometry on the site, and the
+ * scenes that suffer are the ones built from sub-pixel additive lines behind a
+ * bloom with a low luminance threshold. The Hopf fibration showed it first:
+ * its far-side arcs are already multiplied by depthFade, so losing coverage
+ * dropped them under the bloom threshold while the bright near side survived,
+ * and the field stopped reading as lit on all sides.
+ *
+ * The VRAM saving was real but it was paid for out of the art. If it is ever
+ * wanted back, the lever is per-scene and needs a side-by-side first — a scene
+ * of solid geometry can afford fewer samples in a way a scene of thin additive
+ * lines cannot.
  *
  * `maxSamples` is only knowable once a context exists, so it is read inside
  * the canvas — see TieredComposer.
  */
-export function samplesForTier(tier: QualityTier, maxSamples: number): number {
-  if (tier === 'low') return 0;
-  if (tier === 'medium') return Math.min(2, maxSamples);
-  return Math.min(4, maxSamples);
+export function samplesForTier(maxSamples: number): number {
+  return Math.min(8, maxSamples);
 }
 
 /**

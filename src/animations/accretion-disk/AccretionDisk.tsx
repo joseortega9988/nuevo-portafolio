@@ -89,7 +89,7 @@ export function AccretionDisk({
             glow entirely on mobile rather than being dimmed, a hard on/off
             cliff at 768px instead of the taper quality.bloom already
             provides. Same reasoning as the Home attractor's composer. */}
-        <TieredComposer tier={quality.tier}>
+        <TieredComposer>
           <Bloom
             intensity={DISK_CONFIG.bloom.intensity * quality.bloom}
             luminanceThreshold={DISK_CONFIG.bloom.threshold}

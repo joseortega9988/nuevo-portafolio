@@ -59,7 +59,7 @@ export function VoronoiTorus({
             on the tier that never renders them. Low is every phone-width
             viewport, i.e. exactly the devices least able to spare the VRAM. */}
         {quality.tier !== 'low' && (
-          <TieredComposer tier={quality.tier}>
+          <TieredComposer>
             <Bloom
               intensity={TORUS_CONFIG.bloom.intensity * quality.bloom}
               luminanceThreshold={TORUS_CONFIG.bloom.threshold}
