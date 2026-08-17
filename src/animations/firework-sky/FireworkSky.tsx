@@ -171,9 +171,10 @@ class Shell {
        * Speed is the force itself — no damping factor.
        *
        * This used to be scaled by 0.1, which is why the bursts read as small
-       * balls instead of filling the frame. Friction is 0.955 per frame, so a
-       * spark's total travel is roughly v0 / (1 - friction) — about 22x its
-       * starting speed. At 0.1 that came to ~6 world units against a frame
+       * balls instead of filling the frame. Friction is 0.955 per 60th of a
+       * second, so a spark's total travel is roughly v0 / (1 - friction) —
+       * about 22x its starting speed. At 0.1 that came to ~6 world units
+       * against a frame
        * some 173 units tall; at full force it reaches 30-110, which is the
        * whole canvas.
        *
@@ -216,11 +217,31 @@ class Shell {
 
     this.timer += dt;
     const col = this.col;
+
+    /*
+     * Everything below is expressed in 60ths of a second, not in frames.
+     *
+     * friction, gravity and the position integration were applied once per
+     * frame with no dt, so the same shell was a different shell depending on
+     * the display: on a 120Hz ProMotion device the sparks decayed twice as
+     * fast and travelled roughly half as far, while `lifetimes` — which was
+     * already dt-scaled — kept 60Hz timing, so the two drifted apart from each
+     * other as well.
+     *
+     * `steps` is how many 60Hz frames this delta is worth, so friction becomes
+     * exponential in it and gravity and position scale linearly. At exactly
+     * 60Hz steps is 1 and every line reduces to what it was before, which is
+     * why this is a correctness fix and not a retune. None of friction,
+     * gravity or explosionForce moved.
+     */
+    const steps = dt * 60;
+    const decay = Math.pow(C.friction, steps);
     // Gravity ramps in after the hover rather than switching on, which is what
     // gives the burst its moment of hang before it falls.
     const g =
       MathUtils.smoothstep(this.timer, C.hoverDuration, C.hoverDuration + 0.5) *
-      C.gravity;
+      C.gravity *
+      steps;
 
     let alive = 0;
     for (let i = 0; i < this.count; i += 1) {
@@ -229,16 +250,16 @@ class Shell {
       alive += 1;
       const i3 = i * 3;
 
-      const vx = (this.velocities[i3] ?? 0) * C.friction;
-      const vy = ((this.velocities[i3 + 1] ?? 0) - g) * C.friction;
-      const vz = (this.velocities[i3 + 2] ?? 0) * C.friction;
+      const vx = (this.velocities[i3] ?? 0) * decay;
+      const vy = ((this.velocities[i3 + 1] ?? 0) - g) * decay;
+      const vz = (this.velocities[i3 + 2] ?? 0) * decay;
       this.velocities[i3] = vx;
       this.velocities[i3 + 1] = vy;
       this.velocities[i3 + 2] = vz;
 
-      pos[i3] = (pos[i3] ?? 0) + vx;
-      pos[i3 + 1] = (pos[i3 + 1] ?? 0) + vy;
-      pos[i3 + 2] = (pos[i3 + 2] ?? 0) + vz;
+      pos[i3] = (pos[i3] ?? 0) + vx * steps;
+      pos[i3 + 1] = (pos[i3 + 1] ?? 0) + vy * steps;
+      pos[i3 + 2] = (pos[i3 + 2] ?? 0) + vz * steps;
 
       const life = Math.max(0, remaining - C.fadeSpeed * dt * 60);
       this.lifetimes[i] = life;
