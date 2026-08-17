@@ -30,8 +30,19 @@ export function useGsapLenisSync(): void {
 
     const update = () => ScrollTrigger.update();
     lenis.on('scroll', update);
-    // Positions measured before Lenis started are stale by one frame.
-    ScrollTrigger.refresh();
+    /*
+     * No ScrollTrigger.refresh() here any more.
+     *
+     * It was justified as "positions measured before Lenis started are stale by
+     * one frame", but refresh() recalculates every trigger on the page and
+     * forces a full layout to do it, and this effect re-runs whenever the Lenis
+     * instance changes as well as on every consumer mount. The staleness it was
+     * guarding against is covered without it: ScrollTrigger refreshes itself on
+     * load and resize, and the one moment on this site where a layout genuinely
+     * changes under the triggers — the Flip settle — already calls refresh()
+     * deliberately in useThrowSequence's onComplete. That is the right site for
+     * it, because that is where the document height actually moves.
+     */
 
     return () => {
       lenis.off('scroll', update);
