@@ -126,18 +126,24 @@ everywhere; it had miscounted the composers and missed the tunnel.
 Nobody here chose 8, and most GPUs report `MAX_SAMPLES = 4` and clamp it
 silently — so on that hardware the request bought an allocation for
 antialiasing the driver was never going to deliver. `samplesForTier` asks for
-`min(4, maxSamples)` on high, `min(2, …)` on medium and none on low, read from
-`gl.capabilities` inside the canvas because it is only knowable once a context
-exists.
+`min(8, maxSamples)`, read from `gl.capabilities` inside the canvas because it
+is only knowable once a context exists. It requests exactly what was being
+delivered before, on every GPU.
 
-Two things a reader should know before touching this. The high-tier value is
-byte-identical on any GPU reporting `MAX_SAMPLES ≤ 4`; the development machine
-here reports **8** (AMD Radeon via ANGLE/D3D11), so on hardware like it this is
-a genuine reduction from 8 samples to 4 and wants an eye on it. And the medium
-and low steps are *not* free for `aizawa-attractor` and `accretion-disk`, whose
-composers run on every tier by design — precisely so phones get dimmed bloom
-instead of a hard cliff at 768px. For those two this gives up MSAA samples on
-mobile. It is isolated in one commit for that reason.
+It is a clamp and nothing more, and that is the second version. The first
+stepped down by tier — 4 on high, 2 on medium, none on low — for a real VRAM
+saving. On a GPU that genuinely offers 8, which this project's development
+machine does (AMD Radeon via ANGLE/D3D11), that halved the coverage carried by
+the thinnest geometry on the site. The Hopf fibration showed it immediately:
+its arcs are sub-pixel additive lines, already dimmed toward the back of the
+field by `depthFade`, and then thresholded by a bloom at `luminanceThreshold`
+0.12. Losing coverage dropped the far arcs under that threshold while the
+bright near side survived, so the field stopped reading as lit on all sides and
+only filled in as it rotated.
+
+Anyone tempted to reinstate the saving: the lever is per-scene, not per-tier,
+and it needs a side-by-side first. A scene of solid geometry can afford fewer
+samples in a way a scene of thin additive lines cannot.
 
 ### The footer tunnel is the one scene that unmounts
 
