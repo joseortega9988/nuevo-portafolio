@@ -1,6 +1,6 @@
 'use client';
 
-import { Bloom, EffectComposer } from '@react-three/postprocessing';
+import { Bloom } from '@react-three/postprocessing';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import {
@@ -15,6 +15,7 @@ import {
 } from 'three';
 
 import { CanvasStage } from '@/lib/webgl/CanvasStage';
+import { TieredComposer } from '@/lib/webgl/TieredComposer';
 import { useQuality } from '@/lib/webgl/quality';
 
 import { FIREWORK_CONFIG } from './config';
@@ -385,14 +386,14 @@ export function FireworkSky({
             only silences the pass, it does not stop the composer and its
             render targets being allocated on the tier that never uses them. */}
         {quality.tier !== 'low' && (
-          <EffectComposer>
+          <TieredComposer tier={quality.tier}>
             <Bloom
               intensity={C.bloom.strength * quality.bloom}
               luminanceThreshold={C.bloom.threshold}
               luminanceSmoothing={0.6}
               mipmapBlur
             />
-          </EffectComposer>
+          </TieredComposer>
         )}
       </CanvasStage>
     </div>

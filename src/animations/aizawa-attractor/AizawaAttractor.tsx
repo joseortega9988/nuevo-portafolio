@@ -1,11 +1,12 @@
 'use client';
 
-import { Bloom, ChromaticAberration, EffectComposer } from '@react-three/postprocessing';
+import { Bloom, ChromaticAberration } from '@react-three/postprocessing';
 import { useMemo } from 'react';
 import { Vector2 } from 'three';
 
 import { useQuality } from '@/lib/webgl/quality';
 import { CanvasStage } from '@/lib/webgl/CanvasStage';
+import { TieredComposer } from '@/lib/webgl/TieredComposer';
 
 import styles from './AizawaAttractor.module.css';
 import { BaseDisk } from './components/BaseDisk';
@@ -76,7 +77,7 @@ export function AizawaAttractor({
             provide. Bloom itself is cheap relative to the RK4 integration
             that dominates this scene's cost, so keeping it on is not the
             expensive part of a low-tier frame. */}
-        <EffectComposer>
+        <TieredComposer tier={quality.tier}>
           <Bloom
             intensity={SCENE.bloom.intensity * quality.bloom}
             luminanceThreshold={SCENE.bloom.threshold}
@@ -88,7 +89,7 @@ export function AizawaAttractor({
               `offset` is passed — the library's prop type resolves the rest
               away, and the defaults are what we want anyway. */}
           <ChromaticAberration offset={aberration} />
-        </EffectComposer>
+        </TieredComposer>
       </CanvasStage>
     </div>
   );

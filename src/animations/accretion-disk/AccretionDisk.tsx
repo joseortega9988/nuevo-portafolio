@@ -1,10 +1,11 @@
 'use client';
 
-import { Bloom, EffectComposer } from '@react-three/postprocessing';
+import { Bloom } from '@react-three/postprocessing';
 import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
 
 import { CanvasStage } from '@/lib/webgl/CanvasStage';
+import { TieredComposer } from '@/lib/webgl/TieredComposer';
 import { useQuality } from '@/lib/webgl/quality';
 import { useNarrowViewport } from '@/lib/webgl/useNarrowViewport';
 
@@ -88,14 +89,14 @@ export function AccretionDisk({
             glow entirely on mobile rather than being dimmed, a hard on/off
             cliff at 768px instead of the taper quality.bloom already
             provides. Same reasoning as the Home attractor's composer. */}
-        <EffectComposer>
+        <TieredComposer tier={quality.tier}>
           <Bloom
             intensity={DISK_CONFIG.bloom.intensity * quality.bloom}
             luminanceThreshold={DISK_CONFIG.bloom.threshold}
             luminanceSmoothing={0.6}
             mipmapBlur
           />
-        </EffectComposer>
+        </TieredComposer>
       </CanvasStage>
     </div>
   );

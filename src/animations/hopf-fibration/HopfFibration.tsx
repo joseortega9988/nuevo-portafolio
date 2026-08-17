@@ -1,8 +1,9 @@
 'use client';
 
-import { Bloom, EffectComposer } from '@react-three/postprocessing';
+import { Bloom } from '@react-three/postprocessing';
 
 import { CanvasStage } from '@/lib/webgl/CanvasStage';
+import { TieredComposer } from '@/lib/webgl/TieredComposer';
 import { useQuality } from '@/lib/webgl/quality';
 import type { AnimationLayerProps } from '@/lib/webgl/types';
 
@@ -57,14 +58,14 @@ export function HopfFibration({
             only silences the pass, it does not stop the composer and its
             render targets being allocated on the tier that never uses them. */}
         {quality.tier !== 'low' && (
-          <EffectComposer>
+          <TieredComposer tier={quality.tier}>
             <Bloom
               intensity={HOPF_CONFIG.bloom * quality.bloom}
               luminanceThreshold={0.12}
               luminanceSmoothing={0.6}
               mipmapBlur
             />
-          </EffectComposer>
+          </TieredComposer>
         )}
       </CanvasStage>
     </div>

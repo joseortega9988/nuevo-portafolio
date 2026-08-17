@@ -1,8 +1,9 @@
 'use client';
 
-import { Bloom, EffectComposer } from '@react-three/postprocessing';
+import { Bloom } from '@react-three/postprocessing';
 
 import { CanvasStage } from '@/lib/webgl/CanvasStage';
+import { TieredComposer } from '@/lib/webgl/TieredComposer';
 import { useNarrowViewport } from '@/lib/webgl/useNarrowViewport';
 import { useQuality } from '@/lib/webgl/quality';
 
@@ -58,14 +59,14 @@ export function VoronoiTorus({
             on the tier that never renders them. Low is every phone-width
             viewport, i.e. exactly the devices least able to spare the VRAM. */}
         {quality.tier !== 'low' && (
-          <EffectComposer>
+          <TieredComposer tier={quality.tier}>
             <Bloom
               intensity={TORUS_CONFIG.bloom.intensity * quality.bloom}
               luminanceThreshold={TORUS_CONFIG.bloom.threshold}
               luminanceSmoothing={0.55}
               mipmapBlur
             />
-          </EffectComposer>
+          </TieredComposer>
         )}
       </CanvasStage>
     </div>

@@ -92,6 +92,28 @@ export function settingsForTier(tier: QualityTier): QualitySettings {
 }
 
 /**
+ * Samples for an EffectComposer's render target, clamped to what the GPU
+ * actually offers.
+ *
+ * The library default is 8 and nobody here chose it. Most GPUs report
+ * MAX_SAMPLES = 4 and clamp silently, so on that hardware the old value was an
+ * allocation request for antialiasing the driver was never going to deliver —
+ * and 4 is therefore byte-identical there, not a reduction. Where the GPU
+ * genuinely does 8 (desktop NVIDIA/AMD) the high tier gives up four samples on
+ * additively-blended line geometry that a mipmap bloom is about to soften
+ * anyway; that is the one step in this change that is a judgement call rather
+ * than an identity, and it is the reason this lives in its own commit.
+ *
+ * `maxSamples` is only knowable once a context exists, so it is read inside
+ * the canvas — see TieredComposer.
+ */
+export function samplesForTier(tier: QualityTier, maxSamples: number): number {
+  if (tier === 'low') return 0;
+  if (tier === 'medium') return Math.min(2, maxSamples);
+  return Math.min(4, maxSamples);
+}
+
+/**
  * Device-appropriate render settings.
  *
  * Starts disabled and resolves after mount: detection needs `window`, and
