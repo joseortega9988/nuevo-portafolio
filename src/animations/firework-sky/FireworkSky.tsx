@@ -381,14 +381,19 @@ export function FireworkSky({
       >
         <Sky count={count} onReady={onReady} />
 
-        <EffectComposer enabled={quality.tier !== 'low'}>
-          <Bloom
-            intensity={C.bloom.strength * quality.bloom}
-            luminanceThreshold={C.bloom.threshold}
-            luminanceSmoothing={0.6}
-            mipmapBlur
-          />
-        </EffectComposer>
+        {/* Conditional, not `enabled` — see the note in VoronoiTorus: the prop
+            only silences the pass, it does not stop the composer and its
+            render targets being allocated on the tier that never uses them. */}
+        {quality.tier !== 'low' && (
+          <EffectComposer>
+            <Bloom
+              intensity={C.bloom.strength * quality.bloom}
+              luminanceThreshold={C.bloom.threshold}
+              luminanceSmoothing={0.6}
+              mipmapBlur
+            />
+          </EffectComposer>
+        )}
       </CanvasStage>
     </div>
   );

@@ -53,14 +53,19 @@ export function HopfFibration({
         <Cages />
         <Starfield count={particles} />
 
-        <EffectComposer enabled={quality.tier !== 'low'}>
-          <Bloom
-            intensity={HOPF_CONFIG.bloom * quality.bloom}
-            luminanceThreshold={0.12}
-            luminanceSmoothing={0.6}
-            mipmapBlur
-          />
-        </EffectComposer>
+        {/* Conditional, not `enabled` — see the note in VoronoiTorus: the prop
+            only silences the pass, it does not stop the composer and its
+            render targets being allocated on the tier that never uses them. */}
+        {quality.tier !== 'low' && (
+          <EffectComposer>
+            <Bloom
+              intensity={HOPF_CONFIG.bloom * quality.bloom}
+              luminanceThreshold={0.12}
+              luminanceSmoothing={0.6}
+              mipmapBlur
+            />
+          </EffectComposer>
+        )}
       </CanvasStage>
     </div>
   );

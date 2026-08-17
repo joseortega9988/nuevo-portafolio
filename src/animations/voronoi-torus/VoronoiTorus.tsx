@@ -52,14 +52,21 @@ export function VoronoiTorus({
       >
         <Shell gridSize={gridSize} progress={progress} onReady={onReady} />
 
-        <EffectComposer enabled={quality.tier !== 'low'}>
-          <Bloom
-            intensity={TORUS_CONFIG.bloom.intensity * quality.bloom}
-            luminanceThreshold={TORUS_CONFIG.bloom.threshold}
-            luminanceSmoothing={0.55}
-            mipmapBlur
-          />
-        </EffectComposer>
+        {/* Not <EffectComposer enabled={…}> — `enabled` is only read inside the
+            library's useFrame, so the composer, its multisampled HalfFloat
+            render target and the bloom mipmap chain are all still constructed
+            on the tier that never renders them. Low is every phone-width
+            viewport, i.e. exactly the devices least able to spare the VRAM. */}
+        {quality.tier !== 'low' && (
+          <EffectComposer>
+            <Bloom
+              intensity={TORUS_CONFIG.bloom.intensity * quality.bloom}
+              luminanceThreshold={TORUS_CONFIG.bloom.threshold}
+              luminanceSmoothing={0.55}
+              mipmapBlur
+            />
+          </EffectComposer>
+        )}
       </CanvasStage>
     </div>
   );
